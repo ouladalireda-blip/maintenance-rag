@@ -9,7 +9,7 @@ embeddings:
   dimensions: 1536                  # DOIT égaler vector(1536) dans supabase/migrations/0001_init.sql
 
 llm:
-  provider: anthropic               # fournisseur du modèle de génération
+  provider: openai                  # fournisseur du modèle de génération
   model: "à choisir : modèle récent et économique"  # à fixer avant la première évaluation
   temperature: 0                    # déterministe : reproductibilité des évaluations
 

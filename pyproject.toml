@@ -8,7 +8,6 @@ authors = [
 ]
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "anthropic>=2.7.0",
     "fastapi>=0.162.2",
     "flashrank>=0.2.10",
     "httpx>=0.28.1",
