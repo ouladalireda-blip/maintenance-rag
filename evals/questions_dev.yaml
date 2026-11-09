@@ -1,0 +1,24 @@
+# =====================================================================
+# questions_dev.yaml — Jeu de DÉVELOPPEMENT : sert à régler le pipeline et à calibrer tau. Peut évoluer.
+# Quotas visés : 25 valid / 8 out_of_scope / 10 near_miss / 7 identifier_trap (50)
+# =====================================================================
+#
+# Format d'une question :
+#   - id: dev-001                      # identifiant unique et stable
+#     question: "..."                 # formulation utilisateur
+#     category: valid                 # valid | out_of_scope | near_miss | identifier_trap
+#       # valid           : réponse présente dans le corpus
+#       # out_of_scope    : hors du corpus -> refus attendu
+#       # near_miss       : sujet voisin du corpus mais réponse absente -> refus attendu
+#       # identifier_trap : référence inexistante ou proche d'une vraie (ex. ERR-403 vs ERR-402)
+#     must_refuse: false              # true si le système doit refuser
+#     expected_answer: "..."          # réponse de référence (null si must_refuse)
+#     gold:                           # passages justificatifs ([] si must_refuse)
+#       - document_id: inrs-ed6109    # id du manifeste
+#         section: "..."              # titre de section
+#         printed_page: 12            # page IMPRIMÉE (pas la page PDF)
+#     notes: "..."                    # justification, ambiguïtés
+#
+# Règle : questions_test.yaml est figé et commité AVANT la mesure finale.
+
+questions: []

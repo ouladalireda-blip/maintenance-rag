@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    # Aucune étape ne nécessite de clé d'API ni le PDF INRS (non versionné).
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Installer Python (selon .python-version)
+        run: uv python install
+
+      - name: Installer les dépendances (lockfile strict)
+        run: uv sync --locked
+
+      - name: Ruff (lint)
+        run: uv run ruff check .
+
+      - name: Ruff (format)
+        run: uv run ruff format --check .
+
+      - name: Mypy
+        run: uv run mypy src
+
+      - name: Pytest
+        run: uv run pytest

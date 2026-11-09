@@ -1,0 +1,27 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+
+# Secrets
+.env
+
+# Bases locales
+*.db
+
+# Caches des outils
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Document protégé par le droit d'auteur (© INRS) : jamais versionné
+corpus/inrs/
+
+# Sorties d'évaluation régénérables
+evals/results/

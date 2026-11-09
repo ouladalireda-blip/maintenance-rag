@@ -1,0 +1,31 @@
+# =====================================================================
+# Manifeste du corpus : une entrée par document source.
+# id : identifiant stable du document, stocké tel quel dans documents.slug (base Supabase).
+# page_offset : page imprimée = page PDF − page_offset (stocké dans documents.page_offset).
+# sha256 : empreinte du fichier exact indexé (null tant que le fichier est absent).
+# =====================================================================
+
+documents:
+  - id: inrs-ed6109          # = documents.slug
+    title: "INRS ED 6109 — Consignations et déconsignations"
+    path: corpus/inrs/ed6109.pdf
+    language: fr
+    machine: null
+    version: "octobre 2020"
+    license: "© INRS 2020 — reproduction interdite sans consentement : usage local uniquement, non versionné"
+    source_url: "à compléter : URL officielle sur inrs.fr"
+    page_offset: 2
+    sha256: null   # fichier absent de corpus/inrs/ lors de l'audit : à calculer (voir docs/corpus.md)
+
+# Modèle d'entrée pour les 4 procédures fictives TX-200 (à rédiger, versionnées) :
+#
+#  - id: tx200-<sujet>                 # = documents.slug ; ex. tx200-consignation, tx200-filtre, tx200-codes-erreur
+#    title: "TX-200 — <titre de la procédure>"
+#    path: corpus/tx200/<fichier>.pdf
+#    language: fr
+#    machine: TX-200
+#    version: "v1"
+#    license: "Fictif (projet) — rédigé pour maintenance-rag"
+#    source_url: null
+#    page_offset: 0
+#    sha256: <à calculer>

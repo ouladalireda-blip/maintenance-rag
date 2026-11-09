@@ -1,0 +1,8 @@
+services:
+  api:
+    build: .
+    env_file: .env              # secrets locaux, jamais versionnés
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./corpus:/app/corpus:ro # corpus local (dont le PDF INRS) en lecture seule
