@@ -380,3 +380,17 @@ def test_real_questions_fit_bert_window(blocks: list[Block]) -> None:
             f"({longest_chunk} tokens) : {too_long}",
             pytrace=False,
         )
+
+
+@real_pdf
+@pytest.mark.xfail(
+    strict=True, reason="encadré p.22 rattaché au mauvais intertitre, voir docs/corpus.md"
+)
+def test_real_clp_box_section(blocks: list[Block]) -> None:
+    from maintenance_rag.identifiers import extract_identifiers
+
+    chunks = chunk_blocks(blocks, MAX_TOKENS, document_slug=INRS.id)
+    holders = [chunk for chunk in chunks if "CLP" in extract_identifiers(chunk.content)]
+    assert holders, "aucun passage ne contient l'identifiant CLP"
+    for chunk in holders:
+        assert "Principes de séparation de circuits" not in chunk.section_title, chunk.chunk_index

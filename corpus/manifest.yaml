@@ -17,7 +17,7 @@ documents:
     license: "© INRS 2020 — reproduction interdite sans consentement : usage local uniquement, non versionné"
     source_url: "à compléter : URL officielle sur inrs.fr"
     page_offset: 2
-    sha256: null   # fichier absent de corpus/inrs/ lors de l'audit : à calculer (voir docs/corpus.md)
+    sha256: "77e164b01354b66e1f6cba4735e450dc928594373647a1dba734ba0bab992574"   # fichier absent de corpus/inrs/ lors de l'audit : à calculer (voir docs/corpus.md)
     layout_profile: inrs       # config/config.yaml → layout_profiles.inrs
     # Pages PDF non indexées : couverture (1), mentions légales (2), page de titre (3),
     # contributeurs (4), sommaire (5), pages blanches (6, 8, 32), dos (34, 35).

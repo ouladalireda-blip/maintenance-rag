@@ -1,3 +1,4 @@
+expected_identifiers_definition: "Références citées dans la question ou la citation, que la recherche exacte doit retrouver."
 version: "2.1"
 last_reviewed: "2026-11-10"
 note: "Questions rédigées avec l'aide d'un LLM puis vérifiées une à une contre le document source."
@@ -38,7 +39,7 @@ questions:
     expected_section: "5.1. Consignation électrique"
     expected_page: 14
     exact_quote: "séparation de l'équipement de travail concerné, préalablement identifié, de toute source d'énergie électrique (opération 1)"
-    expected_identifiers: ["NF C18-510"]
+    expected_identifiers: []
     reason: "Teste la recherche d'une procédure ordonnée à 5 étapes pour le risque électrique ; la citation ne retient que la première étape comme preuve du bon passage."
 
   - id: "INRS-DEV-004"
@@ -71,9 +72,8 @@ questions:
     expected_section: "6.1. Consignation fluidique"
     expected_page: 20
     exact_quote: "L'article R. 4411-6 du Code du travail définit les substances et mélanges dangereux en faisant référence au règlement européen n° 1272/2008."
-    expected_identifiers: ["R. 4411-6", "1272/2008"]
-    reason: "Teste la recherche d'identifiants réglementaires stricts. Le sigle CLP n'apparaît pas dans le guide, qui écrit « règlement européen n° 1272/2008 » : la recherche sémantique doit faire seule le lien entre les deux."
-  
+    expected_identifiers: ["R. 4411-6", "1272/2008", "CLP"]
+    reason: "Teste la recherche d'identifiants réglementaires stricts : la question cite le sigle CLP, présent dans un encadré du même passage que l'article R. 4411-6 et le règlement 1272/2008."
   - id: "INRS-DEV-007"
     category: "valid"
     question: "Une fois l'intervention finie sur une conduite, qui a le droit de dire qu'elle est déconsignée ?"

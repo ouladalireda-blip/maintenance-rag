@@ -7,6 +7,8 @@ embeddings:
   provider: openai                  # fournisseur des vecteurs
   model: text-embedding-3-small     # modèle multilingue, économique
   dimensions: 1536                  # DOIT égaler vector(1536) dans supabase/migrations/0001_init.sql
+  batch_size: 100                   # textes par appel à l'API d'embedding
+  max_attempts: 3                   # essais par lot (attente exponentielle : 1 s, 2 s)
 
 llm:
   provider: openai                  # fournisseur du modèle de génération

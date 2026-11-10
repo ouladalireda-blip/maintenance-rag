@@ -41,3 +41,12 @@ sha256sum corpus/inrs/ed6109.pdf
 - **Les pages sans numéro imprimé** (couverture, pages liminaires) donnent un résultat ≤ 0 : la page imprimée vaut alors `NULL`, et une citation sur une telle page indique la page PDF.
 
 Exemple pour l'ED 6109 (`page_offset: 2`) : les pages PDF 1 et 2 n'ont pas de page imprimée, et la page PDF 14 correspond à la page imprimée 12.
+
+## Limites connues de l'extraction
+
+Cas connus de `src/maintenance_rag/pdf_reader.py` sur l'ED 6109, documentés plutôt que corrigés. Chacun est suivi par un test.
+
+| Cas | Où | Cause | Impact |
+|---|---|---|---|
+| Encadré rattaché au mauvais intertitre | p. 22 PDF (20 imprimée), chunk 44 | L'ordre de lecture lit la colonne gauche avant la droite. L'encadré en haut de la colonne droite passe donc après l'intertitre « Principes de séparation de circuits », placé plus bas dans la colonne gauche, et en hérite. | `section_title` trop précis (un niveau de trop). La recherche (vecteur, plein texte, identifiants `CLP`, `1272/2008`, `R4411-6`) et la page citée ne sont pas affectées. Test : `test_real_clp_box_section` (`xfail` strict). |
+| Césures non recollées | « réa-lisent » (p. 10 PDF), « intempes-tivement » (p. 29 PDF) | `dehyphenate` ne recolle un mot coupé par un vrai tiret que si le mot entier apparaît ailleurs dans le document (vocabulaire construit sur le PDF). Ces deux mots n'y figurent qu'une fois, coupés. | Le texte affiché garde le tiret. Le garde-fou 2 n'est pas affecté (`normalize_for_match` supprime les tirets). La recherche plein texte peut manquer ces deux mots. |
