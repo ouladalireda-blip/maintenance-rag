@@ -24,6 +24,7 @@ rerank:
   provider: flashrank               # cross-encoder local, sans appel réseau
   model: "ms-marco-MultiBERT-L-12"  # multilingue (BERT multilingue, 100+ langues) ; recalibrer tau si changé
   top_n: 3                          # passages transmis au LLM après reranking
+  cache_dir: ".cache/flashrank"     # modèle FlashRank local (relatif à la racine, non versionné)
 
 guardrails:
   # Seuil du garde-fou 1 (score de reranking minimal pour répondre).
@@ -34,7 +35,7 @@ guardrails:
   min_quote_chars: 20               # longueur minimale (normalisée) d'une citation vérifiable
 
 chunking:
-  max_tokens: 500                   # taille maximale d'un passage
+  max_tokens: 350                   # mesuré : 0 passage > 512 tokens BERT avec marge pour la question
   never_split_lists: true           # une liste d'étapes (procédure) n'est jamais coupée
 
 # ---------------------------------------------------------------------

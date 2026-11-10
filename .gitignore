@@ -25,3 +25,6 @@ corpus/inrs/
 
 # Sorties d'évaluation régénérables
 evals/results/
+
+# Caches locaux (modèle FlashRank, etc.)
+.cache/
