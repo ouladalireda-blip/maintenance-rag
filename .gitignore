@@ -23,8 +23,5 @@ wheels/
 # Document protégé par le droit d'auteur (© INRS) : jamais versionné
 corpus/inrs/
 
-# Sorties d'évaluation régénérables
-evals/results/
-
 # Caches locaux (modèle FlashRank, etc.)
 .cache/
