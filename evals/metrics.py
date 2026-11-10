@@ -10,7 +10,7 @@ premier bon passage dans les résultats, ``None`` s'il n'est pas dans le top 10.
 """
 
 from collections.abc import Mapping, Sequence
-from typing import Any, Protocol
+from typing import Any, NamedTuple, Protocol
 
 from maintenance_rag.normalize import quote_matches
 
@@ -66,3 +66,49 @@ def mrr(ranks: Sequence[int | None]) -> float:
     """Moyenne des inverses de rang (0 si le bon passage est absent du top 10)."""
     _check(ranks)
     return sum(1 / rank for rank in ranks if rank is not None) / len(ranks)
+
+
+class Paired(NamedTuple):
+    """Comparaison appariée question par question, du point de vue de ``a``."""
+
+    wins: int  # a classe le bon passage strictement mieux que b
+    losses: int  # a le classe strictement moins bien
+    ties: int  # même rang, ou absent des deux côtés
+
+
+def paired_comparison(ranks_a: Sequence[int | None], ranks_b: Sequence[int | None]) -> Paired:
+    """Victoires / défaites / égalités de ``a`` contre ``b`` ; rang absent = le pire."""
+    if len(ranks_a) != len(ranks_b):
+        raise ValueError("les deux séries de rangs doivent porter sur les mêmes questions")
+    _check(ranks_a)
+    _check(ranks_b)
+    worst = float("inf")
+    wins = losses = ties = 0
+    for a, b in zip(ranks_a, ranks_b, strict=True):
+        left = worst if a is None else a
+        right = worst if b is None else b
+        if left < right:
+            wins += 1
+        elif left > right:
+            losses += 1
+        else:
+            ties += 1
+    return Paired(wins, losses, ties)
+
+
+class Candidate(NamedTuple):
+    """Une configuration de la grille, réduite aux critères de la règle de choix."""
+
+    name: str
+    recall: float  # rappel au match_count le plus haut de la grille
+    full_text_weight: float
+    match_count: int
+    mrr: float
+
+
+def select_config(candidates: Sequence[Candidate]) -> Candidate:
+    """Règle fixée à l'avance : a) rappel le plus haut ; b) à égalité, poids full-text le plus
+    petit puis match_count le plus petit ; c) le MRR ne départage qu'un ex æquo restant."""
+    if not candidates:
+        raise ValueError("aucune configuration")
+    return min(candidates, key=lambda c: (-c.recall, c.full_text_weight, c.match_count, -c.mrr))

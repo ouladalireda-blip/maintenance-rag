@@ -16,6 +16,23 @@ Mode « retrieval » : mesure de la recherche AVANT tout reranking, branche par 
   candidats de chaque branche, d'où les rangs de branche du bon passage et le nombre de
   passages où la branche full-text a matché.
 
+Mode « grid » : grille de réglages FIXÉE À L'AVANCE, comparée à la sémantique seule.
+
+    uv run python evals/run_eval.py --set dev --mode grid
+
+- Poids (s, f, i) = (1, f, 2) avec f ∈ {0, 0.25, 0.5, 1}, match_count ∈ {10, 20} :
+  8 configurations, aucune autre valeur. rrf_k de config.yaml.
+- Rang d'une question = rang du premier bon passage parmi les match_count renvoyés (None
+  sinon). R@1, R@3, R@10, R@20 (match_count 20 seulement) ; MRR tronqué au top 10
+  (comparable entre match_count).
+- Référence : sémantique seule (1, 0, 0) AU MÊME match_count. Comparaison appariée
+  (victoires / défaites / égalités, absent = pire rang), ids qui sortent du top
+  match_count alors qu'ils y étaient en sémantique seule, et ids qui y entrent.
+- Règle de choix : a) rappel au match_count le plus haut de la grille (R@20 ; une
+  configuration à match_count 10 ne renvoie rien au-delà du rang 10, son R@20 vaut donc son
+  R@10) ; b) à égalité, f le plus petit puis match_count le plus petit ; c) MRR pour un ex
+  æquo restant.
+
 Base en LECTURE SEULE (connexion read_only, uniquement hybrid_search). Les vecteurs des
 questions sont mis en cache dans .cache/query_embeddings.json (non versionné).
 """
@@ -32,13 +49,29 @@ from typing import Any
 import yaml
 
 from maintenance_rag.retrieval import CachedEmbedder, SearchResult, Weights, search
-from metrics import TOP_K, first_hit_rank, hit, mrr, recall_at_k
+from metrics import (
+    TOP_K,
+    Candidate,
+    first_hit_rank,
+    hit,
+    mrr,
+    paired_comparison,
+    recall_at_k,
+    select_config,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = yaml.safe_load((ROOT / "config" / "config.yaml").read_text(encoding="utf-8"))
 CACHE = ROOT / ".cache" / "query_embeddings.json"
 RESULTS = ROOT / "evals" / "results"
 DIAGNOSTIC_MATCH_COUNT = 10_000  # tous les candidats de chaque branche (69 passages en base)
+
+# Grille fixée à l'avance : ne pas ajouter de valeur après avoir vu les résultats.
+GRID_SEMANTIC_WEIGHT = 1.0
+GRID_IDENTIFIER_WEIGHT = 2.0
+GRID_FULL_TEXT_WEIGHTS = (0.0, 0.25, 0.5, 1.0)
+GRID_MATCH_COUNTS = (10, 20)
+SEMANTIC_ONLY: Weights = (1.0, 0.0, 0.0)
 
 
 def _configs() -> dict[str, Weights]:
@@ -141,6 +174,151 @@ def _evaluate(questions: list[dict[str, Any]], embedder: Any, conn: Any) -> dict
     return {"summary": summary, "per_question": per_question}
 
 
+def _grid() -> list[tuple[str, Weights, int]]:
+    return [
+        (f"f={f:g} mc={mc}", (GRID_SEMANTIC_WEIGHT, f, GRID_IDENTIFIER_WEIGHT), mc)
+        for mc in GRID_MATCH_COUNTS
+        for f in GRID_FULL_TEXT_WEIGHTS
+    ]
+
+
+def _ranks(
+    questions: list[dict[str, Any]],
+    embedder: Any,
+    conn: Any,
+    weights: Weights,
+    match_count: int,
+    rrf_k: int,
+    min_chars: int,
+) -> list[int | None]:
+    ranks: list[int | None] = []
+    for question in questions:
+        results = search(question["question"], embedder, conn, weights, match_count, rrf_k=rrf_k)
+        results = [result for result in results if result.rrf_score > 0]  # aucun remplissage
+        ranks.append(first_hit_rank(results, question, min_chars, match_count))
+    return ranks
+
+
+def _metrics(ranks: list[int | None], match_count: int) -> dict[str, float | None]:
+    top10 = [rank if rank is not None and rank <= TOP_K else None for rank in ranks]
+    return {
+        "recall@1": recall_at_k(ranks, 1),
+        "recall@3": recall_at_k(ranks, 3),
+        "recall@10": recall_at_k(ranks, 10),
+        "recall@20": recall_at_k(ranks, 20) if match_count >= 20 else None,
+        "recall_at_max_match_count": recall_at_k(ranks, max(GRID_MATCH_COUNTS)),
+        "mrr@10": mrr(top10),
+    }
+
+
+def _evaluate_grid(questions: list[dict[str, Any]], embedder: Any, conn: Any) -> dict[str, Any]:
+    rrf_k = int(CONFIG["retrieval"]["rrf_k"])
+    min_chars = int(CONFIG["guardrails"]["min_quote_chars"])
+    ids = [question["id"] for question in questions]
+
+    baselines: dict[int, list[int | None]] = {
+        mc: _ranks(questions, embedder, conn, SEMANTIC_ONLY, mc, rrf_k, min_chars)
+        for mc in GRID_MATCH_COUNTS
+    }
+    reference = {
+        f"sémantique seule mc={mc}": {
+            "weights": list(SEMANTIC_ONLY),
+            "match_count": mc,
+            **_metrics(ranks, mc),
+            "ranks": dict(zip(ids, ranks, strict=True)),
+        }
+        for mc, ranks in baselines.items()
+    }
+
+    grid: dict[str, dict[str, Any]] = {}
+    for name, weights, mc in _grid():
+        ranks = _ranks(questions, embedder, conn, weights, mc, rrf_k, min_chars)
+        base = baselines[mc]
+        paired = paired_comparison(ranks, base)
+        grid[name] = {
+            "weights": list(weights),
+            "match_count": mc,
+            **_metrics(ranks, mc),
+            "vs_semantic_only": {
+                "wins": paired.wins,
+                "losses": paired.losses,
+                "ties": paired.ties,
+                "dropped_out": [
+                    qid
+                    for qid, rank, base_rank in zip(ids, ranks, base, strict=True)
+                    if base_rank is not None and rank is None
+                ],
+                "entered": [
+                    qid
+                    for qid, rank, base_rank in zip(ids, ranks, base, strict=True)
+                    if base_rank is None and rank is not None
+                ],
+            },
+            "ranks": dict(zip(ids, ranks, strict=True)),
+        }
+
+    chosen = select_config(
+        [
+            Candidate(
+                name,
+                row["recall_at_max_match_count"],
+                row["weights"][1],
+                row["match_count"],
+                row["mrr@10"],
+            )
+            for name, row in grid.items()
+        ]
+    )
+    return {
+        "reference": reference,
+        "grid": grid,
+        "selection_rule": (
+            f"a) R@{max(GRID_MATCH_COUNTS)} le plus haut ; b) à égalité, f le plus petit puis "
+            "match_count le plus petit ; c) MRR@10 pour un ex æquo restant"
+        ),
+        "selected": chosen.name,
+    }
+
+
+def _r(value: float | None) -> str:
+    return "-" if value is None else f"{value:.2f}"
+
+
+def _print_grid(report: dict[str, Any], questions: list[dict[str, Any]]) -> None:
+    print("\nGrille (s=1, i=2), recherche seule avant reranking ; questions :", len(questions))
+    print("Référence : sémantique seule (1,0,0) au même match_count ; absent = pire rang")
+    print(
+        f"{'configuration':24} {'poids':10} {'R@1':>5} {'R@3':>5} {'R@10':>5} {'R@20':>5} "
+        f"{'MRR@10':>6} {'V/D/E':>8}  sortent du top | entrent dans le top"
+    )
+    for name, row in report["reference"].items():
+        weights = ",".join(f"{w:g}" for w in row["weights"])
+        print(
+            f"{name:24} {weights:10} {_r(row['recall@1']):>5} {_r(row['recall@3']):>5} "
+            f"{_r(row['recall@10']):>5} {_r(row['recall@20']):>5} {row['mrr@10']:6.3f} "
+            f"{'réf.':>8}"
+        )
+    for name, row in report["grid"].items():
+        weights = ",".join(f"{w:g}" for w in row["weights"])
+        vs = row["vs_semantic_only"]
+        record = f"{vs['wins']}/{vs['losses']}/{vs['ties']}"
+        dropped = ", ".join(vs["dropped_out"]) or "aucun"
+        entered = ", ".join(vs["entered"]) or "aucun"
+        print(
+            f"{name:24} {weights:10} {_r(row['recall@1']):>5} {_r(row['recall@3']):>5} "
+            f"{_r(row['recall@10']):>5} {_r(row['recall@20']):>5} {row['mrr@10']:6.3f} "
+            f"{record:>8}  {dropped} | {entered}"
+        )
+    print(f"\nRègle : {report['selection_rule']}")
+    chosen = report["grid"][report["selected"]]
+    weights = ",".join(f"{w:g}" for w in chosen["weights"])
+    print(
+        f"Configuration retenue : {report['selected']} (poids {weights}, match_count "
+        f"{chosen['match_count']}, R@{max(GRID_MATCH_COUNTS)} "
+        f"{chosen['recall_at_max_match_count']:.2f})"
+    )
+
+
 def _print(report: dict[str, Any], questions: list[dict[str, Any]]) -> None:
     print("\na) Recherche seule (avant reranking), questions valides :", len(questions))
     print(f"{'configuration':20} {'poids (s,f,i)':15} {'R@1':>5} {'R@3':>5} {'R@10':>5} {'MRR':>6}")
@@ -176,7 +354,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     parser = argparse.ArgumentParser(description="Évaluation du pipeline maintenance-rag.")
     parser.add_argument("--set", choices=["dev"], required=True)
-    parser.add_argument("--mode", choices=["retrieval"], required=True)
+    parser.add_argument("--mode", choices=["retrieval", "grid"], required=True)
     args = parser.parse_args(argv)
 
     data = yaml.safe_load((ROOT / "evals" / f"questions_{args.set}.yaml").read_text("utf-8"))
@@ -207,18 +385,25 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         with psycopg.connect(settings.supabase_db_url.get_secret_value(), autocommit=True) as conn:
             conn.read_only = True  # garde-fou : aucune écriture possible dans cette session
-            report = _evaluate(questions, embedder, conn)
+            if args.mode == "grid":
+                report = _evaluate_grid(questions, embedder, conn)
+            else:
+                report = _evaluate(questions, embedder, conn)
     except Exception as error:  # réseau, SSL, base : on s'arrête et on montre l'erreur
         print("ÉCHEC (rien n'a été écrit) :\n  " + _error_chain(error, secrets))
         return 2
 
     print(f"Cache des questions : {embedder.hits} lus, {embedder.misses} calculés (OpenAI)")
-    _print(report, questions)
+    if args.mode == "grid":
+        _print_grid(report, questions)
+    else:
+        _print(report, questions)
 
     commit = _git("rev-parse", "--short", "HEAD")
     dirty = bool(_git("status", "--porcelain"))
     today = dt.date.today().isoformat()
-    output = RESULTS / f"retrieval_{args.set}_{today}_{commit}.json"
+    prefix = "grid" if args.mode == "grid" else "retrieval"
+    output = RESULTS / f"{prefix}_{args.set}_{today}_{commit}.json"
     RESULTS.mkdir(parents=True, exist_ok=True)
     payload = {
         "set": args.set,
@@ -229,11 +414,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         "config": {
             "embedding_model": embeddings["model"],
             "embedding_dimensions": int(embeddings["dimensions"]),
-            "match_count": int(CONFIG["retrieval"]["match_count"]),
             "rrf_k": int(CONFIG["retrieval"]["rrf_k"]),
             "max_tokens": int(CONFIG["chunking"]["max_tokens"]),
             "min_quote_chars": int(CONFIG["guardrails"]["min_quote_chars"]),
-            "configurations": {name: list(w) for name, w in _configs().items()},
+            **(
+                {
+                    "grid": {
+                        name: {"weights": list(w), "match_count": mc} for name, w, mc in _grid()
+                    },
+                    "reference_weights": list(SEMANTIC_ONLY),
+                }
+                if args.mode == "grid"
+                else {
+                    "match_count": int(CONFIG["retrieval"]["match_count"]),
+                    "configurations": {name: list(w) for name, w in _configs().items()},
+                }
+            ),
         },
         "question_ids": [q["id"] for q in questions],
         **report,

@@ -16,12 +16,11 @@ llm:
   temperature: 0                    # déterministe : reproductibilité des évaluations
 
 retrieval:
-  match_count: 10                   # nombre de candidats renvoyés par hybrid_search
-  rrf_k: 50                         # constante de lissage de la fusion RRF
-  semantic_weight: 1.0              # poids du classement vectoriel
-  full_text_weight: 1.0             # poids du classement plein texte
-  identifier_weight: 2.0            # poids des références exactes (une référence exacte prime)
-
+  match_count: 20
+  weights:
+    semantic: 1.0
+    full_text: 0.0     # désactivé par la grille du 10/11 (bruit : "consign" dans 56/69 chunks) ; réactivable
+    identifier: 2.0
 rerank:
   provider: flashrank               # cross-encoder local, sans appel réseau
   model: "ms-marco-MultiBERT-L-12"  # multilingue (BERT multilingue, 100+ langues) ; recalibrer tau si changé
