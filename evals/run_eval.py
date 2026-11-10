@@ -104,6 +104,11 @@ def _evaluate(questions: list[dict[str, Any]], embedder: Any, conn: Any) -> dict
         everything = search(
             text, embedder, conn, configs["hybride"], DIAGNOSTIC_MATCH_COUNT, rrf_k=rrf_k
         )
+        # Nombre de passages où la branche full-text matche : mesuré par hybrid_search elle-même
+        # (poids 0,1,0, tous les candidats), jamais par une requête plein texte écrite ici.
+        full_text_all = search(
+            text, embedder, conn, configs["full-text seul"], DIAGNOSTIC_MATCH_COUNT, rrf_k=rrf_k
+        )
         gold: list[SearchResult] = [r for r in everything if hit(r, question, min_chars)]
         best = min(gold, key=lambda r: r.semantic_rank or 10**9, default=None)
         per_question[qid] = {
@@ -114,7 +119,9 @@ def _evaluate(questions: list[dict[str, Any]], embedder: Any, conn: Any) -> dict
             "gold_full_text_rank": best.full_text_rank if best else None,
             "gold_identifier_rank": best.identifier_rank if best else None,
             "full_text_returned_top10": returned["full-text seul"][qid],
-            "full_text_matches_total": sum(1 for r in everything if r.full_text_rank is not None),
+            "full_text_matches_total": sum(
+                1 for r in full_text_all if r.full_text_rank is not None
+            ),
             "identifier_matches_total": sum(1 for r in everything if r.identifier_rank is not None),
             "chunks_in_base": len(everything),
         }
@@ -155,7 +162,8 @@ def _print(report: dict[str, Any], questions: list[dict[str, Any]]) -> None:
             f"{_fmt(row['gold_identifier_rank']):>5} {row['full_text_returned_top10']:>8}"
         )
 
-    print("\nc) Passages où la branche full-text a matché (websearch_to_tsquery, tous candidats)")
+    print("\nc) Passages où la branche full-text de hybrid_search a matché (poids 0,1,0, tous")
+    print("   candidats) ; ident : branche identifiants (appel diagnostic hybride)")
     print(f"{'id':14} {'ft':>4} {'ident':>5} {'en base':>7}")
     for qid, row in report["per_question"].items():
         print(

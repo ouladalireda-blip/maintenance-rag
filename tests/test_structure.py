@@ -113,3 +113,20 @@ def test_total_questions_matches() -> None:
         data = _load("evals", name)
         if "total_questions" in data:
             assert data["total_questions"] == len(data["questions"]), name
+
+
+def test_stopwords_migration_orders_dictionaries() -> None:
+    sql = (MIGRATIONS / "0004_fr_stopwords_first.sql").read_text(encoding="utf-8")
+    code = "\n".join(re.sub(r"--.*", "", line) for line in sql.splitlines())
+    assert sql.lstrip().splitlines()[-1] == "commit;" and "\nbegin;\n" in sql
+    assert "websearch_to_tsquery" not in code and "to_tsquery(" not in code
+    mapping = re.search(r"alter mapping for [^;]*?\bwith\b([^;]*);", code, re.S)
+    assert mapping, "alter mapping introuvable"
+    dictionaries = [name.strip() for name in mapping.group(1).split(",")]
+    assert dictionaries == ["public.fr_stopwords", "extensions.unaccent", "french_stem"]
+    assert dictionaries.index("public.fr_stopwords") < dictionaries.index("extensions.unaccent")
+    assert (
+        "to_tsvector('public.fr_unaccent', coalesce(section_title, '') || ' ' || "
+        "coalesce(content, ''))"
+    ) in code  # expression identique à 0003
+    assert "relrowsecurity" in code
