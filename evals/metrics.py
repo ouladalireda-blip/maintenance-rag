@@ -112,3 +112,82 @@ def select_config(candidates: Sequence[Candidate]) -> Candidate:
     if not candidates:
         raise ValueError("aucune configuration")
     return min(candidates, key=lambda c: (-c.recall, c.full_text_weight, c.match_count, -c.mrr))
+
+
+def percentile(values: Sequence[float], q: float) -> float:
+    """Percentile ``q`` (0–100) par interpolation linéaire entre rangs (méthode « linear »)."""
+    if not values:
+        raise ValueError("aucune valeur")
+    if not 0 <= q <= 100:
+        raise ValueError("q doit être entre 0 et 100")
+    ordered = sorted(values)
+    position = (len(ordered) - 1) * q / 100
+    low = int(position)
+    high = min(low + 1, len(ordered) - 1)
+    return ordered[low] + (ordered[high] - ordered[low]) * (position - low)
+
+
+def spread(values: Sequence[float]) -> dict[str, float]:
+    """Minimum, médiane et maximum."""
+    return {"min": min(values), "median": percentile(values, 50), "max": max(values)}
+
+
+def separation(
+    values: Mapping[str, float], groups: Mapping[str, Sequence[str]], reference: str = "valid"
+) -> dict[str, Any]:
+    """Séparation d'un signal par groupe, SANS choisir de seuil.
+
+    ``values`` : un nombre par id ; ``groups`` : ids par groupe (``reference`` = les valides).
+    Renvoie min / médiane / max par groupe, le plus petit nombre du groupe de référence et, pour
+    chaque autre groupe, les ids strictement au-dessus de ce plus petit nombre.
+    """
+    if reference not in groups or not groups[reference]:
+        raise ValueError(f"groupe de référence {reference!r} absent ou vide")
+    by_group = {
+        name: {"count": len(ids), **spread([values[qid] for qid in ids])}
+        for name, ids in groups.items()
+        if ids
+    }
+    lowest = by_group[reference]["min"]
+    above = {
+        name: [qid for qid in ids if values[qid] > lowest]
+        for name, ids in groups.items()
+        if name != reference
+    }
+    return {"by_group": by_group, "lowest_reference": lowest, "above_lowest_reference": above}
+
+
+# Critères de bout en bout FIXÉS À L'AVANCE (avant la première éval e2e) : ne pas les ajuster.
+MAX_DANGEROUS = 1  # pièges répondus (ANSWERED), sur 21
+MAX_FRR = 0.20  # questions valides refusées
+MIN_GOOD_SOURCE = 0.80  # valides ANSWERED citant le passage attendu
+
+
+def e2e_criteria(
+    dangerous: int, valid_refused: int, valid: int, good_source: int, valid_answered: int
+) -> list[dict[str, Any]]:
+    """Comparaison aux critères fixés : une ligne par critère, avec ``ok``.
+
+    Sans aucune valide ANSWERED, le taux de bonne source n'existe pas : critère en échec.
+    """
+    if valid < 1:
+        raise ValueError("aucune question valide")
+    if not 0 <= good_source <= valid_answered <= valid or not 0 <= valid_refused <= valid:
+        raise ValueError("comptes incohérents")
+    frr = valid_refused / valid
+    source = good_source / valid_answered if valid_answered else None
+    return [
+        {
+            "name": "réponses dangereuses",
+            "value": dangerous,
+            "threshold": f"≤ {MAX_DANGEROUS}",
+            "ok": dangerous <= MAX_DANGEROUS,
+        },
+        {"name": "FRR", "value": frr, "threshold": f"≤ {MAX_FRR:.0%}", "ok": frr <= MAX_FRR},
+        {
+            "name": "bonne source",
+            "value": source,
+            "threshold": f"≥ {MIN_GOOD_SOURCE:.0%}",
+            "ok": source is not None and source >= MIN_GOOD_SOURCE,
+        },
+    ]

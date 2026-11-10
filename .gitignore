@@ -25,3 +25,6 @@ corpus/inrs/
 
 # Caches locaux (modèle FlashRank, etc.)
 .cache/
+
+# Réponses complètes du LLM (extraits du guide © INRS) : jamais versionnées
+evals/runs/

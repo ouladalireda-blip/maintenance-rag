@@ -33,31 +33,97 @@ Mode « grid » : grille de réglages FIXÉE À L'AVANCE, comparée à la séman
   R@10) ; b) à égalité, f le plus petit puis match_count le plus petit ; c) MRR pour un ex
   æquo restant.
 
-Base en LECTURE SEULE (connexion read_only, uniquement hybrid_search). Les vecteurs des
+Mode « rerank » : FlashRank sur les candidats de la recherche retenue (poids, match_count et
+rrf_k de config.yaml), sur TOUTES les questions (valides et pièges). τ n'est PAS choisi ici.
+
+    uv run python evals/run_eval.py --set dev --mode rerank
+
+- a) Questions valides : R@1, R@3, MRR avant / après reranking (rangs parmi les match_count
+  candidats), comparaison appariée après contre avant, questions dont le rang bouge de plus
+  de 2 places.
+- b) Chaque question : score maximal du reranker, score de la bonne fiche (valides : score du
+  premier bon passage après reranking), catégorie ; trié par score maximal décroissant.
+- c) Séparation : min / médiane / max du score maximal par groupe (valides, chaque catégorie
+  de piège) ; pièges dont le score maximal dépasse le plus petit score maximal d'une valide.
+- d) Latence du seul reranking par question (modèle chargé, un appel d'échauffement non
+  compté) : médiane et p95.
+
+Le reranker est retiré du pipeline (docs/adr/0002-retrait-reranker-flashrank.md,
+rerank.enabled: false) ; le mode rerank reste disponible pour tester un autre modèle : il charge
+le modèle pour l'évaluation seulement, en le signalant.
+
+Mode « signals » : signaux de la recherche retenue (poids, match_count et rrf_k de config.yaml),
+sur TOUTES les questions. Aucun seuil n'est choisi ici.
+
+    uv run python evals/run_eval.py --set dev --mode signals
+
+- a) Questions valides : R@1, R@3, R@5, R@8, R@10 (combien de passages donner au LLM).
+- b) Chaque question : similarité cosinus du meilleur candidat (le 1er de la recherche
+  retenue), écart avec le 2e (sim 1er − sim 2e, négatif si le 2e est plus proche), rang
+  sémantique du 1er, catégorie ; trié par similarité décroissante.
+- c) Séparation de cette similarité par groupe (valides, chaque catégorie de piège) et pièges
+  au-dessus de la plus petite similarité d'une valide.
+- Similarité = 1 − (embedding <=> vecteur de la question), l'opérateur de la branche
+  sémantique de hybrid_search, recalculé exactement (sans l'index HNSW) par une requête en
+  lecture seule sur les ids renvoyés : hybrid_search ne renvoie que des rangs.
+
+Mode « e2e » : pipeline complet (recherche retenue → top_k passages → LLM → garde-fou 2) sur
+TOUTES les questions, comparé à des critères FIXÉS À L'AVANCE (evals/metrics.py).
+
+    uv run python evals/run_eval.py --set dev --mode e2e --estimate-only   # coût seulement
+    uv run python evals/run_eval.py --set dev --mode e2e
+
+- Arrêt avant tout appel si llm.model ou un prix est vide dans config.yaml.
+- Estimation du coût AVANT l'éval : tokens d'entrée (prompt système + schéma + question +
+  passages, comptés en cl100k_base, +10 % de marge) et plafond de sortie (max_output_tokens
+  par question), aux prix de config.yaml. Arrêt si l'estimation dépasse 1 $.
+- Toute erreur (réseau, SSL, API) arrête l'éval : elle n'est jamais comptée comme un refus.
+- Pièges : CRR = refusés / pièges ; réponses dangereuses = pièges ANSWERED.
+- Valides : FRR = refusées / valides ; bonne source = ANSWERED dont une affirmation cite un
+  passage qui contient la citation de référence (``hit``).
+- Réponses complètes (texte du LLM, extraits du guide) : evals/runs/ (non versionné).
+  evals/results/ : ids, statuts, codes de raison et nombres seulement.
+
+Base en LECTURE SEULE (connexion read_only : hybrid_search, et en mode signals une lecture des
+distances sur public.chunks). Les vecteurs des
 questions sont mis en cache dans .cache/query_embeddings.json (non versionné).
 """
 
 import argparse
 import datetime as dt
 import json
+import math
 import subprocess
 import sys
+import time
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, LiteralString
 
 import yaml
 
-from maintenance_rag.retrieval import CachedEmbedder, SearchResult, Weights, search
+from maintenance_rag.db import vector_literal
+from maintenance_rag.rerank import Reranker, rerank
+from maintenance_rag.retrieval import (
+    CachedEmbedder,
+    SearchResult,
+    Weights,
+    load_retrieval_settings,
+    search,
+)
 from metrics import (
     TOP_K,
     Candidate,
+    e2e_criteria,
     first_hit_rank,
     hit,
     mrr,
     paired_comparison,
+    percentile,
     recall_at_k,
     select_config,
+    separation,
+    spread,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -75,14 +141,8 @@ SEMANTIC_ONLY: Weights = (1.0, 0.0, 0.0)
 
 
 def _configs() -> dict[str, Weights]:
-    retrieval = CONFIG["retrieval"]
-    hybrid = (
-        float(retrieval["semantic_weight"]),
-        float(retrieval["full_text_weight"]),
-        float(retrieval["identifier_weight"]),
-    )
     return {
-        "hybride": hybrid,
+        "hybride": load_retrieval_settings().weights,
         "sémantique seule": (1.0, 0.0, 0.0),
         "full-text seul": (0.0, 1.0, 0.0),
         "identifiants seuls": (0.0, 0.0, 1.0),
@@ -319,6 +379,616 @@ def _print_grid(report: dict[str, Any], questions: list[dict[str, Any]]) -> None
     )
 
 
+MOVE_THRESHOLD = 2  # « le rang change de plus de 2 places »
+
+
+def _evaluate_rerank(
+    questions: list[dict[str, Any]], embedder: Any, conn: Any, reranker: Reranker
+) -> dict[str, Any]:
+    settings = load_retrieval_settings()
+    min_chars = int(CONFIG["guardrails"]["min_quote_chars"])
+    worst = settings.match_count + 1  # rang d'un bon passage absent (pour mesurer un déplacement)
+
+    retrieved = [(question, search(question["question"], embedder, conn)) for question in questions]
+    if retrieved and retrieved[0][1]:  # échauffement du modèle : non compté dans la latence
+        rerank(retrieved[0][0]["question"], retrieved[0][1], reranker)
+
+    per_question: dict[str, dict[str, Any]] = {}
+    for question, results in retrieved:
+        start = time.perf_counter()
+        reranked = rerank(question["question"], results, reranker)
+        latency_ms = (time.perf_counter() - start) * 1000
+        row: dict[str, Any] = {
+            "category": question["category"],
+            "must_refuse": bool(question["must_refuse"]),
+            "candidates": len(results),
+            "max_score": reranked[0].score if reranked else None,
+            "latency_ms": latency_ms,
+            "reranked": [
+                {"chunk_id": r.result.chunk_id, "search_rank": r.search_rank, "score": r.score}
+                for r in reranked
+            ],
+        }
+        if not question["must_refuse"]:
+            before = first_hit_rank(results, question, min_chars, settings.match_count)
+            after = first_hit_rank(
+                [r.result for r in reranked], question, min_chars, settings.match_count
+            )
+            row.update(
+                rank_before=before,
+                rank_after=after,
+                gold_score=reranked[after - 1].score if after else None,
+            )
+        per_question[question["id"]] = row
+
+    valid = [qid for qid, row in per_question.items() if not row["must_refuse"]]
+    before_ranks = [per_question[qid]["rank_before"] for qid in valid]
+    after_ranks = [per_question[qid]["rank_after"] for qid in valid]
+    paired = paired_comparison(after_ranks, before_ranks)
+
+    def quality(ranks: list[int | None]) -> dict[str, float]:
+        return {
+            "recall@1": recall_at_k(ranks, 1),
+            "recall@3": recall_at_k(ranks, 3),
+            f"recall@{settings.match_count}": recall_at_k(ranks, settings.match_count),
+            "mrr": mrr(ranks),
+        }
+
+    moved = []
+    for qid in valid:
+        row = per_question[qid]
+        before, after = row["rank_before"] or worst, row["rank_after"] or worst
+        if abs(after - before) > MOVE_THRESHOLD:
+            moved.append({"id": qid, "rank_before": row["rank_before"], "rank_after": after})
+
+    groups: dict[str, list[str]] = {"valid": valid}
+    for qid, row in per_question.items():
+        if row["must_refuse"]:
+            groups.setdefault(row["category"], []).append(qid)
+    max_scores = {qid: row["max_score"] for qid, row in per_question.items()}
+    separation = {
+        name: {"count": len(ids), **spread([max_scores[qid] for qid in ids])}
+        for name, ids in groups.items()
+    }
+    lowest_valid = separation["valid"]["min"]
+    above = {
+        name: [qid for qid in ids if max_scores[qid] > lowest_valid]
+        for name, ids in groups.items()
+        if name != "valid"
+    }
+    latencies = [row["latency_ms"] for row in per_question.values()]
+    return {
+        "quality": {
+            "before": quality(before_ranks),
+            "after": quality(after_ranks),
+            "after_vs_before": paired._asdict(),
+            "moved_more_than_2": moved,
+        },
+        "separation": {
+            "max_score_by_group": separation,
+            "lowest_valid_max_score": lowest_valid,
+            "traps_above_lowest_valid": above,
+            "traps_above_lowest_valid_count": sum(len(ids) for ids in above.values()),
+        },
+        "latency_ms": {
+            "median": percentile(latencies, 50),
+            "p95": percentile(latencies, 95),
+            "questions": len(latencies),
+        },
+        "per_question": per_question,
+    }
+
+
+def _s(value: float | None) -> str:
+    return "-" if value is None else f"{value:.4f}"
+
+
+def _print_rerank(report: dict[str, Any]) -> None:
+    quality = report["quality"]
+    keys = list(quality["before"])
+    valid_count = sum(1 for row in report["per_question"].values() if not row["must_refuse"])
+    print(f"\na) Questions valides : {valid_count} ; rangs parmi les candidats de la recherche")
+    print(f"{'':8} " + " ".join(f"{key:>10}" for key in keys))
+    for label in ("before", "after"):
+        name = "avant" if label == "before" else "après"
+        print(f"{name:8} " + " ".join(f"{quality[label][key]:>10.3f}" for key in keys))
+    vs = quality["after_vs_before"]
+    print(f"Après contre avant (V/D/E, absent = pire) : {vs['wins']}/{vs['losses']}/{vs['ties']}")
+    print(
+        f"Rang qui bouge de plus de {MOVE_THRESHOLD} places : {len(quality['moved_more_than_2'])}"
+    )
+    for row in quality["moved_more_than_2"]:
+        print(f"  {row['id']:14} {_fmt(row['rank_before']):>3} -> {_fmt(row['rank_after']):>3}")
+
+    print("\nb) Chaque question, triée par score maximal décroissant")
+    print(
+        f"{'id':14} {'catégorie':16} {'score max':>9} {'bonne fiche':>11} {'rang av.':>8} "
+        f"{'rang ap.':>8}"
+    )
+    rows = sorted(
+        report["per_question"].items(), key=lambda item: (-(item[1]["max_score"] or 0), item[0])
+    )
+    for qid, row in rows:
+        print(
+            f"{qid:14} {row['category']:16} {_s(row['max_score']):>9} "
+            f"{_s(row.get('gold_score')):>11} {_fmt(row.get('rank_before')):>8} "
+            f"{_fmt(row.get('rank_after')):>8}"
+        )
+
+    separation = report["separation"]
+    print("\nc) Séparation du score maximal (τ non choisi)")
+    print(f"{'groupe':16} {'n':>3} {'min':>8} {'médiane':>8} {'max':>8}")
+    for name, row in separation["max_score_by_group"].items():
+        print(
+            f"{name:16} {row['count']:>3} {row['min']:8.4f} {row['median']:8.4f} {row['max']:8.4f}"
+        )
+    print(
+        f"Plus petit score maximal d'une valide : {separation['lowest_valid_max_score']:.4f} ; "
+        f"pièges au-dessus : {separation['traps_above_lowest_valid_count']}"
+    )
+    for name, ids in separation["traps_above_lowest_valid"].items():
+        print(f"  {name:16} {len(ids):>2}  {', '.join(ids) or '-'}")
+
+    latency = report["latency_ms"]
+    print(
+        f"\nd) Latence du reranking ({latency['questions']} questions) : "
+        f"médiane {latency['median']:.0f} ms, p95 {latency['p95']:.0f} ms"
+    )
+
+
+SIGNAL_RECALL_KS = (1, 3, 5, 8, 10)
+COSINE_SIMILARITY: LiteralString = """
+    select c.id, 1 - (c.embedding <=> %s::extensions.vector)
+    from public.chunks c
+    where c.id = any(%s)
+"""
+
+
+def _similarities(conn: Any, vector: list[float], chunk_ids: list[int]) -> dict[int, float]:
+    with conn.cursor() as cursor:
+        cursor.execute(COSINE_SIMILARITY, (vector_literal(vector), chunk_ids))
+        return {int(chunk_id): float(similarity) for chunk_id, similarity in cursor.fetchall()}
+
+
+def _evaluate_signals(questions: list[dict[str, Any]], embedder: Any, conn: Any) -> dict[str, Any]:
+    settings = load_retrieval_settings()
+    min_chars = int(CONFIG["guardrails"]["min_quote_chars"])
+
+    per_question: dict[str, dict[str, Any]] = {}
+    for question in questions:
+        results = search(question["question"], embedder, conn)
+        vector = embedder.embed([question["question"]])[0]
+        similarity = _similarities(conn, vector, [r.chunk_id for r in results])
+        ordered = [similarity[r.chunk_id] for r in results]
+        row: dict[str, Any] = {
+            "category": question["category"],
+            "must_refuse": bool(question["must_refuse"]),
+            "candidates": len(results),
+            "top1_chunk_id": results[0].chunk_id if results else None,
+            "top1_semantic_rank": results[0].semantic_rank if results else None,
+            "top1_similarity": ordered[0] if ordered else None,
+            "gap_1_2": ordered[0] - ordered[1] if len(ordered) > 1 else None,
+            "max_similarity": max(ordered, default=None),
+            "similarities": ordered,  # dans l'ordre de la recherche retenue
+        }
+        if not question["must_refuse"]:
+            row["rank"] = first_hit_rank(results, question, min_chars, settings.match_count)
+        per_question[question["id"]] = row
+
+    valid = [qid for qid, row in per_question.items() if not row["must_refuse"]]
+    ranks = [per_question[qid]["rank"] for qid in valid]
+    groups: dict[str, list[str]] = {"valid": valid}
+    for qid, row in per_question.items():
+        if row["must_refuse"]:
+            groups.setdefault(row["category"], []).append(qid)
+    top1 = {qid: row["top1_similarity"] for qid, row in per_question.items()}
+    return {
+        "recall": {f"recall@{k}": recall_at_k(ranks, k) for k in SIGNAL_RECALL_KS},
+        "separation_top1_similarity": separation(top1, groups),
+        "top1_is_semantic_rank1": sum(
+            1 for row in per_question.values() if row["top1_semantic_rank"] == 1
+        ),
+        "per_question": per_question,
+    }
+
+
+def _print_signals(report: dict[str, Any]) -> None:
+    rows = report["per_question"]
+    valid_count = sum(1 for row in rows.values() if not row["must_refuse"])
+    print(f"\na) Questions valides : {valid_count} ; rang du bon passage dans la recherche retenue")
+    print("   " + "  ".join(f"{key}={value:.3f}" for key, value in report["recall"].items()))
+
+    print("\nb) Chaque question, triée par similarité cosinus du 1er candidat décroissante")
+    print(
+        f"   1er candidat = rang sémantique 1 pour {report['top1_is_semantic_rank1']}/{len(rows)}"
+    )
+    print(f"{'id':14} {'catégorie':16} {'sim 1er':>8} {'écart 1-2':>9} {'sem':>4} {'rang':>4}")
+    ordered = sorted(rows.items(), key=lambda item: (-(item[1]["top1_similarity"] or 0), item[0]))
+    for qid, row in ordered:
+        print(
+            f"{qid:14} {row['category']:16} {_s(row['top1_similarity']):>8} "
+            f"{_s(row['gap_1_2']):>9} {_fmt(row['top1_semantic_rank']):>4} "
+            f"{_fmt(row.get('rank')):>4}"
+        )
+
+    sep = report["separation_top1_similarity"]
+    print("\nc) Séparation de la similarité du 1er candidat (aucun seuil choisi)")
+    print(f"{'groupe':16} {'n':>3} {'min':>8} {'médiane':>8} {'max':>8}")
+    for name, row in sep["by_group"].items():
+        print(
+            f"{name:16} {row['count']:>3} {row['min']:8.4f} {row['median']:8.4f} {row['max']:8.4f}"
+        )
+    above = sep["above_lowest_reference"]
+    print(
+        f"Plus petite similarité d'une valide : {sep['lowest_reference']:.4f} ; pièges au-dessus : "
+        f"{sum(len(ids) for ids in above.values())}"
+    )
+    for name, ids in above.items():
+        total = sep["by_group"][name]["count"]
+        print(f"  {name:16} {len(ids):>2}/{total:<2} {', '.join(ids) or '-'}")
+
+
+BUDGET_USD = 1.0  # arrêt si l'estimation du coût de l'éval complète dépasse ce montant
+TOKEN_MARGIN = 1.10  # cl100k_base ≠ tokenizer exact du modèle : marge sur l'entrée
+RUNS = ROOT / "evals" / "runs"  # réponses complètes : non versionné (.gitignore)
+
+
+def _estimate(
+    questions: list[dict[str, Any]], embedder: Any, conn: Any, settings: Any
+) -> dict[str, Any]:
+    """Coût maximal estimé de l'éval complète, sans appeler le LLM."""
+    from maintenance_rag.chunking import count_tokens
+    from maintenance_rag.generation import (
+        SCHEMA,
+        SYSTEM_PROMPT,
+        build_user_message,
+        label_passages,
+    )
+
+    fixed = count_tokens(SYSTEM_PROMPT) + count_tokens(json.dumps(SCHEMA, ensure_ascii=False))
+    counted = 0
+    for question in questions:
+        passages = search(question["question"], embedder, conn)[: settings.top_k]
+        message = build_user_message(question["question"], label_passages(passages))
+        counted += fixed + count_tokens(message)
+    input_tokens = math.ceil(counted * TOKEN_MARGIN)
+    output_tokens = settings.llm.max_output_tokens * len(questions)
+    cost = settings.llm.cost(input_tokens, output_tokens)
+    return {
+        "questions": len(questions),
+        "input_tokens_cl100k": counted,
+        "input_tokens_with_margin": input_tokens,
+        "output_tokens_max": output_tokens,
+        "price_per_1m_input": settings.llm.price_per_1m_input,
+        "price_per_1m_output": settings.llm.price_per_1m_output,
+        "cost_usd_max": cost,
+        "budget_usd": BUDGET_USD,
+    }
+
+
+def _print_estimate(estimate: dict[str, Any], model: str) -> None:
+    print(f"\nEstimation du coût ({model}, {estimate['questions']} questions)")
+    print(
+        f"  entrée : {estimate['input_tokens_cl100k']} tokens cl100k_base, "
+        f"{estimate['input_tokens_with_margin']} avec +10 % "
+        f"× {estimate['price_per_1m_input']} $/M"
+    )
+    print(
+        f"  sortie : {estimate['output_tokens_max']} tokens au plus (max_output_tokens × questions)"
+        f" × {estimate['price_per_1m_output']} $/M"
+    )
+    print(
+        f"  coût maximal estimé : {estimate['cost_usd_max']:.4f} $ "
+        f"(budget {estimate['budget_usd']:.2f} $)"
+    )
+
+
+def _e2e_metrics(
+    questions: list[dict[str, Any]], records: dict[str, dict[str, Any]], verdicts: dict[str, Any]
+) -> dict[str, Any]:
+    from maintenance_rag.guardrails import refused_reasons
+
+    traps = [q["id"] for q in questions if q["must_refuse"]]
+    valid = [q["id"] for q in questions if not q["must_refuse"]]
+    answered = "ANSWERED"
+    dangerous = [qid for qid in traps if records[qid]["status"] == answered]
+    valid_answered = [qid for qid in valid if records[qid]["status"] == answered]
+    valid_refused = [qid for qid in valid if records[qid]["status"] != answered]
+    good = [qid for qid in valid_answered if records[qid]["good_source"]]
+    not_good = [qid for qid in valid_answered if not records[qid]["good_source"]]
+
+    def by_llm(ids: list[str]) -> list[str]:
+        return [qid for qid in ids if records[qid]["status"] == "REFUSED_BY_LLM"]
+
+    def by_guardrail(ids: list[str]) -> dict[str, int]:
+        return refused_reasons([verdicts[qid] for qid in ids])
+
+    costs = [records[qid]["cost_usd"] or 0.0 for qid in records]
+    totals = [records[qid]["latency_ms"]["total"] for qid in records]
+    steps = sorted({step for r in records.values() for step in r["latency_ms"]})
+    return {
+        "traps": {
+            "count": len(traps),
+            "refused": len(traps) - len(dangerous),
+            "crr": (len(traps) - len(dangerous)) / len(traps),
+            "dangerous_answers": dangerous,
+        },
+        "valid": {
+            "count": len(valid),
+            "refused": valid_refused,
+            "frr": len(valid_refused) / len(valid),
+            "answered": len(valid_answered),
+            "good_source": len(good),
+            "good_source_rate": len(good) / len(valid_answered) if valid_answered else None,
+            "answered_without_expected_source": not_good,
+            "expected_passage_not_given": [
+                qid for qid in valid if not records[qid]["gold_in_passages"]
+            ],
+        },
+        "refusals": {
+            "by_llm": {"traps": by_llm(traps), "valid": by_llm(valid)},
+            "by_guardrail": {"traps": by_guardrail(traps), "valid": by_guardrail(valid)},
+        },
+        "cost_usd": {"total": sum(costs), "per_question": sum(costs) / len(costs)},
+        "tokens": {
+            "input": sum(r["input_tokens"] for r in records.values()),
+            "output": sum(r["output_tokens"] for r in records.values()),
+        },
+        "latency_ms": {
+            "median": percentile(totals, 50),
+            "p95": percentile(totals, 95),
+            "median_by_step": {
+                step: percentile(
+                    [r["latency_ms"][step] for r in records.values() if step in r["latency_ms"]],
+                    50,
+                )
+                for step in steps
+            },
+        },
+        "criteria": e2e_criteria(
+            len(dangerous), len(valid_refused), len(valid), len(good), len(valid_answered)
+        ),
+    }
+
+
+def _print_e2e(metrics: dict[str, Any], records: dict[str, dict[str, Any]]) -> None:
+    print("\nPar question")
+    print(
+        f"{'id':14} {'catégorie':16} {'statut':21} {'source':>6} {'attendu∈P':>9} "
+        f"{'coût $':>8} {'ms':>6}  raison"
+    )
+    for qid, row in records.items():
+        source = "-" if row["good_source"] is None else ("oui" if row["good_source"] else "NON")
+        given = (
+            "-"
+            if row["gold_in_passages"] is None
+            else ("oui" if row["gold_in_passages"] else "non")
+        )
+        cost = "-" if row["cost_usd"] is None else f"{row['cost_usd']:.5f}"
+        print(
+            f"{qid:14} {row['category']:16} {row['status']:21} {source:>6} {given:>9} "
+            f"{cost:>8} {row['latency_ms']['total']:6.0f}  {row['reason']}"
+        )
+
+    traps, valid = metrics["traps"], metrics["valid"]
+    print(
+        f"\nPièges ({traps['count']}) : CRR = {traps['refused']}/{traps['count']} "
+        f"= {traps['crr']:.2f}"
+    )
+    print(
+        f"  réponses dangereuses (ANSWERED) : {len(traps['dangerous_answers'])} "
+        f"{', '.join(traps['dangerous_answers']) or ''}"
+    )
+    print(
+        f"Valides ({valid['count']}) : FRR = {len(valid['refused'])}/{valid['count']} = "
+        f"{valid['frr']:.2f}  {', '.join(valid['refused'])}"
+    )
+    rate = valid["good_source_rate"]
+    print(
+        f"  bonne source : {valid['good_source']}/{valid['answered']} ANSWERED"
+        f" = {'-' if rate is None else f'{rate:.2f}'}"
+    )
+    print(
+        "  ANSWERED sans citer le passage attendu (à relire) : "
+        f"{', '.join(valid['answered_without_expected_source']) or 'aucune'}"
+    )
+    print(
+        "  passage attendu absent des passages fournis : "
+        f"{', '.join(valid['expected_passage_not_given']) or 'aucune'}"
+    )
+
+    refusals = metrics["refusals"]
+    print("\nRépartition des refus")
+    for group in ("traps", "valid"):
+        name = "pièges" if group == "traps" else "valides"
+        llm_ids = refusals["by_llm"][group]
+        reasons = refusals["by_guardrail"][group]
+        print(
+            f"  {name:8} par le LLM : {len(llm_ids)} ; par le garde-fou 2 : {sum(reasons.values())}"
+        )
+        for reason, count in reasons.items():
+            print(f"           {reason} : {count}")
+
+    cost, tokens, latency = metrics["cost_usd"], metrics["tokens"], metrics["latency_ms"]
+    print(
+        f"\nCoût : {cost['total']:.4f} $ au total, {cost['per_question']:.5f} $ par question "
+        f"({tokens['input']} tokens d'entrée, {tokens['output']} de sortie)"
+    )
+    steps = ", ".join(f"{k} {v:.0f}" for k, v in latency["median_by_step"].items())
+    print(f"Latence : médiane {latency['median']:.0f} ms, p95 {latency['p95']:.0f} ms ({steps})")
+
+    print("\nCritères fixés à l'avance")
+    for row in metrics["criteria"]:
+        value = row["value"]
+        shown = "-" if value is None else (f"{value:.2f}" if isinstance(value, float) else value)
+        print(
+            f"  {row['name']:22} {shown!s:>6} {row['threshold']:>6}  "
+            f"{'OK' if row['ok'] else 'ÉCHEC'}"
+        )
+
+
+def _run_e2e(
+    args: argparse.Namespace,
+    questions: list[dict[str, Any]],
+    env: Any,
+    embedder: Any,
+    secrets: Sequence[str],
+) -> int:
+    import psycopg
+
+    from maintenance_rag.llm import OpenAILLM
+    from maintenance_rag.pipeline import Pipeline, PipelineSettings
+
+    settings = PipelineSettings.from_config()
+    llm_settings = settings.llm
+    if not llm_settings.model:
+        print("ARRÊT : llm.model est vide dans config/config.yaml. Renseigne un petit modèle")
+        print("OpenAI actuel qui supporte les Structured Outputs ; aucun appel n'a été fait.")
+        return 3
+    if llm_settings.price_per_1m_input is None or llm_settings.price_per_1m_output is None:
+        print("ARRÊT : llm.price_per_1m_input / price_per_1m_output vides dans config.yaml ;")
+        print("le coût ne peut pas être estimé. Aucun appel n'a été fait.")
+        return 3
+
+    min_chars = int(CONFIG["guardrails"]["min_quote_chars"])
+    commit = _git("rev-parse", "--short", "HEAD")
+    today = dt.date.today().isoformat()
+    runs_path = RUNS / f"e2e_{args.set}_{today}_{commit}.jsonl"
+    records: dict[str, dict[str, Any]] = {}
+    verdicts: dict[str, Any] = {}
+    try:
+        with psycopg.connect(env.supabase_db_url.get_secret_value(), autocommit=True) as conn:
+            conn.read_only = True  # garde-fou : aucune écriture possible dans cette session
+            estimate = _estimate(questions, embedder, conn, settings)
+            _print_estimate(estimate, llm_settings.model)
+            if estimate["cost_usd_max"] > BUDGET_USD:
+                print(f"ARRÊT : estimation supérieure au budget de {BUDGET_USD:.2f} $.")
+                return 4
+            if args.estimate_only:
+                return 0
+
+            reranker = None
+            if settings.rerank_enabled:
+                from maintenance_rag.rerank import FlashRankReranker
+
+                reranker = FlashRankReranker.from_config()
+            seen: dict[int, SearchResult] = {}
+
+            def retrieve(question: str) -> list[SearchResult]:
+                results = search(question, embedder, conn)
+                seen.update({result.chunk_id: result for result in results})
+                return results
+
+            llm = OpenAILLM(llm_settings, api_key=env.openai_api_key.get_secret_value())
+            pipeline = Pipeline(retrieve, llm, settings, reranker)
+            RUNS.mkdir(parents=True, exist_ok=True)
+            with runs_path.open("w", encoding="utf-8") as runs:
+                for number, question in enumerate(questions, start=1):
+                    result = pipeline.answer(question["question"])
+                    given = [seen[chunk_id] for chunk_id in result.passage_ids]
+                    valid = not question["must_refuse"]
+                    cited = [c.chunk_id for c in result.citations]
+                    record = {
+                        "category": question["category"],
+                        "must_refuse": bool(question["must_refuse"]),
+                        "status": result.status.value,
+                        "reason_code": result.verdict.reason.value
+                        if result.verdict.reason
+                        else None,
+                        "reason": result.reason,
+                        "passage_ids": result.passage_ids,
+                        "cited_chunk_ids": cited,
+                        "gold_in_passages": any(hit(p, question, min_chars) for p in given)
+                        if valid
+                        else None,
+                        "good_source": any(
+                            hit(seen[chunk_id], question, min_chars) for chunk_id in cited
+                        )
+                        if valid and result.status.value == "ANSWERED"
+                        else None,
+                        "input_tokens": result.input_tokens,
+                        "output_tokens": result.output_tokens,
+                        "cost_usd": result.cost_usd,
+                        "latency_ms": result.latencies_ms,
+                    }
+                    records[question["id"]] = record
+                    verdicts[question["id"]] = result.verdict
+                    runs.write(
+                        json.dumps(
+                            {
+                                "id": question["id"],
+                                "question": question["question"],
+                                **record,
+                                "model": result.model,
+                                "prompt_version": result.prompt_version,
+                                "reponse": result.reponse,
+                                "llm_output": result.llm_output.model_dump()
+                                if result.llm_output
+                                else None,
+                                "citations": [
+                                    {
+                                        "passage_id": c.passage_id,
+                                        "chunk_id": c.chunk_id,
+                                        "section_title": c.section_title,
+                                        "printed_page_start": c.printed_page_start,
+                                        "printed_page_end": c.printed_page_end,
+                                        "texte": c.texte,
+                                        "extrait_exact": c.extrait_exact,
+                                    }
+                                    for c in result.citations
+                                ],
+                            },
+                            ensure_ascii=False,
+                        )
+                        + "\n"
+                    )
+                    runs.flush()
+                    print(f"  {number:>2}/{len(questions)} {question['id']} {result.status.value}")
+    except Exception as error:  # réseau, SSL, API, base : arrêt, jamais compté comme un refus
+        print(
+            f"ÉCHEC après {len(records)} question(s) ; aucune métrique écrite"
+            f" (réponses partielles : {runs_path.relative_to(ROOT).as_posix()}) :\n  "
+            + _error_chain(error, secrets)
+        )
+        return 2
+
+    metrics = _e2e_metrics(questions, records, verdicts)
+    _print_e2e(metrics, records)
+    output = RESULTS / f"e2e_{args.set}_{today}_{commit}.json"
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "set": args.set,
+        "mode": args.mode,
+        "date": today,
+        "commit": commit,
+        "working_tree_dirty": bool(_git("status", "--porcelain")),
+        "config": {
+            "llm_model": llm_settings.model,
+            "temperature": llm_settings.temperature,
+            "max_output_tokens": llm_settings.max_output_tokens,
+            "prompt_version": _prompt_version(),
+            "top_k": settings.top_k,
+            "min_quote_chars": settings.min_quote_chars,
+            "rerank_enabled": settings.rerank_enabled,
+            "retrieval_weights": list(load_retrieval_settings().weights),
+            "match_count": load_retrieval_settings().match_count,
+        },
+        "estimate": estimate,
+        **metrics,
+        "per_question": records,
+    }
+    output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    print(f"\nMétriques : {output.relative_to(ROOT).as_posix()}")
+    print(f"Réponses complètes (non versionnées) : {runs_path.relative_to(ROOT).as_posix()}")
+    return 0
+
+
+def _prompt_version() -> str:
+    from maintenance_rag.generation import PROMPT_VERSION
+
+    return PROMPT_VERSION
+
+
 def _print(report: dict[str, Any], questions: list[dict[str, Any]]) -> None:
     print("\na) Recherche seule (avant reranking), questions valides :", len(questions))
     print(f"{'configuration':20} {'poids (s,f,i)':15} {'R@1':>5} {'R@3':>5} {'R@10':>5} {'MRR':>6}")
@@ -354,11 +1024,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     parser = argparse.ArgumentParser(description="Évaluation du pipeline maintenance-rag.")
     parser.add_argument("--set", choices=["dev"], required=True)
-    parser.add_argument("--mode", choices=["retrieval", "grid"], required=True)
+    parser.add_argument(
+        "--mode", choices=["retrieval", "grid", "rerank", "signals", "e2e"], required=True
+    )
+    parser.add_argument(
+        "--estimate-only", action="store_true", help="e2e : estimer le coût sans appeler le LLM"
+    )
     args = parser.parse_args(argv)
 
     data = yaml.safe_load((ROOT / "evals" / f"questions_{args.set}.yaml").read_text("utf-8"))
-    questions = [q for q in data["questions"] if not q["must_refuse"]]
+    all_questions = args.mode in {"rerank", "signals", "e2e"}
+    questions = [q for q in data["questions"] if all_questions or not q["must_refuse"]]
 
     import psycopg
 
@@ -382,11 +1058,24 @@ def main(argv: Sequence[str] | None = None) -> int:
         model=embeddings["model"],
         path=CACHE,
     )
+    if args.mode == "e2e":
+        return _run_e2e(args, questions, settings, embedder, secrets)
     try:
+        reranker = None
+        if args.mode == "rerank":  # seul endroit où le modèle est chargé
+            from maintenance_rag.rerank import FlashRankReranker
+
+            if not CONFIG["rerank"]["enabled"]:
+                print("rerank.enabled = false : modèle chargé pour cette évaluation seulement")
+            reranker = FlashRankReranker.from_config()  # cache local uniquement
         with psycopg.connect(settings.supabase_db_url.get_secret_value(), autocommit=True) as conn:
             conn.read_only = True  # garde-fou : aucune écriture possible dans cette session
             if args.mode == "grid":
                 report = _evaluate_grid(questions, embedder, conn)
+            elif reranker is not None:
+                report = _evaluate_rerank(questions, embedder, conn, reranker)
+            elif args.mode == "signals":
+                report = _evaluate_signals(questions, embedder, conn)
             else:
                 report = _evaluate(questions, embedder, conn)
     except Exception as error:  # réseau, SSL, base : on s'arrête et on montre l'erreur
@@ -396,14 +1085,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"Cache des questions : {embedder.hits} lus, {embedder.misses} calculés (OpenAI)")
     if args.mode == "grid":
         _print_grid(report, questions)
+    elif args.mode == "rerank":
+        _print_rerank(report)
+    elif args.mode == "signals":
+        _print_signals(report)
     else:
         _print(report, questions)
 
     commit = _git("rev-parse", "--short", "HEAD")
     dirty = bool(_git("status", "--porcelain"))
     today = dt.date.today().isoformat()
-    prefix = "grid" if args.mode == "grid" else "retrieval"
-    output = RESULTS / f"{prefix}_{args.set}_{today}_{commit}.json"
+    output = RESULTS / f"{args.mode}_{args.set}_{today}_{commit}.json"
     RESULTS.mkdir(parents=True, exist_ok=True)
     payload = {
         "set": args.set,
@@ -425,6 +1117,21 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "reference_weights": list(SEMANTIC_ONLY),
                 }
                 if args.mode == "grid"
+                else {
+                    "match_count": load_retrieval_settings().match_count,
+                    "weights": list(load_retrieval_settings().weights),
+                    "rerank_model": CONFIG["rerank"]["model"],
+                    "rerank_max_length": int(CONFIG["rerank"]["max_length"]),
+                    "rerank_text": "section_title + \\n + content",
+                }
+                if args.mode == "rerank"
+                else {
+                    "match_count": load_retrieval_settings().match_count,
+                    "weights": list(load_retrieval_settings().weights),
+                    "similarity": "1 - (embedding <=> question), exacte, sur les ids renvoyés",
+                    "best_candidate": "1er de la recherche retenue",
+                }
+                if args.mode == "signals"
                 else {
                     "match_count": int(CONFIG["retrieval"]["match_count"]),
                     "configurations": {name: list(w) for name, w in _configs().items()},

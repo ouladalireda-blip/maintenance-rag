@@ -33,3 +33,12 @@ Deux garde-fous indépendants, l'un avant, l'autre après la génération :
 - L'évaluation sépare `dev` (calibration) et `test` (mesure finale, figé et commité avant la mesure).
 - La génération doit utiliser une sortie structurée, et les passages conservent leur texte exact et leurs pages jusqu'à la vérification.
 - Changer de modèle de reranking impose de recalibrer τ.
+
+## Mise à jour (ADR 0002) — 2026-11-11
+
+- **Garde-fou 1 suspendu.** Ni le score du reranker FlashRank (saturé en français) ni la similarité cosinus du meilleur candidat ne séparent les pièges des questions valides sur le jeu dev (`docs/adr/0002-retrait-reranker-flashrank.md`). Il n'y a donc plus de seuil τ : `guardrails.tau` est retiré de `config/config.yaml`.
+- **Le refus repose sur le LLM et le garde-fou 2.** Le LLM reçoit les `generation.top_k` (8) meilleurs passages de la recherche. Sa sortie structurée porte `info_presente` : faux si l'information précise demandée n'est pas écrite dans les passages, ce qui donne le statut `REFUSED_BY_LLM`. Le garde-fou 2 (`guardrails.verify`) vérifie ensuite, sans LLM, chaque affirmation : passage fourni, extrait mot pour mot (au moins 20 caractères), nombres cités. Une seule affirmation fausse refuse toute la réponse (`REFUSED_BY_GUARDRAIL`).
+- **Limite assumée.** Une citation exacte prouve que l'extrait existe, pas qu'il répond à la question. Une réponse à une question voisine (`near_miss`) qui cite fidèlement un passage voisin passe le garde-fou 2.
+- **Parades.**
+  1. Tout nombre d'une affirmation (valeur, durée, seuil, article) doit figurer dans son extrait. Un chiffre inventé ou pris ailleurs fait échouer la vérification.
+  2. Les réponses dangereuses (pièges en `ANSWERED`) sont mesurées de bout en bout (`run_eval.py --mode e2e`), contre des critères fixés avant la première mesure : au plus 1 réponse dangereuse sur 21 pièges, FRR ≤ 20 %, bonne source ≥ 80 % des valides répondues.

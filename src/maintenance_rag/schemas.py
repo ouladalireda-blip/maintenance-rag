@@ -27,3 +27,53 @@ class Chunk(BaseModel):
     token_count: int = Field(ge=1, description="tokens tiktoken cl100k_base de embedding_text")
     has_warning: bool = Field(description="le passage contient un « Attention ! »")
     block_types: list[str] = Field(description="types de blocs présents, dans l'ordre")
+
+
+class Affirmation(BaseModel):
+    """Une affirmation de la réponse, adossée à un extrait copié mot pour mot d'un passage."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    texte: str = Field(description="affirmation courte, en français")
+    extrait_exact: str = Field(
+        description="extrait COPIÉ MOT POUR MOT du passage cité (au moins 20 caractères) ; "
+        "contient tout chiffre, durée, seuil ou nom présent dans texte"
+    )
+    passage_id: str = Field(description="identifiant du passage cité : P1, P2…")
+
+
+class LLMAnswer(BaseModel):
+    """Sortie structurée du LLM (JSON schema strict : tous les champs requis, aucun en plus).
+
+    ``info_presente`` : l'information PRÉCISE demandée (valeur, durée, seuil, nom, étape) est
+    écrite dans les passages. Si elle est absente, ``reponse`` le dit et ``affirmations`` peut
+    donner des informations liées, chacune citée.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    info_presente: bool = Field(
+        description="vrai seulement si l'information précise demandée est écrite dans les passages"
+    )
+    reponse: str = Field(description="réponse courte, en français, pour un technicien")
+    affirmations: list[Affirmation] = Field(description="affirmations, chacune citée")
+
+
+def strict_json_schema(model: type[BaseModel]) -> dict[str, object]:
+    """JSON schema du modèle au format « strict » des Structured Outputs : chaque objet liste
+    toutes ses propriétés dans ``required`` et interdit les propriétés en plus."""
+    schema = model.model_json_schema()
+
+    def tighten(node: object) -> None:
+        if isinstance(node, dict):
+            if node.get("type") == "object":
+                node["additionalProperties"] = False
+                node["required"] = list(node.get("properties", {}))
+            for value in node.values():
+                tighten(value)
+        elif isinstance(node, list):
+            for value in node:
+                tighten(value)
+
+    tighten(schema)
+    return schema

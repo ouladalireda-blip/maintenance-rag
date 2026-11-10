@@ -11,28 +11,34 @@ embeddings:
   max_attempts: 3                   # essais par lot (attente exponentielle : 1 s, 2 s)
 
 llm:
-  provider: openai                  # fournisseur du modèle de génération
-  model: "à choisir : modèle récent et économique"  # à fixer avant la première évaluation
-  temperature: 0                    # déterministe : reproductibilité des évaluations
+  model: "gpt-4o-mini"
+  temperature: 0
+  max_output_tokens: 2000
+  price_per_1m_input: 0.15
+  price_per_1m_output: 0.60
+
+generation:
+  top_k: 8                          # passages transmis au LLM (R@8 = 0,97 sur le jeu dev)
 
 retrieval:
   match_count: 20
+  rrf_k: 50                         # constante de lissage de la fusion RRF
   weights:
     semantic: 1.0
     full_text: 0.0     # désactivé par la grille du 10/11 (bruit : "consign" dans 56/69 chunks) ; réactivable
     identifier: 2.0
 rerank:
+  enabled: false                    # retiré du pipeline : docs/adr/0002-retrait-reranker-flashrank.md
   provider: flashrank               # cross-encoder local, sans appel réseau
   model: "ms-marco-MultiBERT-L-12"  # multilingue (BERT multilingue, 100+ langues) ; recalibrer tau si changé
-  top_n: 3                          # passages transmis au LLM après reranking
+  top_n: 3                          # inutilisé depuis l'ADR 0002 ; voir generation.top_k
   cache_dir: ".cache/flashrank"     # modèle FlashRank local (relatif à la racine, non versionné)
+  max_length: 512                   # tokens question + passage, au-delà le reranker tronque
 
 guardrails:
-  # Seuil du garde-fou 1 (score de reranking minimal pour répondre).
-  # null tant que tau n'est pas calibré sur evals/questions_dev.yaml : aucune valeur
-  # arbitraire ne doit décider des refus. Une fois calibré, il est FIGÉ avant toute
-  # mesure sur questions_test.yaml (sinon le jeu de test fuit dans le réglage).
-  tau: null
+  # Garde-fou 1 (seuil tau sur un score avant génération) suspendu : ni le reranker ni la
+  # similarité ne séparent les pièges (docs/adr/0002-retrait-reranker-flashrank.md).
+  # Le refus repose sur le LLM (info_presente) et le garde-fou 2 (vérification des citations).
   min_quote_chars: 20               # longueur minimale (normalisée) d'une citation vérifiable
 
 chunking:

@@ -1,10 +1,14 @@
 """Recherche hybride : préparation de la requête (texte, vecteur, identifiants) et appel de
 hybrid_search avec les poids RRF de la configuration.
 
+- ``RetrievalSettings`` / ``load_retrieval_settings`` : match_count, rrf_k et poids
+  (semantic, full_text, identifier) lus dans la section ``retrieval`` de config/config.yaml.
+  Aucune valeur par défaut dans le code : une clé absente est une erreur.
 - ``search`` : une question → les passages classés par hybrid_search (fonction SQL de
   0002_chunks_warning.sql). Les identifiants de la question sont extraits sous forme canonique
   (``extract_identifiers``), comme à l'indexation. Le ``content`` des passages est récupéré
-  pour la vérification des citations, mais n'est jamais affiché (``repr=False``).
+  pour la vérification des citations, mais n'est jamais affiché (``repr=False``). Sans
+  poids ni match_count explicites, ``search`` applique ceux de config.yaml.
 - ``CachedEmbedder`` : cache disque des vecteurs de QUESTIONS (pas des passages), pour qu'une
   évaluation relancée ne recoûte aucun appel d'embedding.
 """
@@ -14,9 +18,13 @@ import json
 from collections.abc import Sequence
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, field
+from functools import cache
 from pathlib import Path
 from typing import Any, LiteralString, Protocol
 
+import yaml
+
+from maintenance_rag.config import CONFIG_PATH
 from maintenance_rag.db import vector_literal
 from maintenance_rag.embeddings import Embedder
 from maintenance_rag.identifiers import extract_identifiers
@@ -24,7 +32,7 @@ from maintenance_rag.identifiers import extract_identifiers
 Weights = tuple[float, float, float]  # (semantic, full_text, identifier)
 
 HYBRID_SEARCH: LiteralString = """
-    select chunk_id, document_slug, chunk_index, page_start, page_end,
+    select chunk_id, document_slug, chunk_index, section_title, page_start, page_end,
            printed_page_start, printed_page_end, content,
            semantic_rank, full_text_rank, identifier_rank, rrf_score, has_warning
     from public.hybrid_search(
@@ -40,6 +48,38 @@ HYBRID_SEARCH: LiteralString = """
 """
 
 
+@dataclass(frozen=True)
+class RetrievalSettings:
+    """Réglages de la recherche (section ``retrieval`` de config.yaml)."""
+
+    match_count: int
+    rrf_k: int
+    weights: Weights
+
+
+def load_retrieval_settings(config_path: Path = CONFIG_PATH) -> RetrievalSettings:
+    """Lit match_count, rrf_k et les trois poids ; KeyError si une clé manque."""
+    retrieval = yaml.safe_load(config_path.read_text(encoding="utf-8"))["retrieval"]
+    weights = retrieval["weights"]
+    settings = RetrievalSettings(
+        match_count=int(retrieval["match_count"]),
+        rrf_k=int(retrieval["rrf_k"]),
+        weights=(
+            float(weights["semantic"]),
+            float(weights["full_text"]),
+            float(weights["identifier"]),
+        ),
+    )
+    if settings.match_count < 1 or settings.rrf_k < 1 or min(settings.weights) < 0:
+        raise ValueError(f"{config_path} : réglages de recherche invalides ({settings})")
+    return settings
+
+
+@cache
+def _default_settings() -> RetrievalSettings:
+    return load_retrieval_settings()
+
+
 class Connection(Protocol):
     """Sous-ensemble de psycopg.Connection utilisé ici."""
 
@@ -53,6 +93,7 @@ class SearchResult:
     chunk_id: int
     document_slug: str
     chunk_index: int
+    section_title: str
     page_start: int
     page_end: int
     printed_page_start: int | None
@@ -69,12 +110,20 @@ def search(
     question: str,
     embedder: Embedder,
     conn: Connection,
-    weights: Weights = (1.0, 1.0, 2.0),
-    match_count: int = 10,
+    weights: Weights | None = None,
+    match_count: int | None = None,
     *,
-    rrf_k: int = 50,
+    rrf_k: int | None = None,
 ) -> list[SearchResult]:
-    """Passages classés par hybrid_search pour la question, du meilleur au moins bon."""
+    """Passages classés par hybrid_search pour la question, du meilleur au moins bon.
+
+    Tout réglage non fourni vient de config.yaml (``load_retrieval_settings``).
+    """
+    if weights is None or match_count is None or rrf_k is None:
+        settings = _default_settings()
+        weights = settings.weights if weights is None else weights
+        match_count = settings.match_count if match_count is None else match_count
+        rrf_k = settings.rrf_k if rrf_k is None else rrf_k
     vector = embedder.embed([question])[0]
     identifiers = extract_identifiers(question)
     semantic, full_text, identifier = (float(w) for w in weights)
@@ -96,16 +145,17 @@ def search(
             chunk_id=row[0],
             document_slug=row[1],
             chunk_index=row[2],
-            page_start=row[3],
-            page_end=row[4],
-            printed_page_start=row[5],
-            printed_page_end=row[6],
-            content=row[7],
-            semantic_rank=row[8],
-            full_text_rank=row[9],
-            identifier_rank=row[10],
-            rrf_score=float(row[11]),
-            has_warning=bool(row[12]),
+            section_title=row[3] or "",
+            page_start=row[4],
+            page_end=row[5],
+            printed_page_start=row[6],
+            printed_page_end=row[7],
+            content=row[8],
+            semantic_rank=row[9],
+            full_text_rank=row[10],
+            identifier_rank=row[11],
+            rrf_score=float(row[12]),
+            has_warning=bool(row[13]),
         )
         for row in rows
     ]

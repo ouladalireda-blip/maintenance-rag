@@ -6,12 +6,16 @@ import pytest
 from evals.metrics import (
     Candidate,
     Paired,
+    e2e_criteria,
     first_hit_rank,
     hit,
     mrr,
     paired_comparison,
+    percentile,
     recall_at_k,
     select_config,
+    separation,
+    spread,
 )
 
 QUESTION = {
@@ -117,3 +121,64 @@ def test_select_config_ties() -> None:
     assert select_config(same).name == "y"  # le MRR ne départage qu'un ex æquo restant
     with pytest.raises(ValueError):
         select_config([])
+
+
+def test_percentile() -> None:
+    values = [4.0, 1.0, 3.0, 2.0]
+    assert percentile(values, 0) == 1.0
+    assert percentile(values, 100) == 4.0
+    assert percentile(values, 50) == 2.5  # médiane d'un nombre pair de valeurs
+    assert percentile(list(map(float, range(1, 21))), 95) == pytest.approx(19.05)
+    assert percentile([7.0], 95) == 7.0
+
+
+@pytest.mark.parametrize(("values", "q"), [([], 50), ([1.0], -1), ([1.0], 101)])
+def test_percentile_invalid(values: list[float], q: float) -> None:
+    with pytest.raises(ValueError):
+        percentile(values, q)
+
+
+def test_spread() -> None:
+    assert spread([0.9, 0.1, 0.5]) == {"min": 0.1, "median": 0.5, "max": 0.9}
+
+
+def test_separation() -> None:
+    values = {"v1": 0.80, "v2": 0.60, "v3": 0.70, "n1": 0.65, "n2": 0.50, "o1": 0.60}
+    groups = {"valid": ["v1", "v2", "v3"], "near_miss": ["n1", "n2"], "out_of_scope": ["o1"]}
+    result = separation(values, groups)
+    assert result["by_group"]["valid"] == {"count": 3, "min": 0.60, "median": 0.70, "max": 0.80}
+    assert result["by_group"]["near_miss"]["median"] == pytest.approx(0.575)
+    assert result["lowest_reference"] == 0.60
+    # strictement au-dessus : o1 (= 0.60) n'est pas compté
+    assert result["above_lowest_reference"] == {"near_miss": ["n1"], "out_of_scope": []}
+
+
+def test_separation_needs_reference_group() -> None:
+    with pytest.raises(ValueError):
+        separation({"n1": 0.5}, {"near_miss": ["n1"]})
+    with pytest.raises(ValueError):
+        separation({}, {"valid": []})
+
+
+def _ok(rows: list[dict[str, object]]) -> list[object]:
+    return [row["ok"] for row in rows]
+
+
+def test_e2e_criteria_thresholds() -> None:
+    # Juste aux seuils : 1 réponse dangereuse, 5/29 refusées (17 %), 20/24 bonnes sources (83 %)
+    assert _ok(e2e_criteria(1, 5, 29, 20, 24)) == [True, True, True]
+    # Juste au-dessus : 2 dangereuses, 6/29 (20,7 %), 19/24 (79 %)
+    assert _ok(e2e_criteria(2, 6, 29, 19, 24)) == [False, False, False]
+    assert e2e_criteria(0, 6, 29, 19, 24)[1]["value"] == pytest.approx(6 / 29)
+
+
+def test_e2e_criteria_without_answered_valid() -> None:
+    rows = e2e_criteria(0, 29, 29, 0, 0)
+    assert rows[2]["value"] is None
+    assert rows[2]["ok"] is False
+
+
+@pytest.mark.parametrize("args", [(0, 0, 0, 0, 0), (0, 30, 29, 0, 0), (0, 0, 29, 5, 4)])
+def test_e2e_criteria_invalid(args: tuple[int, int, int, int, int]) -> None:
+    with pytest.raises(ValueError):
+        e2e_criteria(*args)

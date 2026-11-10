@@ -1,0 +1,5803 @@
+{
+  "set": "dev",
+  "mode": "rerank",
+  "date": "2026-11-10",
+  "commit": "f2ffa9b",
+  "working_tree_dirty": true,
+  "config": {
+    "embedding_model": "text-embedding-3-small",
+    "embedding_dimensions": 1536,
+    "rrf_k": 50,
+    "max_tokens": 350,
+    "min_quote_chars": 20,
+    "match_count": 20,
+    "weights": [
+      1.0,
+      0.0,
+      2.0
+    ],
+    "rerank_model": "ms-marco-MultiBERT-L-12",
+    "rerank_max_length": 512,
+    "rerank_text": "section_title + \\n + content"
+  },
+  "question_ids": [
+    "INRS-DEV-001",
+    "INRS-DEV-002",
+    "INRS-DEV-003",
+    "INRS-DEV-004",
+    "INRS-DEV-005",
+    "INRS-DEV-006",
+    "INRS-DEV-007",
+    "INRS-DEV-008",
+    "INRS-DEV-009",
+    "INRS-DEV-010",
+    "INRS-DEV-011",
+    "INRS-DEV-012",
+    "INRS-DEV-013",
+    "INRS-DEV-014",
+    "INRS-DEV-015",
+    "INRS-DEV-016",
+    "INRS-DEV-017",
+    "INRS-DEV-018",
+    "INRS-DEV-019",
+    "INRS-DEV-020",
+    "INRS-DEV-021",
+    "INRS-DEV-022",
+    "INRS-DEV-023",
+    "INRS-DEV-024",
+    "INRS-DEV-025",
+    "INRS-DEV-026",
+    "INRS-DEV-027",
+    "INRS-DEV-028",
+    "INRS-DEV-029",
+    "INRS-DEV-030",
+    "INRS-DEV-031",
+    "INRS-DEV-032",
+    "INRS-DEV-033",
+    "INRS-DEV-034",
+    "INRS-DEV-035",
+    "INRS-DEV-036",
+    "INRS-DEV-037",
+    "INRS-DEV-038",
+    "INRS-DEV-039",
+    "INRS-DEV-040",
+    "INRS-DEV-041",
+    "INRS-DEV-042",
+    "INRS-DEV-043",
+    "INRS-DEV-044",
+    "INRS-DEV-045",
+    "INRS-DEV-046",
+    "INRS-DEV-047",
+    "INRS-DEV-048",
+    "INRS-DEV-049",
+    "INRS-DEV-050"
+  ],
+  "quality": {
+    "before": {
+      "recall@1": 0.5517241379310345,
+      "recall@3": 0.7931034482758621,
+      "recall@20": 1.0,
+      "mrr": 0.7039968652037617
+    },
+    "after": {
+      "recall@1": 0.034482758620689655,
+      "recall@3": 0.2413793103448276,
+      "recall@20": 1.0,
+      "mrr": 0.20486689049062276
+    },
+    "after_vs_before": {
+      "wins": 2,
+      "losses": 26,
+      "ties": 1
+    },
+    "moved_more_than_2": [
+      {
+        "id": "INRS-DEV-001",
+        "rank_before": 3,
+        "rank_after": 15
+      },
+      {
+        "id": "INRS-DEV-003",
+        "rank_before": 2,
+        "rank_after": 6
+      },
+      {
+        "id": "INRS-DEV-004",
+        "rank_before": 1,
+        "rank_after": 17
+      },
+      {
+        "id": "INRS-DEV-005",
+        "rank_before": 2,
+        "rank_after": 11
+      },
+      {
+        "id": "INRS-DEV-006",
+        "rank_before": 1,
+        "rank_after": 18
+      },
+      {
+        "id": "INRS-DEV-007",
+        "rank_before": 1,
+        "rank_after": 16
+      },
+      {
+        "id": "INRS-DEV-008",
+        "rank_before": 1,
+        "rank_after": 4
+      },
+      {
+        "id": "INRS-DEV-016",
+        "rank_before": 2,
+        "rank_after": 6
+      },
+      {
+        "id": "INRS-DEV-017",
+        "rank_before": 1,
+        "rank_after": 7
+      },
+      {
+        "id": "INRS-DEV-018",
+        "rank_before": 4,
+        "rank_after": 10
+      },
+      {
+        "id": "INRS-DEV-019",
+        "rank_before": 1,
+        "rank_after": 13
+      },
+      {
+        "id": "INRS-DEV-020",
+        "rank_before": 6,
+        "rank_after": 15
+      },
+      {
+        "id": "INRS-DEV-022",
+        "rank_before": 11,
+        "rank_after": 2
+      },
+      {
+        "id": "INRS-DEV-024",
+        "rank_before": 1,
+        "rank_after": 7
+      },
+      {
+        "id": "INRS-DEV-025",
+        "rank_before": 2,
+        "rank_after": 18
+      },
+      {
+        "id": "INRS-DEV-026",
+        "rank_before": 1,
+        "rank_after": 8
+      },
+      {
+        "id": "INRS-DEV-029",
+        "rank_before": 2,
+        "rank_after": 7
+      },
+      {
+        "id": "INRS-DEV-030",
+        "rank_before": 4,
+        "rank_after": 10
+      },
+      {
+        "id": "INRS-DEV-032",
+        "rank_before": 1,
+        "rank_after": 6
+      },
+      {
+        "id": "INRS-DEV-033",
+        "rank_before": 1,
+        "rank_after": 9
+      },
+      {
+        "id": "INRS-DEV-035",
+        "rank_before": 5,
+        "rank_after": 15
+      }
+    ]
+  },
+  "separation": {
+    "max_score_by_group": {
+      "valid": {
+        "count": 29,
+        "min": 0.9989694952964783,
+        "median": 0.9994547367095947,
+        "max": 0.9997460842132568
+      },
+      "near_miss": {
+        "count": 11,
+        "min": 0.9989598393440247,
+        "median": 0.9994632601737976,
+        "max": 0.999675989151001
+      },
+      "identifier_trap": {
+        "count": 6,
+        "min": 0.9990571141242981,
+        "median": 0.9992852509021759,
+        "max": 0.9993991851806641
+      },
+      "out_of_scope": {
+        "count": 4,
+        "min": 0.9993414878845215,
+        "median": 0.9994333386421204,
+        "max": 0.9995564222335815
+      }
+    },
+    "lowest_valid_max_score": 0.9989694952964783,
+    "traps_above_lowest_valid": {
+      "near_miss": [
+        "INRS-DEV-009",
+        "INRS-DEV-010",
+        "INRS-DEV-011",
+        "INRS-DEV-012",
+        "INRS-DEV-037",
+        "INRS-DEV-038",
+        "INRS-DEV-039",
+        "INRS-DEV-040",
+        "INRS-DEV-042",
+        "INRS-DEV-043"
+      ],
+      "identifier_trap": [
+        "INRS-DEV-013",
+        "INRS-DEV-014",
+        "INRS-DEV-044",
+        "INRS-DEV-045",
+        "INRS-DEV-046",
+        "INRS-DEV-047"
+      ],
+      "out_of_scope": [
+        "INRS-DEV-015",
+        "INRS-DEV-048",
+        "INRS-DEV-049",
+        "INRS-DEV-050"
+      ]
+    },
+    "traps_above_lowest_valid_count": 20
+  },
+  "latency_ms": {
+    "median": 2830.901349996566,
+    "p95": 3503.261329997622,
+    "questions": 50
+  },
+  "per_question": {
+    "INRS-DEV-001": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9993833899497986,
+      "latency_ms": 2631.644500012044,
+      "reranked": [
+        {
+          "chunk_id": 64,
+          "search_rank": 12,
+          "score": 0.9993833899497986
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 7,
+          "score": 0.9993817806243896
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 2,
+          "score": 0.9992911219596863
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 4,
+          "score": 0.9991214871406555
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 15,
+          "score": 0.9991128444671631
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 17,
+          "score": 0.9990959167480469
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 9,
+          "score": 0.9990708231925964
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 6,
+          "score": 0.9987552762031555
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 10,
+          "score": 0.9987331032752991
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 1,
+          "score": 0.9987179040908813
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 14,
+          "score": 0.9986929297447205
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 20,
+          "score": 0.9986661672592163
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 16,
+          "score": 0.9986453652381897
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 19,
+          "score": 0.9983993172645569
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 3,
+          "score": 0.9982543587684631
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 8,
+          "score": 0.9979912638664246
+        },
+        {
+          "chunk_id": 25,
+          "search_rank": 18,
+          "score": 0.9975840449333191
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 5,
+          "score": 0.997252345085144
+        },
+        {
+          "chunk_id": 62,
+          "search_rank": 13,
+          "score": 0.9884273409843445
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 11,
+          "score": 0.9858182072639465
+        }
+      ],
+      "rank_before": 3,
+      "rank_after": 15,
+      "gold_score": 0.9982543587684631
+    },
+    "INRS-DEV-002": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9995500445365906,
+      "latency_ms": 2724.1834000014933,
+      "reranked": [
+        {
+          "chunk_id": 57,
+          "search_rank": 20,
+          "score": 0.9995500445365906
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 3,
+          "score": 0.9995248317718506
+        },
+        {
+          "chunk_id": 5,
+          "search_rank": 1,
+          "score": 0.9995044469833374
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 12,
+          "score": 0.9995007514953613
+        },
+        {
+          "chunk_id": 6,
+          "search_rank": 2,
+          "score": 0.9994972944259644
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 4,
+          "score": 0.9994916915893555
+        },
+        {
+          "chunk_id": 8,
+          "search_rank": 7,
+          "score": 0.9994360208511353
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 15,
+          "score": 0.9994196891784668
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 5,
+          "score": 0.9993581175804138
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 18,
+          "score": 0.9993289709091187
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 14,
+          "score": 0.9992978572845459
+        },
+        {
+          "chunk_id": 10,
+          "search_rank": 13,
+          "score": 0.99928879737854
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 6,
+          "score": 0.9992871284484863
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 16,
+          "score": 0.9992212057113647
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 10,
+          "score": 0.9991655349731445
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 11,
+          "score": 0.999120831489563
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 9,
+          "score": 0.9991152882575989
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 17,
+          "score": 0.9990463852882385
+        },
+        {
+          "chunk_id": 27,
+          "search_rank": 19,
+          "score": 0.9984288811683655
+        },
+        {
+          "chunk_id": 11,
+          "search_rank": 8,
+          "score": 0.9953843355178833
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 3,
+      "gold_score": 0.9995044469833374
+    },
+    "INRS-DEV-003": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9996290802955627,
+      "latency_ms": 3478.1471000023885,
+      "reranked": [
+        {
+          "chunk_id": 34,
+          "search_rank": 4,
+          "score": 0.9996290802955627
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 17,
+          "score": 0.9996105432510376
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 3,
+          "score": 0.9995735287666321
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 14,
+          "score": 0.9995651245117188
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 6,
+          "score": 0.9995563626289368
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 2,
+          "score": 0.999548614025116
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 11,
+          "score": 0.9995371103286743
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 10,
+          "score": 0.9994490146636963
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 16,
+          "score": 0.9994363188743591
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 7,
+          "score": 0.9994038343429565
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 9,
+          "score": 0.9993711709976196
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 8,
+          "score": 0.9993616342544556
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 15,
+          "score": 0.9993284940719604
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 1,
+          "score": 0.9992620944976807
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 13,
+          "score": 0.9992066621780396
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 20,
+          "score": 0.9991883039474487
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 5,
+          "score": 0.9990265965461731
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 12,
+          "score": 0.998787522315979
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 19,
+          "score": 0.9987159967422485
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 18,
+          "score": 0.9986244440078735
+        }
+      ],
+      "rank_before": 2,
+      "rank_after": 6,
+      "gold_score": 0.999548614025116
+    },
+    "INRS-DEV-004": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9993113279342651,
+      "latency_ms": 3251.348300007521,
+      "reranked": [
+        {
+          "chunk_id": 43,
+          "search_rank": 3,
+          "score": 0.9993113279342651
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 13,
+          "score": 0.9992836713790894
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 17,
+          "score": 0.999147891998291
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 19,
+          "score": 0.9990752935409546
+        },
+        {
+          "chunk_id": 52,
+          "search_rank": 7,
+          "score": 0.999045729637146
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 9,
+          "score": 0.998905599117279
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 11,
+          "score": 0.998896062374115
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 14,
+          "score": 0.9988574385643005
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 18,
+          "score": 0.9987727999687195
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 20,
+          "score": 0.9987308382987976
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 10,
+          "score": 0.9986526370048523
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 8,
+          "score": 0.9985836148262024
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 15,
+          "score": 0.9984680414199829
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 5,
+          "score": 0.9983907341957092
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 12,
+          "score": 0.9982609748840332
+        },
+        {
+          "chunk_id": 44,
+          "search_rank": 4,
+          "score": 0.9982596635818481
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 1,
+          "score": 0.9981235265731812
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 2,
+          "score": 0.9979835152626038
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 6,
+          "score": 0.9978683590888977
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 16,
+          "score": 0.9832130670547485
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 17,
+      "gold_score": 0.9981235265731812
+    },
+    "INRS-DEV-005": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9994708299636841,
+      "latency_ms": 2644.157200003974,
+      "reranked": [
+        {
+          "chunk_id": 49,
+          "search_rank": 5,
+          "score": 0.9994708299636841
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 7,
+          "score": 0.9994363188743591
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 8,
+          "score": 0.9994320273399353
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 20,
+          "score": 0.9993878602981567
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 3,
+          "score": 0.9993529319763184
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 4,
+          "score": 0.9993014335632324
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 13,
+          "score": 0.9992498755455017
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 15,
+          "score": 0.9991679191589355
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 9,
+          "score": 0.9991530776023865
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 11,
+          "score": 0.9991476535797119
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 2,
+          "score": 0.9991328716278076
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 1,
+          "score": 0.9991199374198914
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 12,
+          "score": 0.9990807175636292
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 19,
+          "score": 0.9990482926368713
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 10,
+          "score": 0.9989722967147827
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 18,
+          "score": 0.9989660382270813
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 16,
+          "score": 0.9989641904830933
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 14,
+          "score": 0.9989550113677979
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 6,
+          "score": 0.9989064335823059
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 17,
+          "score": 0.9987642168998718
+        }
+      ],
+      "rank_before": 2,
+      "rank_after": 11,
+      "gold_score": 0.9991328716278076
+    },
+    "INRS-DEV-006": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9994843006134033,
+      "latency_ms": 3093.094199997722,
+      "reranked": [
+        {
+          "chunk_id": 18,
+          "search_rank": 4,
+          "score": 0.9994843006134033
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 11,
+          "score": 0.9993562698364258
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 6,
+          "score": 0.9992403388023376
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 20,
+          "score": 0.9992032051086426
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 10,
+          "score": 0.999197244644165
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 12,
+          "score": 0.9990463852882385
+        },
+        {
+          "chunk_id": 44,
+          "search_rank": 2,
+          "score": 0.999015748500824
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 8,
+          "score": 0.9989809393882751
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 16,
+          "score": 0.9988059997558594
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 19,
+          "score": 0.9986721873283386
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 7,
+          "score": 0.998603105545044
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 5,
+          "score": 0.9985992312431335
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 9,
+          "score": 0.9985717535018921
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 15,
+          "score": 0.9981428980827332
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 14,
+          "score": 0.9981405138969421
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 3,
+          "score": 0.9979476928710938
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 13,
+          "score": 0.9977629780769348
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 1,
+          "score": 0.9976511001586914
+        },
+        {
+          "chunk_id": 27,
+          "search_rank": 18,
+          "score": 0.9844081401824951
+        },
+        {
+          "chunk_id": 52,
+          "search_rank": 17,
+          "score": 0.9823488593101501
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 18,
+      "gold_score": 0.9976511001586914
+    },
+    "INRS-DEV-007": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9996841549873352,
+      "latency_ms": 2703.3381999935955,
+      "reranked": [
+        {
+          "chunk_id": 5,
+          "search_rank": 10,
+          "score": 0.9996841549873352
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 13,
+          "score": 0.9994879364967346
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 14,
+          "score": 0.9994813799858093
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 4,
+          "score": 0.9994809627532959
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 9,
+          "score": 0.9994127750396729
+        },
+        {
+          "chunk_id": 11,
+          "search_rank": 5,
+          "score": 0.9994049072265625
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 3,
+          "score": 0.9993914365768433
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 19,
+          "score": 0.9993672370910645
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 8,
+          "score": 0.9993494153022766
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 6,
+          "score": 0.9993150234222412
+        },
+        {
+          "chunk_id": 16,
+          "search_rank": 15,
+          "score": 0.9992700219154358
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 7,
+          "score": 0.9992489218711853
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 11,
+          "score": 0.9992470741271973
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 16,
+          "score": 0.9992386698722839
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 12,
+          "score": 0.9991764426231384
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 1,
+          "score": 0.999165952205658
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 2,
+          "score": 0.9991068243980408
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 20,
+          "score": 0.9991012811660767
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 18,
+          "score": 0.9988483786582947
+        },
+        {
+          "chunk_id": 8,
+          "search_rank": 17,
+          "score": 0.9987532496452332
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 16,
+      "gold_score": 0.999165952205658
+    },
+    "INRS-DEV-008": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9995481371879578,
+      "latency_ms": 2671.7248000059044,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 11,
+          "score": 0.9995481371879578
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 16,
+          "score": 0.9993504881858826
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 3,
+          "score": 0.9993402361869812
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 1,
+          "score": 0.9992913007736206
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 8,
+          "score": 0.9992339015007019
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 17,
+          "score": 0.9991582632064819
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 5,
+          "score": 0.9991582036018372
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 4,
+          "score": 0.9991557598114014
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 12,
+          "score": 0.9990989565849304
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 2,
+          "score": 0.9990966320037842
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 20,
+          "score": 0.9990727305412292
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 19,
+          "score": 0.9989659190177917
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 10,
+          "score": 0.9989591240882874
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 6,
+          "score": 0.99891597032547
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 15,
+          "score": 0.9989024996757507
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 9,
+          "score": 0.9989017248153687
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 18,
+          "score": 0.998788595199585
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 7,
+          "score": 0.9987863302230835
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 14,
+          "score": 0.9985423684120178
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 13,
+          "score": 0.9983158707618713
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 4,
+      "gold_score": 0.9992913007736206
+    },
+    "INRS-DEV-009": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9996441006660461,
+      "latency_ms": 2900.2909999981057,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 11,
+          "score": 0.9996441006660461
+        },
+        {
+          "chunk_id": 5,
+          "search_rank": 1,
+          "score": 0.9995531439781189
+        },
+        {
+          "chunk_id": 6,
+          "search_rank": 6,
+          "score": 0.9995391964912415
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 3,
+          "score": 0.9995324015617371
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 17,
+          "score": 0.9994918704032898
+        },
+        {
+          "chunk_id": 62,
+          "search_rank": 10,
+          "score": 0.9994385838508606
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 2,
+          "score": 0.9994000196456909
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 9,
+          "score": 0.9993976950645447
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 5,
+          "score": 0.9993569850921631
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 19,
+          "score": 0.9993483424186707
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 13,
+          "score": 0.9993327856063843
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 15,
+          "score": 0.9993178844451904
+        },
+        {
+          "chunk_id": 26,
+          "search_rank": 18,
+          "score": 0.9993042349815369
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 16,
+          "score": 0.999289333820343
+        },
+        {
+          "chunk_id": 8,
+          "search_rank": 8,
+          "score": 0.9992470741271973
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 14,
+          "score": 0.9991930723190308
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 4,
+          "score": 0.9990849494934082
+        },
+        {
+          "chunk_id": 10,
+          "search_rank": 20,
+          "score": 0.9989734292030334
+        },
+        {
+          "chunk_id": 11,
+          "search_rank": 12,
+          "score": 0.9969252347946167
+        },
+        {
+          "chunk_id": 24,
+          "search_rank": 7,
+          "score": 0.9934626221656799
+        }
+      ]
+    },
+    "INRS-DEV-010": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.999675989151001,
+      "latency_ms": 3329.6586999931606,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 4,
+          "score": 0.999675989151001
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 6,
+          "score": 0.9996393322944641
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 8,
+          "score": 0.9996037483215332
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 1,
+          "score": 0.9995850920677185
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 15,
+          "score": 0.9995279312133789
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 14,
+          "score": 0.9995113611221313
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 11,
+          "score": 0.999504566192627
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 20,
+          "score": 0.999452531337738
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 5,
+          "score": 0.9993772506713867
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 2,
+          "score": 0.9993342757225037
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 18,
+          "score": 0.9993149042129517
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 16,
+          "score": 0.9992609620094299
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 9,
+          "score": 0.999257504940033
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 17,
+          "score": 0.9991390705108643
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 7,
+          "score": 0.9990905523300171
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 3,
+          "score": 0.9987732172012329
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 10,
+          "score": 0.9986324906349182
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 19,
+          "score": 0.9985535740852356
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 13,
+          "score": 0.998533308506012
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 12,
+          "score": 0.998454213142395
+        }
+      ]
+    },
+    "INRS-DEV-011": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9993905425071716,
+      "latency_ms": 3223.4279999975115,
+      "reranked": [
+        {
+          "chunk_id": 29,
+          "search_rank": 9,
+          "score": 0.9993905425071716
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 10,
+          "score": 0.9992325901985168
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 8,
+          "score": 0.9991417527198792
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 20,
+          "score": 0.9991214275360107
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 12,
+          "score": 0.9991196990013123
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 7,
+          "score": 0.9990506768226624
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 18,
+          "score": 0.9990469813346863
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 17,
+          "score": 0.9990094304084778
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 11,
+          "score": 0.9988939762115479
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 15,
+          "score": 0.9988129734992981
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 1,
+          "score": 0.9987433552742004
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 2,
+          "score": 0.9986813068389893
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 6,
+          "score": 0.9986608028411865
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 19,
+          "score": 0.9985455870628357
+        },
+        {
+          "chunk_id": 26,
+          "search_rank": 13,
+          "score": 0.9985418915748596
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 16,
+          "score": 0.9982877373695374
+        },
+        {
+          "chunk_id": 17,
+          "search_rank": 5,
+          "score": 0.9981744289398193
+        },
+        {
+          "chunk_id": 62,
+          "search_rank": 4,
+          "score": 0.9978796243667603
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 3,
+          "score": 0.997755229473114
+        },
+        {
+          "chunk_id": 24,
+          "search_rank": 14,
+          "score": 0.9955042600631714
+        }
+      ]
+    },
+    "INRS-DEV-012": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.999641478061676,
+      "latency_ms": 3780.9514999971725,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 4,
+          "score": 0.999641478061676
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 15,
+          "score": 0.9995679259300232
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 5,
+          "score": 0.9995669722557068
+        },
+        {
+          "chunk_id": 62,
+          "search_rank": 12,
+          "score": 0.9995458126068115
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 7,
+          "score": 0.9995244741439819
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 19,
+          "score": 0.9995161890983582
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 2,
+          "score": 0.9995000958442688
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 13,
+          "score": 0.9994897842407227
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 17,
+          "score": 0.9994503855705261
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 10,
+          "score": 0.9994279742240906
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 20,
+          "score": 0.9993939399719238
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 3,
+          "score": 0.9993125200271606
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 18,
+          "score": 0.9993031024932861
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 9,
+          "score": 0.9992200136184692
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 8,
+          "score": 0.9990397691726685
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 14,
+          "score": 0.9989504218101501
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 11,
+          "score": 0.9989187717437744
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 1,
+          "score": 0.9988458156585693
+        },
+        {
+          "chunk_id": 16,
+          "search_rank": 16,
+          "score": 0.9987513422966003
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 6,
+          "score": 0.9966313242912292
+        }
+      ]
+    },
+    "INRS-DEV-013": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9992431402206421,
+      "latency_ms": 3658.886299992446,
+      "reranked": [
+        {
+          "chunk_id": 1,
+          "search_rank": 9,
+          "score": 0.9992431402206421
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 1,
+          "score": 0.9991814494132996
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 4,
+          "score": 0.9991470575332642
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 7,
+          "score": 0.9990273118019104
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 14,
+          "score": 0.9989678859710693
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 12,
+          "score": 0.9989007115364075
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 20,
+          "score": 0.9988520741462708
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 6,
+          "score": 0.9987822771072388
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 17,
+          "score": 0.998722493648529
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 15,
+          "score": 0.9985985159873962
+        },
+        {
+          "chunk_id": 26,
+          "search_rank": 10,
+          "score": 0.9984055161476135
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 8,
+          "score": 0.9982287287712097
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 13,
+          "score": 0.9979092478752136
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 5,
+          "score": 0.9972044825553894
+        },
+        {
+          "chunk_id": 25,
+          "search_rank": 11,
+          "score": 0.9971933364868164
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 19,
+          "score": 0.9959850907325745
+        },
+        {
+          "chunk_id": 44,
+          "search_rank": 16,
+          "score": 0.9952819347381592
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 3,
+          "score": 0.9921039342880249
+        },
+        {
+          "chunk_id": 27,
+          "search_rank": 2,
+          "score": 0.9853991866111755
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 18,
+          "score": 0.9259586930274963
+        }
+      ]
+    },
+    "INRS-DEV-014": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9990571141242981,
+      "latency_ms": 3457.984299995587,
+      "reranked": [
+        {
+          "chunk_id": 4,
+          "search_rank": 10,
+          "score": 0.9990571141242981
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 1,
+          "score": 0.9989773631095886
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 13,
+          "score": 0.9989669322967529
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 5,
+          "score": 0.9988840818405151
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 17,
+          "score": 0.9987927079200745
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 9,
+          "score": 0.9987830519676208
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 6,
+          "score": 0.9987794160842896
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 11,
+          "score": 0.9986188411712646
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 3,
+          "score": 0.9985358715057373
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 12,
+          "score": 0.998438835144043
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 20,
+          "score": 0.9984250068664551
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 16,
+          "score": 0.9982780814170837
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 7,
+          "score": 0.9981646537780762
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 15,
+          "score": 0.9981616139411926
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 18,
+          "score": 0.9981600642204285
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 4,
+          "score": 0.9981332421302795
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 2,
+          "score": 0.997643232345581
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 8,
+          "score": 0.9955373406410217
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 19,
+          "score": 0.9955329895019531
+        },
+        {
+          "chunk_id": 27,
+          "search_rank": 14,
+          "score": 0.8464088439941406
+        }
+      ]
+    },
+    "INRS-DEV-015": {
+      "category": "out_of_scope",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9994640350341797,
+      "latency_ms": 3332.4861000000965,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 4,
+          "score": 0.9994640350341797
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 11,
+          "score": 0.999356210231781
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 3,
+          "score": 0.9993075132369995
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 6,
+          "score": 0.9992960095405579
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 12,
+          "score": 0.9991739392280579
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 8,
+          "score": 0.99913090467453
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 20,
+          "score": 0.999090850353241
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 15,
+          "score": 0.9990463852882385
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 7,
+          "score": 0.9990430474281311
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 17,
+          "score": 0.998630166053772
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 18,
+          "score": 0.9984973669052124
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 2,
+          "score": 0.998322606086731
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 5,
+          "score": 0.9982432126998901
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 16,
+          "score": 0.998231053352356
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 19,
+          "score": 0.9982067346572876
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 14,
+          "score": 0.9981968998908997
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 13,
+          "score": 0.9981653690338135
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 9,
+          "score": 0.9980862140655518
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 10,
+          "score": 0.9980782270431519
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 1,
+          "score": 0.9961451292037964
+        }
+      ]
+    },
+    "INRS-DEV-016": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9996423721313477,
+      "latency_ms": 3225.621299992781,
+      "reranked": [
+        {
+          "chunk_id": 30,
+          "search_rank": 5,
+          "score": 0.9996423721313477
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 3,
+          "score": 0.9996140003204346
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 4,
+          "score": 0.9996089339256287
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 14,
+          "score": 0.9995799660682678
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 10,
+          "score": 0.9995396137237549
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 2,
+          "score": 0.9994833469390869
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 16,
+          "score": 0.999434769153595
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 19,
+          "score": 0.9994325041770935
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 7,
+          "score": 0.9993645548820496
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 1,
+          "score": 0.9993504285812378
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 15,
+          "score": 0.9993453621864319
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 8,
+          "score": 0.9993348717689514
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 17,
+          "score": 0.9993144273757935
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 9,
+          "score": 0.9992899298667908
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 11,
+          "score": 0.9992668032646179
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 13,
+          "score": 0.9991471171379089
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 18,
+          "score": 0.9991163611412048
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 6,
+          "score": 0.9984632730484009
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 20,
+          "score": 0.9983949065208435
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 12,
+          "score": 0.9983907341957092
+        }
+      ],
+      "rank_before": 2,
+      "rank_after": 6,
+      "gold_score": 0.9994833469390869
+    },
+    "INRS-DEV-017": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9989694952964783,
+      "latency_ms": 3520.6612999900244,
+      "reranked": [
+        {
+          "chunk_id": 19,
+          "search_rank": 8,
+          "score": 0.9989694952964783
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 3,
+          "score": 0.9989212155342102
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 20,
+          "score": 0.9988881945610046
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 5,
+          "score": 0.9987421035766602
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 10,
+          "score": 0.9986968636512756
+        },
+        {
+          "chunk_id": 14,
+          "search_rank": 18,
+          "score": 0.9985648393630981
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 1,
+          "score": 0.998526394367218
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 12,
+          "score": 0.9983120560646057
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 7,
+          "score": 0.9982808232307434
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 19,
+          "score": 0.9982454776763916
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 9,
+          "score": 0.9981861114501953
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 2,
+          "score": 0.9979406595230103
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 17,
+          "score": 0.9979305267333984
+        },
+        {
+          "chunk_id": 26,
+          "search_rank": 14,
+          "score": 0.9976171255111694
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 4,
+          "score": 0.9975641369819641
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 13,
+          "score": 0.9975255131721497
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 16,
+          "score": 0.9966472387313843
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 11,
+          "score": 0.9906366467475891
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 15,
+          "score": 0.9862933158874512
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 6,
+          "score": 0.9466742277145386
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 7,
+      "gold_score": 0.998526394367218
+    },
+    "INRS-DEV-018": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9993870258331299,
+      "latency_ms": 3300.8785999991233,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 1,
+          "score": 0.9993870258331299
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 2,
+          "score": 0.9993398189544678
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 17,
+          "score": 0.9992802143096924
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 11,
+          "score": 0.999269425868988
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 7,
+          "score": 0.9992559552192688
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 6,
+          "score": 0.9992274045944214
+        },
+        {
+          "chunk_id": 5,
+          "search_rank": 18,
+          "score": 0.9991888403892517
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 3,
+          "score": 0.9991652369499207
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 19,
+          "score": 0.9990389943122864
+        },
+        {
+          "chunk_id": 7,
+          "search_rank": 4,
+          "score": 0.9990376830101013
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 14,
+          "score": 0.998935878276825
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 20,
+          "score": 0.9988614916801453
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 15,
+          "score": 0.9987443685531616
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 10,
+          "score": 0.9986449480056763
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 16,
+          "score": 0.9985112547874451
+        },
+        {
+          "chunk_id": 16,
+          "search_rank": 5,
+          "score": 0.9982444643974304
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 9,
+          "score": 0.9976184964179993
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 13,
+          "score": 0.9973968267440796
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 12,
+          "score": 0.9970734715461731
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 8,
+          "score": 0.9901947975158691
+        }
+      ],
+      "rank_before": 4,
+      "rank_after": 10,
+      "gold_score": 0.9990376830101013
+    },
+    "INRS-DEV-019": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9995483160018921,
+      "latency_ms": 2692.2992000036174,
+      "reranked": [
+        {
+          "chunk_id": 5,
+          "search_rank": 8,
+          "score": 0.9995483160018921
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 4,
+          "score": 0.9994788765907288
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 13,
+          "score": 0.9994289875030518
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 6,
+          "score": 0.999420166015625
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 5,
+          "score": 0.9993955492973328
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 16,
+          "score": 0.9993561506271362
+        },
+        {
+          "chunk_id": 8,
+          "search_rank": 2,
+          "score": 0.9992623329162598
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 18,
+          "score": 0.9992285966873169
+        },
+        {
+          "chunk_id": 9,
+          "search_rank": 9,
+          "score": 0.9991549849510193
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 15,
+          "score": 0.9990566968917847
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 12,
+          "score": 0.9990538358688354
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 19,
+          "score": 0.9989943504333496
+        },
+        {
+          "chunk_id": 10,
+          "search_rank": 1,
+          "score": 0.9987647533416748
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 7,
+          "score": 0.9986781477928162
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 14,
+          "score": 0.9986546635627747
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 20,
+          "score": 0.9983708262443542
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 17,
+          "score": 0.9983130097389221
+        },
+        {
+          "chunk_id": 7,
+          "search_rank": 3,
+          "score": 0.9981435537338257
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 11,
+          "score": 0.9978838562965393
+        },
+        {
+          "chunk_id": 11,
+          "search_rank": 10,
+          "score": 0.977939248085022
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 13,
+      "gold_score": 0.9987647533416748
+    },
+    "INRS-DEV-020": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9995651245117188,
+      "latency_ms": 2901.9867000024533,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 12,
+          "score": 0.9995651245117188
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 20,
+          "score": 0.9993340969085693
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 1,
+          "score": 0.9992901086807251
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 11,
+          "score": 0.9991834759712219
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 5,
+          "score": 0.9991406798362732
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 4,
+          "score": 0.9991242289543152
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 7,
+          "score": 0.999034583568573
+        },
+        {
+          "chunk_id": 10,
+          "search_rank": 15,
+          "score": 0.999031662940979
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 19,
+          "score": 0.9989961385726929
+        },
+        {
+          "chunk_id": 26,
+          "search_rank": 16,
+          "score": 0.998992919921875
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 3,
+          "score": 0.9989898204803467
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 10,
+          "score": 0.998989462852478
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 8,
+          "score": 0.9988976120948792
+        },
+        {
+          "chunk_id": 5,
+          "search_rank": 2,
+          "score": 0.9988852143287659
+        },
+        {
+          "chunk_id": 6,
+          "search_rank": 6,
+          "score": 0.9987748265266418
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 13,
+          "score": 0.9986632466316223
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 9,
+          "score": 0.9985920786857605
+        },
+        {
+          "chunk_id": 11,
+          "search_rank": 18,
+          "score": 0.9985506534576416
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 14,
+          "score": 0.9985265135765076
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 17,
+          "score": 0.9946538209915161
+        }
+      ],
+      "rank_before": 6,
+      "rank_after": 15,
+      "gold_score": 0.9987748265266418
+    },
+    "INRS-DEV-021": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9994025826454163,
+      "latency_ms": 3009.3212999927346,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 17,
+          "score": 0.9994025826454163
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 11,
+          "score": 0.999226450920105
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 1,
+          "score": 0.9992068409919739
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 8,
+          "score": 0.9991840720176697
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 9,
+          "score": 0.9991503953933716
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 6,
+          "score": 0.9991171360015869
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 3,
+          "score": 0.9991133809089661
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 16,
+          "score": 0.9990770816802979
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 4,
+          "score": 0.9990565776824951
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 19,
+          "score": 0.999029815196991
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 12,
+          "score": 0.9987787008285522
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 10,
+          "score": 0.9986539483070374
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 18,
+          "score": 0.9986109137535095
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 15,
+          "score": 0.9985877275466919
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 5,
+          "score": 0.9984172582626343
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 7,
+          "score": 0.9982993006706238
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 14,
+          "score": 0.9982197880744934
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 20,
+          "score": 0.9977858662605286
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 13,
+          "score": 0.9974786043167114
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 2,
+          "score": 0.9973690509796143
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 3,
+      "gold_score": 0.9992068409919739
+    },
+    "INRS-DEV-022": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9993942975997925,
+      "latency_ms": 2524.491299991496,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 7,
+          "score": 0.9993942975997925
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 11,
+          "score": 0.9992793798446655
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 9,
+          "score": 0.9990339279174805
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 12,
+          "score": 0.9990286231040955
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 14,
+          "score": 0.9989579319953918
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 2,
+          "score": 0.9988029599189758
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 5,
+          "score": 0.9987449645996094
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 13,
+          "score": 0.998697817325592
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 15,
+          "score": 0.9984928369522095
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 1,
+          "score": 0.9984142780303955
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 10,
+          "score": 0.9984095692634583
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 17,
+          "score": 0.9982244968414307
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 6,
+          "score": 0.9978482723236084
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 20,
+          "score": 0.997303307056427
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 18,
+          "score": 0.9965742826461792
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 4,
+          "score": 0.9960584044456482
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 16,
+          "score": 0.9956422448158264
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 3,
+          "score": 0.9952430129051208
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 8,
+          "score": 0.9912200570106506
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 19,
+          "score": 0.9909818768501282
+        }
+      ],
+      "rank_before": 11,
+      "rank_after": 2,
+      "gold_score": 0.9992793798446655
+    },
+    "INRS-DEV-023": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9994697570800781,
+      "latency_ms": 2495.9231999964686,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 13,
+          "score": 0.9994697570800781
+        },
+        {
+          "chunk_id": 5,
+          "search_rank": 2,
+          "score": 0.999427080154419
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 1,
+          "score": 0.999407172203064
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 10,
+          "score": 0.9992761015892029
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 5,
+          "score": 0.9992175102233887
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 3,
+          "score": 0.9991905093193054
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 11,
+          "score": 0.9991411566734314
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 12,
+          "score": 0.9991267919540405
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 4,
+          "score": 0.9991036057472229
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 17,
+          "score": 0.999072790145874
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 8,
+          "score": 0.9990708827972412
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 18,
+          "score": 0.9990221261978149
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 6,
+          "score": 0.998953104019165
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 19,
+          "score": 0.9988469481468201
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 9,
+          "score": 0.9987648725509644
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 20,
+          "score": 0.9987564086914062
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 7,
+          "score": 0.9987236261367798
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 16,
+          "score": 0.9986211657524109
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 14,
+          "score": 0.9985811710357666
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 15,
+          "score": 0.9984526634216309
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 3,
+      "gold_score": 0.999407172203064
+    },
+    "INRS-DEV-024": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9996033310890198,
+      "latency_ms": 2709.1381999925943,
+      "reranked": [
+        {
+          "chunk_id": 57,
+          "search_rank": 11,
+          "score": 0.9996033310890198
+        },
+        {
+          "chunk_id": 5,
+          "search_rank": 2,
+          "score": 0.9995130896568298
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 17,
+          "score": 0.9994281530380249
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 3,
+          "score": 0.999411404132843
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 9,
+          "score": 0.9993709921836853
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 20,
+          "score": 0.9993664026260376
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 1,
+          "score": 0.9993641972541809
+        },
+        {
+          "chunk_id": 6,
+          "search_rank": 4,
+          "score": 0.9993288516998291
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 7,
+          "score": 0.9993159174919128
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 13,
+          "score": 0.9992697238922119
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 6,
+          "score": 0.99924236536026
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 12,
+          "score": 0.9992243051528931
+        },
+        {
+          "chunk_id": 25,
+          "search_rank": 14,
+          "score": 0.9992117285728455
+        },
+        {
+          "chunk_id": 26,
+          "search_rank": 8,
+          "score": 0.9991180896759033
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 10,
+          "score": 0.9989086985588074
+        },
+        {
+          "chunk_id": 11,
+          "search_rank": 19,
+          "score": 0.998871922492981
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 18,
+          "score": 0.9987233877182007
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 16,
+          "score": 0.9982771873474121
+        },
+        {
+          "chunk_id": 13,
+          "search_rank": 15,
+          "score": 0.958328366279602
+        },
+        {
+          "chunk_id": 24,
+          "search_rank": 5,
+          "score": 0.9333603382110596
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 7,
+      "gold_score": 0.9993641972541809
+    },
+    "INRS-DEV-025": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9993269443511963,
+      "latency_ms": 2724.62630001246,
+      "reranked": [
+        {
+          "chunk_id": 2,
+          "search_rank": 1,
+          "score": 0.9993269443511963
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 4,
+          "score": 0.9992896318435669
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 18,
+          "score": 0.9991766214370728
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 16,
+          "score": 0.9991099834442139
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 11,
+          "score": 0.9990905523300171
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 15,
+          "score": 0.9989838004112244
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 3,
+          "score": 0.9988347887992859
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 7,
+          "score": 0.99881511926651
+        },
+        {
+          "chunk_id": 26,
+          "search_rank": 9,
+          "score": 0.9986998438835144
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 19,
+          "score": 0.9986625909805298
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 8,
+          "score": 0.9986371994018555
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 5,
+          "score": 0.9981512427330017
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 14,
+          "score": 0.9980998635292053
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 13,
+          "score": 0.9980546832084656
+        },
+        {
+          "chunk_id": 25,
+          "search_rank": 10,
+          "score": 0.9980222582817078
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 6,
+          "score": 0.9959436058998108
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 12,
+          "score": 0.995725691318512
+        },
+        {
+          "chunk_id": 27,
+          "search_rank": 2,
+          "score": 0.9954042434692383
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 20,
+          "score": 0.9842500686645508
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 17,
+          "score": 0.8887559175491333
+        }
+      ],
+      "rank_before": 2,
+      "rank_after": 18,
+      "gold_score": 0.9954042434692383
+    },
+    "INRS-DEV-026": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9997460842132568,
+      "latency_ms": 2874.061400012579,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 15,
+          "score": 0.9997460842132568
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 5,
+          "score": 0.9996145963668823
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 19,
+          "score": 0.9996032118797302
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 4,
+          "score": 0.999588131904602
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 6,
+          "score": 0.9995854496955872
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 14,
+          "score": 0.9995588064193726
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 3,
+          "score": 0.999556839466095
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 1,
+          "score": 0.9995272755622864
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 13,
+          "score": 0.9993764162063599
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 10,
+          "score": 0.9993595480918884
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 7,
+          "score": 0.9993187785148621
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 17,
+          "score": 0.9992936849594116
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 18,
+          "score": 0.9992911219596863
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 20,
+          "score": 0.9990663528442383
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 16,
+          "score": 0.9990304708480835
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 12,
+          "score": 0.9987981915473938
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 2,
+          "score": 0.9987661242485046
+        },
+        {
+          "chunk_id": 27,
+          "search_rank": 8,
+          "score": 0.9985840320587158
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 9,
+          "score": 0.9980880618095398
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 11,
+          "score": 0.969998300075531
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 8,
+      "gold_score": 0.9995272755622864
+    },
+    "INRS-DEV-027": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9993016719818115,
+      "latency_ms": 2547.2520999901462,
+      "reranked": [
+        {
+          "chunk_id": 29,
+          "search_rank": 3,
+          "score": 0.9993016719818115
+        },
+        {
+          "chunk_id": 14,
+          "search_rank": 7,
+          "score": 0.9992257356643677
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 1,
+          "score": 0.9992028474807739
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 4,
+          "score": 0.9991692900657654
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 8,
+          "score": 0.9991689920425415
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 18,
+          "score": 0.9990015029907227
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 9,
+          "score": 0.9989345669746399
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 10,
+          "score": 0.9989205002784729
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 6,
+          "score": 0.998920202255249
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 20,
+          "score": 0.9989140629768372
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 17,
+          "score": 0.998895525932312
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 5,
+          "score": 0.9987735152244568
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 12,
+          "score": 0.9986350536346436
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 16,
+          "score": 0.9986112117767334
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 15,
+          "score": 0.9986072182655334
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 13,
+          "score": 0.9980911612510681
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 2,
+          "score": 0.9979009628295898
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 14,
+          "score": 0.9975149035453796
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 19,
+          "score": 0.9972646832466125
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 11,
+          "score": 0.9962539076805115
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 3,
+      "gold_score": 0.9992028474807739
+    },
+    "INRS-DEV-028": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.999398946762085,
+      "latency_ms": 2590.610300001572,
+      "reranked": [
+        {
+          "chunk_id": 32,
+          "search_rank": 1,
+          "score": 0.999398946762085
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 11,
+          "score": 0.9993340373039246
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 2,
+          "score": 0.9993088245391846
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 18,
+          "score": 0.9992520809173584
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 7,
+          "score": 0.9991215467453003
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 17,
+          "score": 0.9989771246910095
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 5,
+          "score": 0.9988686442375183
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 15,
+          "score": 0.9987833499908447
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 19,
+          "score": 0.9987784028053284
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 3,
+          "score": 0.9987469911575317
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 8,
+          "score": 0.9984438419342041
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 9,
+          "score": 0.9984415769577026
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 4,
+          "score": 0.9981518387794495
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 10,
+          "score": 0.9974581003189087
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 14,
+          "score": 0.9966009855270386
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 12,
+          "score": 0.9960508346557617
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 16,
+          "score": 0.994891881942749
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 6,
+          "score": 0.9918709397315979
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 20,
+          "score": 0.9744695425033569
+        },
+        {
+          "chunk_id": 27,
+          "search_rank": 13,
+          "score": 0.054622914642095566
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 1,
+      "gold_score": 0.999398946762085
+    },
+    "INRS-DEV-029": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9994702339172363,
+      "latency_ms": 2550.7921000098577,
+      "reranked": [
+        {
+          "chunk_id": 63,
+          "search_rank": 16,
+          "score": 0.9994702339172363
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 20,
+          "score": 0.9994626641273499
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 18,
+          "score": 0.9994059205055237
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 8,
+          "score": 0.999252438545227
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 3,
+          "score": 0.9992170929908752
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 1,
+          "score": 0.9991713166236877
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 2,
+          "score": 0.9991549253463745
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 12,
+          "score": 0.9991282224655151
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 14,
+          "score": 0.999083936214447
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 13,
+          "score": 0.9989588260650635
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 19,
+          "score": 0.9989334344863892
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 10,
+          "score": 0.9987839460372925
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 9,
+          "score": 0.9985648393630981
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 17,
+          "score": 0.998346745967865
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 7,
+          "score": 0.9983418583869934
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 6,
+          "score": 0.9983336329460144
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 5,
+          "score": 0.9980957508087158
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 11,
+          "score": 0.9980050921440125
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 4,
+          "score": 0.9975407719612122
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 15,
+          "score": 0.5339369773864746
+        }
+      ],
+      "rank_before": 2,
+      "rank_after": 7,
+      "gold_score": 0.9991549253463745
+    },
+    "INRS-DEV-030": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9992072582244873,
+      "latency_ms": 2386.441399998148,
+      "reranked": [
+        {
+          "chunk_id": 20,
+          "search_rank": 15,
+          "score": 0.9992072582244873
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 11,
+          "score": 0.9992004632949829
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 14,
+          "score": 0.9991715550422668
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 7,
+          "score": 0.9991661906242371
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 1,
+          "score": 0.9990944266319275
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 5,
+          "score": 0.9990831017494202
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 2,
+          "score": 0.9990586638450623
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 8,
+          "score": 0.9990048408508301
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 3,
+          "score": 0.9990013241767883
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 4,
+          "score": 0.9989697337150574
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 6,
+          "score": 0.9989014267921448
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 12,
+          "score": 0.9988980889320374
+        },
+        {
+          "chunk_id": 52,
+          "search_rank": 10,
+          "score": 0.9988006949424744
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 17,
+          "score": 0.9987093806266785
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 13,
+          "score": 0.9987000226974487
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 9,
+          "score": 0.9982975125312805
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 20,
+          "score": 0.9982374310493469
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 18,
+          "score": 0.9978957772254944
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 19,
+          "score": 0.9961402416229248
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 16,
+          "score": 0.9891805052757263
+        }
+      ],
+      "rank_before": 4,
+      "rank_after": 10,
+      "gold_score": 0.9989697337150574
+    },
+    "INRS-DEV-031": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9992666840553284,
+      "latency_ms": 2430.866299997433,
+      "reranked": [
+        {
+          "chunk_id": 41,
+          "search_rank": 6,
+          "score": 0.9992666840553284
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 17,
+          "score": 0.9991470575332642
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 15,
+          "score": 0.9989832043647766
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 2,
+          "score": 0.9989127516746521
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 3,
+          "score": 0.9988538026809692
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 4,
+          "score": 0.9988077878952026
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 10,
+          "score": 0.998769998550415
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 1,
+          "score": 0.9987185597419739
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 11,
+          "score": 0.9987086057662964
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 5,
+          "score": 0.9986658096313477
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 7,
+          "score": 0.9986302852630615
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 16,
+          "score": 0.998349666595459
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 19,
+          "score": 0.9982805848121643
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 8,
+          "score": 0.9981282353401184
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 12,
+          "score": 0.9979327321052551
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 13,
+          "score": 0.9976416826248169
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 14,
+          "score": 0.9972012639045715
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 20,
+          "score": 0.9968620538711548
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 18,
+          "score": 0.9965171217918396
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 9,
+          "score": 0.9960835576057434
+        }
+      ],
+      "rank_before": 2,
+      "rank_after": 4,
+      "gold_score": 0.9989127516746521
+    },
+    "INRS-DEV-032": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9994547367095947,
+      "latency_ms": 2488.8347999949474,
+      "reranked": [
+        {
+          "chunk_id": 4,
+          "search_rank": 13,
+          "score": 0.9994547367095947
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 14,
+          "score": 0.9994320869445801
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 18,
+          "score": 0.9993724226951599
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 19,
+          "score": 0.9993276000022888
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 8,
+          "score": 0.9991838335990906
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 1,
+          "score": 0.9991737008094788
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 10,
+          "score": 0.9991334080696106
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 12,
+          "score": 0.9991052746772766
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 16,
+          "score": 0.9990924000740051
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 17,
+          "score": 0.9989957213401794
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 15,
+          "score": 0.9989604949951172
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 3,
+          "score": 0.9988952875137329
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 2,
+          "score": 0.9988053441047668
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 9,
+          "score": 0.9986935257911682
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 20,
+          "score": 0.9986913800239563
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 7,
+          "score": 0.9985654354095459
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 4,
+          "score": 0.9985171556472778
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 11,
+          "score": 0.9983142614364624
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 6,
+          "score": 0.9980529546737671
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 5,
+          "score": 0.9977967739105225
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 6,
+      "gold_score": 0.9991737008094788
+    },
+    "INRS-DEV-033": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9993152022361755,
+      "latency_ms": 2389.12559999153,
+      "reranked": [
+        {
+          "chunk_id": 2,
+          "search_rank": 20,
+          "score": 0.9993152022361755
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 13,
+          "score": 0.99928218126297
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 17,
+          "score": 0.9989104270935059
+        },
+        {
+          "chunk_id": 12,
+          "search_rank": 4,
+          "score": 0.998885452747345
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 2,
+          "score": 0.9988210201263428
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 8,
+          "score": 0.9988180994987488
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 10,
+          "score": 0.998798131942749
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 16,
+          "score": 0.9987046122550964
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 1,
+          "score": 0.9986633062362671
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 11,
+          "score": 0.9986380934715271
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 5,
+          "score": 0.9986290335655212
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 6,
+          "score": 0.9985584020614624
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 3,
+          "score": 0.9984455108642578
+        },
+        {
+          "chunk_id": 52,
+          "search_rank": 9,
+          "score": 0.9982473254203796
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 14,
+          "score": 0.9982472062110901
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 12,
+          "score": 0.9982181787490845
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 15,
+          "score": 0.9981531500816345
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 7,
+          "score": 0.9981487393379211
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 18,
+          "score": 0.9978299140930176
+        },
+        {
+          "chunk_id": 15,
+          "search_rank": 19,
+          "score": 0.9901957511901855
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 9,
+      "gold_score": 0.9986633062362671
+    },
+    "INRS-DEV-034": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9989912509918213,
+      "latency_ms": 2577.889599997434,
+      "reranked": [
+        {
+          "chunk_id": 64,
+          "search_rank": 16,
+          "score": 0.9989912509918213
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 4,
+          "score": 0.9989792704582214
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 20,
+          "score": 0.9989401698112488
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 6,
+          "score": 0.9989133477210999
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 13,
+          "score": 0.9988399744033813
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 1,
+          "score": 0.9987239837646484
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 8,
+          "score": 0.9987105131149292
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 19,
+          "score": 0.9986389875411987
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 18,
+          "score": 0.9985866546630859
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 9,
+          "score": 0.998488187789917
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 3,
+          "score": 0.9983870983123779
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 5,
+          "score": 0.9983189702033997
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 14,
+          "score": 0.9982163906097412
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 15,
+          "score": 0.9979733824729919
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 17,
+          "score": 0.9977371692657471
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 2,
+          "score": 0.9973801374435425
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 7,
+          "score": 0.9973801374435425
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 11,
+          "score": 0.9973189234733582
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 12,
+          "score": 0.9969537854194641
+        },
+        {
+          "chunk_id": 62,
+          "search_rank": 10,
+          "score": 0.9966527223587036
+        }
+      ],
+      "rank_before": 8,
+      "rank_after": 7,
+      "gold_score": 0.9987105131149292
+    },
+    "INRS-DEV-035": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9995932579040527,
+      "latency_ms": 2589.4240000052378,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 17,
+          "score": 0.9995932579040527
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 16,
+          "score": 0.9994426369667053
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 6,
+          "score": 0.9994202256202698
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 4,
+          "score": 0.9994151592254639
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 7,
+          "score": 0.9993880391120911
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 2,
+          "score": 0.9993585348129272
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 9,
+          "score": 0.9993399381637573
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 15,
+          "score": 0.999329149723053
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 14,
+          "score": 0.9992323517799377
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 1,
+          "score": 0.9992027878761292
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 18,
+          "score": 0.9991932511329651
+        },
+        {
+          "chunk_id": 21,
+          "search_rank": 20,
+          "score": 0.9991596937179565
+        },
+        {
+          "chunk_id": 62,
+          "search_rank": 11,
+          "score": 0.9991550445556641
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 12,
+          "score": 0.9991511702537537
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 5,
+          "score": 0.9991206526756287
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 3,
+          "score": 0.9990894794464111
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 19,
+          "score": 0.9990843534469604
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 13,
+          "score": 0.9990392327308655
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 8,
+          "score": 0.9985899925231934
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 10,
+          "score": 0.998587429523468
+        }
+      ],
+      "rank_before": 5,
+      "rank_after": 15,
+      "gold_score": 0.9991206526756287
+    },
+    "INRS-DEV-036": {
+      "category": "valid",
+      "must_refuse": false,
+      "candidates": 20,
+      "max_score": 0.9991001486778259,
+      "latency_ms": 2673.8066999969305,
+      "reranked": [
+        {
+          "chunk_id": 40,
+          "search_rank": 9,
+          "score": 0.9991001486778259
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 1,
+          "score": 0.998794436454773
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 8,
+          "score": 0.9986144304275513
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 19,
+          "score": 0.9986051321029663
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 10,
+          "score": 0.9985533356666565
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 11,
+          "score": 0.9984609484672546
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 5,
+          "score": 0.9983258843421936
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 17,
+          "score": 0.9983137249946594
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 2,
+          "score": 0.9982467293739319
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 4,
+          "score": 0.9982014894485474
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 14,
+          "score": 0.998081624507904
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 12,
+          "score": 0.9979568123817444
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 20,
+          "score": 0.9970592260360718
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 3,
+          "score": 0.9961671829223633
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 16,
+          "score": 0.9956961274147034
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 15,
+          "score": 0.9852458834648132
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 6,
+          "score": 0.9564250111579895
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 13,
+          "score": 0.9102451801300049
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 7,
+          "score": 0.008060356602072716
+        },
+        {
+          "chunk_id": 62,
+          "search_rank": 18,
+          "score": 0.0029516175854951143
+        }
+      ],
+      "rank_before": 1,
+      "rank_after": 2,
+      "gold_score": 0.998794436454773
+    },
+    "INRS-DEV-037": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9991863369941711,
+      "latency_ms": 2608.146400001715,
+      "reranked": [
+        {
+          "chunk_id": 4,
+          "search_rank": 2,
+          "score": 0.9991863369941711
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 4,
+          "score": 0.999113142490387
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 19,
+          "score": 0.9990742802619934
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 8,
+          "score": 0.9990127682685852
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 13,
+          "score": 0.99896240234375
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 5,
+          "score": 0.9989126920700073
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 17,
+          "score": 0.9988075494766235
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 18,
+          "score": 0.9986940026283264
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 3,
+          "score": 0.9986529350280762
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 7,
+          "score": 0.9986411333084106
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 11,
+          "score": 0.9985928535461426
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 20,
+          "score": 0.9984469413757324
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 9,
+          "score": 0.9984353184700012
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 12,
+          "score": 0.9983595013618469
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 14,
+          "score": 0.9982645511627197
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 10,
+          "score": 0.9981762170791626
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 1,
+          "score": 0.9978711605072021
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 6,
+          "score": 0.9973742961883545
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 16,
+          "score": 0.9967913031578064
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 15,
+          "score": 0.996712327003479
+        }
+      ]
+    },
+    "INRS-DEV-038": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9995430707931519,
+      "latency_ms": 2930.077099998016,
+      "reranked": [
+        {
+          "chunk_id": 33,
+          "search_rank": 1,
+          "score": 0.9995430707931519
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 5,
+          "score": 0.9994917511940002
+        },
+        {
+          "chunk_id": 2,
+          "search_rank": 12,
+          "score": 0.9993450045585632
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 7,
+          "score": 0.9992957711219788
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 6,
+          "score": 0.9992823600769043
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 4,
+          "score": 0.9992662072181702
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 8,
+          "score": 0.9992608428001404
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 3,
+          "score": 0.9992075562477112
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 11,
+          "score": 0.9992045760154724
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 13,
+          "score": 0.9991620182991028
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 2,
+          "score": 0.9990274906158447
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 20,
+          "score": 0.9989722371101379
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 10,
+          "score": 0.9989311695098877
+        },
+        {
+          "chunk_id": 26,
+          "search_rank": 19,
+          "score": 0.9986857771873474
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 14,
+          "score": 0.9986280798912048
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 16,
+          "score": 0.9985714554786682
+        },
+        {
+          "chunk_id": 10,
+          "search_rank": 17,
+          "score": 0.9972983598709106
+        },
+        {
+          "chunk_id": 11,
+          "search_rank": 18,
+          "score": 0.9950997829437256
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 15,
+          "score": 0.9857472777366638
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 9,
+          "score": 0.962199866771698
+        }
+      ]
+    },
+    "INRS-DEV-039": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9992852210998535,
+      "latency_ms": 2597.9547000024468,
+      "reranked": [
+        {
+          "chunk_id": 46,
+          "search_rank": 1,
+          "score": 0.9992852210998535
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 18,
+          "score": 0.9991101622581482
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 4,
+          "score": 0.9990627765655518
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 15,
+          "score": 0.9990600943565369
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 14,
+          "score": 0.9990485906600952
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 12,
+          "score": 0.9990122318267822
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 10,
+          "score": 0.9989321231842041
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 5,
+          "score": 0.9989202618598938
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 20,
+          "score": 0.9988881945610046
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 2,
+          "score": 0.9988764524459839
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 11,
+          "score": 0.9988664388656616
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 7,
+          "score": 0.9987512826919556
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 6,
+          "score": 0.9986764192581177
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 16,
+          "score": 0.9986739158630371
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 3,
+          "score": 0.9986311197280884
+        },
+        {
+          "chunk_id": 52,
+          "search_rank": 13,
+          "score": 0.9985533356666565
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 8,
+          "score": 0.9984707832336426
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 9,
+          "score": 0.9982841610908508
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 17,
+          "score": 0.99825519323349
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 19,
+          "score": 0.9978222846984863
+        }
+      ]
+    },
+    "INRS-DEV-040": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9994887709617615,
+      "latency_ms": 3165.5663000128698,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 2,
+          "score": 0.9994887709617615
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 7,
+          "score": 0.9992729425430298
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 3,
+          "score": 0.9992231130599976
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 11,
+          "score": 0.9989389181137085
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 5,
+          "score": 0.9989222288131714
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 15,
+          "score": 0.9989087581634521
+        },
+        {
+          "chunk_id": 55,
+          "search_rank": 20,
+          "score": 0.9988352060317993
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 4,
+          "score": 0.9988276362419128
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 9,
+          "score": 0.9988220930099487
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 14,
+          "score": 0.9987556338310242
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 17,
+          "score": 0.9987465739250183
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 19,
+          "score": 0.9987047910690308
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 18,
+          "score": 0.9982885122299194
+        },
+        {
+          "chunk_id": 25,
+          "search_rank": 6,
+          "score": 0.9981889128684998
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 10,
+          "score": 0.9981737732887268
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 13,
+          "score": 0.9973050951957703
+        },
+        {
+          "chunk_id": 14,
+          "search_rank": 12,
+          "score": 0.995762288570404
+        },
+        {
+          "chunk_id": 24,
+          "search_rank": 8,
+          "score": 0.9926517605781555
+        },
+        {
+          "chunk_id": 62,
+          "search_rank": 16,
+          "score": 0.9909389019012451
+        },
+        {
+          "chunk_id": 16,
+          "search_rank": 1,
+          "score": 0.9890335202217102
+        }
+      ]
+    },
+    "INRS-DEV-041": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9989598393440247,
+      "latency_ms": 3406.511399996816,
+      "reranked": [
+        {
+          "chunk_id": 4,
+          "search_rank": 11,
+          "score": 0.9989598393440247
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 6,
+          "score": 0.9987612366676331
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 10,
+          "score": 0.9987568855285645
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 1,
+          "score": 0.998734176158905
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 9,
+          "score": 0.9985325336456299
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 18,
+          "score": 0.9984881281852722
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 19,
+          "score": 0.9984131455421448
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 15,
+          "score": 0.9983863234519958
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 3,
+          "score": 0.9981838464736938
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 13,
+          "score": 0.9981821179389954
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 16,
+          "score": 0.9981664419174194
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 5,
+          "score": 0.9981184005737305
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 20,
+          "score": 0.9978043437004089
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 14,
+          "score": 0.9971128106117249
+        },
+        {
+          "chunk_id": 44,
+          "search_rank": 8,
+          "score": 0.996963620185852
+        },
+        {
+          "chunk_id": 52,
+          "search_rank": 2,
+          "score": 0.9968459606170654
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 7,
+          "score": 0.9967701435089111
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 17,
+          "score": 0.9961859583854675
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 4,
+          "score": 0.9939211010932922
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 12,
+          "score": 0.9869575500488281
+        }
+      ]
+    },
+    "INRS-DEV-042": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9994632601737976,
+      "latency_ms": 2792.55739999644,
+      "reranked": [
+        {
+          "chunk_id": 52,
+          "search_rank": 7,
+          "score": 0.9994632601737976
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 15,
+          "score": 0.9992777705192566
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 18,
+          "score": 0.9991945028305054
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 13,
+          "score": 0.9991815686225891
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 14,
+          "score": 0.9991612434387207
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 2,
+          "score": 0.9990279674530029
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 19,
+          "score": 0.9990119338035583
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 5,
+          "score": 0.9990073442459106
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 9,
+          "score": 0.9989704489707947
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 17,
+          "score": 0.9988945722579956
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 16,
+          "score": 0.9988189935684204
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 12,
+          "score": 0.998786449432373
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 10,
+          "score": 0.9987480044364929
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 4,
+          "score": 0.9987197518348694
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 1,
+          "score": 0.9987135529518127
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 3,
+          "score": 0.9983943104743958
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 20,
+          "score": 0.9983651638031006
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 6,
+          "score": 0.9980242252349854
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 8,
+          "score": 0.9978527426719666
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 11,
+          "score": 0.9970693588256836
+        }
+      ]
+    },
+    "INRS-DEV-043": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9994131922721863,
+      "latency_ms": 2955.8491999923717,
+      "reranked": [
+        {
+          "chunk_id": 29,
+          "search_rank": 2,
+          "score": 0.9994131922721863
+        },
+        {
+          "chunk_id": 33,
+          "search_rank": 1,
+          "score": 0.9994097352027893
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 7,
+          "score": 0.9993137717247009
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 18,
+          "score": 0.9992836117744446
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 19,
+          "score": 0.9992523193359375
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 16,
+          "score": 0.9992382526397705
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 13,
+          "score": 0.9992372989654541
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 6,
+          "score": 0.9992152452468872
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 4,
+          "score": 0.9991797804832458
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 11,
+          "score": 0.999154806137085
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 14,
+          "score": 0.9991376399993896
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 5,
+          "score": 0.9991192817687988
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 9,
+          "score": 0.9991065859794617
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 8,
+          "score": 0.999048113822937
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 17,
+          "score": 0.9990026950836182
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 15,
+          "score": 0.9989273548126221
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 12,
+          "score": 0.9986861944198608
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 20,
+          "score": 0.9982747435569763
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 10,
+          "score": 0.9981933236122131
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 3,
+          "score": 0.9972127079963684
+        }
+      ]
+    },
+    "INRS-DEV-044": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9993273615837097,
+      "latency_ms": 3261.2460999953328,
+      "reranked": [
+        {
+          "chunk_id": 2,
+          "search_rank": 3,
+          "score": 0.9993273615837097
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 17,
+          "score": 0.99920254945755
+        },
+        {
+          "chunk_id": 3,
+          "search_rank": 4,
+          "score": 0.9990710020065308
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 14,
+          "score": 0.99903404712677
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 11,
+          "score": 0.9987785220146179
+        },
+        {
+          "chunk_id": 23,
+          "search_rank": 20,
+          "score": 0.9987705945968628
+        },
+        {
+          "chunk_id": 1,
+          "search_rank": 6,
+          "score": 0.9987703561782837
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 19,
+          "score": 0.9986299872398376
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 1,
+          "score": 0.9985186457633972
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 10,
+          "score": 0.9985179305076599
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 7,
+          "score": 0.9983345866203308
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 8,
+          "score": 0.9983093738555908
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 13,
+          "score": 0.9982530474662781
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 16,
+          "score": 0.9980574250221252
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 15,
+          "score": 0.9977017641067505
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 9,
+          "score": 0.994117021560669
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 5,
+          "score": 0.9934210181236267
+        },
+        {
+          "chunk_id": 58,
+          "search_rank": 18,
+          "score": 0.9923743009567261
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 12,
+          "score": 0.9861017465591431
+        },
+        {
+          "chunk_id": 66,
+          "search_rank": 2,
+          "score": 0.004201128147542477
+        }
+      ]
+    },
+    "INRS-DEV-045": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9993756413459778,
+      "latency_ms": 2824.2352999950526,
+      "reranked": [
+        {
+          "chunk_id": 3,
+          "search_rank": 1,
+          "score": 0.9993756413459778
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 16,
+          "score": 0.9993323087692261
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 3,
+          "score": 0.9993181824684143
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 14,
+          "score": 0.9993001818656921
+        },
+        {
+          "chunk_id": 4,
+          "search_rank": 11,
+          "score": 0.999269962310791
+        },
+        {
+          "chunk_id": 68,
+          "search_rank": 2,
+          "score": 0.9992583394050598
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 9,
+          "score": 0.9991976022720337
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 10,
+          "score": 0.9991854429244995
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 8,
+          "score": 0.9991157650947571
+        },
+        {
+          "chunk_id": 22,
+          "search_rank": 20,
+          "score": 0.999096691608429
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 12,
+          "score": 0.9989821910858154
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 6,
+          "score": 0.9989364743232727
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 15,
+          "score": 0.9987093806266785
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 4,
+          "score": 0.9987019896507263
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 19,
+          "score": 0.9985657930374146
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 17,
+          "score": 0.9984983801841736
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 7,
+          "score": 0.9984474778175354
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 13,
+          "score": 0.9984203577041626
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 5,
+          "score": 0.998405396938324
+        },
+        {
+          "chunk_id": 27,
+          "search_rank": 18,
+          "score": 0.9717966914176941
+        }
+      ]
+    },
+    "INRS-DEV-046": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9993991851806641,
+      "latency_ms": 2814.943299992592,
+      "reranked": [
+        {
+          "chunk_id": 43,
+          "search_rank": 1,
+          "score": 0.9993991851806641
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 9,
+          "score": 0.999355673789978
+        },
+        {
+          "chunk_id": 7,
+          "search_rank": 17,
+          "score": 0.9993547797203064
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 6,
+          "score": 0.9993119239807129
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 4,
+          "score": 0.9993022680282593
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 3,
+          "score": 0.9991812705993652
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 8,
+          "score": 0.9991770386695862
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 5,
+          "score": 0.9991676807403564
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 10,
+          "score": 0.9989303946495056
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 15,
+          "score": 0.9989219903945923
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 14,
+          "score": 0.9988864064216614
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 7,
+          "score": 0.998267412185669
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 2,
+          "score": 0.9982020854949951
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 18,
+          "score": 0.9978044629096985
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 12,
+          "score": 0.9973582625389099
+        },
+        {
+          "chunk_id": 9,
+          "search_rank": 19,
+          "score": 0.9973437190055847
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 11,
+          "score": 0.9971435070037842
+        },
+        {
+          "chunk_id": 15,
+          "search_rank": 16,
+          "score": 0.996834397315979
+        },
+        {
+          "chunk_id": 39,
+          "search_rank": 20,
+          "score": 0.996626079082489
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 13,
+          "score": 0.9919873476028442
+        }
+      ]
+    },
+    "INRS-DEV-047": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.999201238155365,
+      "latency_ms": 3098.102799995104,
+      "reranked": [
+        {
+          "chunk_id": 56,
+          "search_rank": 11,
+          "score": 0.999201238155365
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 12,
+          "score": 0.9991109371185303
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 4,
+          "score": 0.9990977048873901
+        },
+        {
+          "chunk_id": 32,
+          "search_rank": 14,
+          "score": 0.9990777969360352
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 6,
+          "score": 0.9990025162696838
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 1,
+          "score": 0.9989026784896851
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 19,
+          "score": 0.998878002166748
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 20,
+          "score": 0.9988548159599304
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 3,
+          "score": 0.9988490343093872
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 5,
+          "score": 0.9987565279006958
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 7,
+          "score": 0.9987263083457947
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 17,
+          "score": 0.9987195730209351
+        },
+        {
+          "chunk_id": 38,
+          "search_rank": 15,
+          "score": 0.9986687898635864
+        },
+        {
+          "chunk_id": 51,
+          "search_rank": 16,
+          "score": 0.9986315369606018
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 8,
+          "score": 0.9985533952713013
+        },
+        {
+          "chunk_id": 50,
+          "search_rank": 9,
+          "score": 0.9983242750167847
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 2,
+          "score": 0.9982526898384094
+        },
+        {
+          "chunk_id": 54,
+          "search_rank": 13,
+          "score": 0.9976797699928284
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 10,
+          "score": 0.9969760775566101
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 18,
+          "score": 0.9910787343978882
+        }
+      ]
+    },
+    "INRS-DEV-048": {
+      "category": "out_of_scope",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9995564222335815,
+      "latency_ms": 3481.994700006908,
+      "reranked": [
+        {
+          "chunk_id": 7,
+          "search_rank": 11,
+          "score": 0.9995564222335815
+        },
+        {
+          "chunk_id": 31,
+          "search_rank": 4,
+          "score": 0.999520480632782
+        },
+        {
+          "chunk_id": 35,
+          "search_rank": 6,
+          "score": 0.9994184970855713
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 7,
+          "score": 0.9993940591812134
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 16,
+          "score": 0.9991831183433533
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 3,
+          "score": 0.9988787174224854
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 8,
+          "score": 0.998859167098999
+        },
+        {
+          "chunk_id": 19,
+          "search_rank": 13,
+          "score": 0.9986247420310974
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 14,
+          "score": 0.9983817338943481
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 10,
+          "score": 0.9982066750526428
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 9,
+          "score": 0.9977254867553711
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 2,
+          "score": 0.9974496364593506
+        },
+        {
+          "chunk_id": 34,
+          "search_rank": 17,
+          "score": 0.9974042177200317
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 5,
+          "score": 0.9973744750022888
+        },
+        {
+          "chunk_id": 28,
+          "search_rank": 18,
+          "score": 0.9972476363182068
+        },
+        {
+          "chunk_id": 14,
+          "search_rank": 15,
+          "score": 0.9970887303352356
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 1,
+          "score": 0.9970712661743164
+        },
+        {
+          "chunk_id": 16,
+          "search_rank": 12,
+          "score": 0.9965128302574158
+        },
+        {
+          "chunk_id": 18,
+          "search_rank": 19,
+          "score": 0.995122492313385
+        },
+        {
+          "chunk_id": 30,
+          "search_rank": 20,
+          "score": 0.9896144866943359
+        }
+      ]
+    },
+    "INRS-DEV-049": {
+      "category": "out_of_scope",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.9993414878845215,
+      "latency_ms": 2858.935600001132,
+      "reranked": [
+        {
+          "chunk_id": 31,
+          "search_rank": 19,
+          "score": 0.9993414878845215
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 1,
+          "score": 0.9991928935050964
+        },
+        {
+          "chunk_id": 20,
+          "search_rank": 18,
+          "score": 0.9991005063056946
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 7,
+          "score": 0.9990381598472595
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 17,
+          "score": 0.9989720582962036
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 10,
+          "score": 0.9989495873451233
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 6,
+          "score": 0.9989344477653503
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 2,
+          "score": 0.998852014541626
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 5,
+          "score": 0.9988300800323486
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 9,
+          "score": 0.998597264289856
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 3,
+          "score": 0.9985787272453308
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 14,
+          "score": 0.9984694123268127
+        },
+        {
+          "chunk_id": 56,
+          "search_rank": 4,
+          "score": 0.9984521269798279
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 11,
+          "score": 0.9983201026916504
+        },
+        {
+          "chunk_id": 43,
+          "search_rank": 16,
+          "score": 0.9981907606124878
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 15,
+          "score": 0.9981406331062317
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 12,
+          "score": 0.9979718327522278
+        },
+        {
+          "chunk_id": 37,
+          "search_rank": 20,
+          "score": 0.9978647232055664
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 8,
+          "score": 0.9970288872718811
+        },
+        {
+          "chunk_id": 36,
+          "search_rank": 13,
+          "score": 0.9851955771446228
+        }
+      ]
+    },
+    "INRS-DEV-050": {
+      "category": "out_of_scope",
+      "must_refuse": true,
+      "candidates": 20,
+      "max_score": 0.999402642250061,
+      "latency_ms": 2837.567399998079,
+      "reranked": [
+        {
+          "chunk_id": 43,
+          "search_rank": 2,
+          "score": 0.999402642250061
+        },
+        {
+          "chunk_id": 63,
+          "search_rank": 10,
+          "score": 0.999259352684021
+        },
+        {
+          "chunk_id": 64,
+          "search_rank": 16,
+          "score": 0.999137818813324
+        },
+        {
+          "chunk_id": 48,
+          "search_rank": 3,
+          "score": 0.9991276860237122
+        },
+        {
+          "chunk_id": 42,
+          "search_rank": 1,
+          "score": 0.9991272687911987
+        },
+        {
+          "chunk_id": 40,
+          "search_rank": 19,
+          "score": 0.999080240726471
+        },
+        {
+          "chunk_id": 61,
+          "search_rank": 7,
+          "score": 0.9990392327308655
+        },
+        {
+          "chunk_id": 29,
+          "search_rank": 20,
+          "score": 0.9989974498748779
+        },
+        {
+          "chunk_id": 65,
+          "search_rank": 14,
+          "score": 0.9988777041435242
+        },
+        {
+          "chunk_id": 59,
+          "search_rank": 11,
+          "score": 0.9988614916801453
+        },
+        {
+          "chunk_id": 41,
+          "search_rank": 5,
+          "score": 0.9988064169883728
+        },
+        {
+          "chunk_id": 53,
+          "search_rank": 13,
+          "score": 0.9987232685089111
+        },
+        {
+          "chunk_id": 45,
+          "search_rank": 17,
+          "score": 0.9987138509750366
+        },
+        {
+          "chunk_id": 46,
+          "search_rank": 8,
+          "score": 0.9986915588378906
+        },
+        {
+          "chunk_id": 47,
+          "search_rank": 4,
+          "score": 0.9985637664794922
+        },
+        {
+          "chunk_id": 60,
+          "search_rank": 12,
+          "score": 0.9983983635902405
+        },
+        {
+          "chunk_id": 57,
+          "search_rank": 18,
+          "score": 0.9967257976531982
+        },
+        {
+          "chunk_id": 67,
+          "search_rank": 9,
+          "score": 0.9909615516662598
+        },
+        {
+          "chunk_id": 49,
+          "search_rank": 6,
+          "score": 0.9899974465370178
+        },
+        {
+          "chunk_id": 69,
+          "search_rank": 15,
+          "score": 0.47220370173454285
+        }
+      ]
+    }
+  }
+}
