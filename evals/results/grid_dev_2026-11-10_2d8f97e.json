@@ -1,0 +1,628 @@
+{
+  "set": "dev",
+  "mode": "grid",
+  "date": "2026-11-10",
+  "commit": "2d8f97e",
+  "working_tree_dirty": true,
+  "config": {
+    "embedding_model": "text-embedding-3-small",
+    "embedding_dimensions": 1536,
+    "rrf_k": 50,
+    "max_tokens": 350,
+    "min_quote_chars": 20,
+    "grid": {
+      "f=0 mc=10": {
+        "weights": [
+          1.0,
+          0.0,
+          2.0
+        ],
+        "match_count": 10
+      },
+      "f=0.25 mc=10": {
+        "weights": [
+          1.0,
+          0.25,
+          2.0
+        ],
+        "match_count": 10
+      },
+      "f=0.5 mc=10": {
+        "weights": [
+          1.0,
+          0.5,
+          2.0
+        ],
+        "match_count": 10
+      },
+      "f=1 mc=10": {
+        "weights": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "match_count": 10
+      },
+      "f=0 mc=20": {
+        "weights": [
+          1.0,
+          0.0,
+          2.0
+        ],
+        "match_count": 20
+      },
+      "f=0.25 mc=20": {
+        "weights": [
+          1.0,
+          0.25,
+          2.0
+        ],
+        "match_count": 20
+      },
+      "f=0.5 mc=20": {
+        "weights": [
+          1.0,
+          0.5,
+          2.0
+        ],
+        "match_count": 20
+      },
+      "f=1 mc=20": {
+        "weights": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "match_count": 20
+      }
+    },
+    "reference_weights": [
+      1.0,
+      0.0,
+      0.0
+    ]
+  },
+  "question_ids": [
+    "INRS-DEV-001",
+    "INRS-DEV-002",
+    "INRS-DEV-003",
+    "INRS-DEV-004",
+    "INRS-DEV-005",
+    "INRS-DEV-006",
+    "INRS-DEV-007",
+    "INRS-DEV-008",
+    "INRS-DEV-016",
+    "INRS-DEV-017",
+    "INRS-DEV-018",
+    "INRS-DEV-019",
+    "INRS-DEV-020",
+    "INRS-DEV-021",
+    "INRS-DEV-022",
+    "INRS-DEV-023",
+    "INRS-DEV-024",
+    "INRS-DEV-025",
+    "INRS-DEV-026",
+    "INRS-DEV-027",
+    "INRS-DEV-028",
+    "INRS-DEV-029",
+    "INRS-DEV-030",
+    "INRS-DEV-031",
+    "INRS-DEV-032",
+    "INRS-DEV-033",
+    "INRS-DEV-034",
+    "INRS-DEV-035",
+    "INRS-DEV-036"
+  ],
+  "reference": {
+    "sémantique seule mc=10": {
+      "weights": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "match_count": 10,
+      "recall@1": 0.5862068965517241,
+      "recall@3": 0.7931034482758621,
+      "recall@10": 0.9655172413793104,
+      "recall@20": null,
+      "recall_at_max_match_count": 0.9655172413793104,
+      "mrr@10": 0.7123563218390805,
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 2,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 3,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 1,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 2,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 4,
+        "INRS-DEV-019": 1,
+        "INRS-DEV-020": 6,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": null,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 1,
+        "INRS-DEV-025": 2,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 2,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 1,
+        "INRS-DEV-032": 1,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 8,
+        "INRS-DEV-035": 5,
+        "INRS-DEV-036": 1
+      }
+    },
+    "sémantique seule mc=20": {
+      "weights": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "match_count": 20,
+      "recall@1": 0.5862068965517241,
+      "recall@3": 0.7931034482758621,
+      "recall@10": 0.9655172413793104,
+      "recall@20": 1.0,
+      "recall_at_max_match_count": 1.0,
+      "mrr@10": 0.7123563218390805,
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 2,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 3,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 1,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 2,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 4,
+        "INRS-DEV-019": 1,
+        "INRS-DEV-020": 6,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": 11,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 1,
+        "INRS-DEV-025": 2,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 2,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 1,
+        "INRS-DEV-032": 1,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 8,
+        "INRS-DEV-035": 5,
+        "INRS-DEV-036": 1
+      }
+    }
+  },
+  "grid": {
+    "f=0 mc=10": {
+      "weights": [
+        1.0,
+        0.0,
+        2.0
+      ],
+      "match_count": 10,
+      "recall@1": 0.5517241379310345,
+      "recall@3": 0.7931034482758621,
+      "recall@10": 0.9655172413793104,
+      "recall@20": null,
+      "recall_at_max_match_count": 0.9655172413793104,
+      "mrr@10": 0.7008620689655172,
+      "vs_semantic_only": {
+        "wins": 1,
+        "losses": 1,
+        "ties": 27,
+        "dropped_out": []
+      },
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 2,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 1,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 2,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 4,
+        "INRS-DEV-019": 1,
+        "INRS-DEV-020": 6,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": null,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 1,
+        "INRS-DEV-025": 2,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 2,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 2,
+        "INRS-DEV-032": 1,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 8,
+        "INRS-DEV-035": 5,
+        "INRS-DEV-036": 1
+      }
+    },
+    "f=0.25 mc=10": {
+      "weights": [
+        1.0,
+        0.25,
+        2.0
+      ],
+      "match_count": 10,
+      "recall@1": 0.5172413793103449,
+      "recall@3": 0.7586206896551724,
+      "recall@10": 1.0,
+      "recall@20": null,
+      "recall_at_max_match_count": 1.0,
+      "mrr@10": 0.6630541871921182,
+      "vs_semantic_only": {
+        "wins": 7,
+        "losses": 8,
+        "ties": 14,
+        "dropped_out": []
+      },
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 1,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 2,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 1,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 7,
+        "INRS-DEV-019": 2,
+        "INRS-DEV-020": 5,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": 7,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 1,
+        "INRS-DEV-025": 10,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 3,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 2,
+        "INRS-DEV-032": 4,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 3,
+        "INRS-DEV-035": 1,
+        "INRS-DEV-036": 7
+      }
+    },
+    "f=0.5 mc=10": {
+      "weights": [
+        1.0,
+        0.5,
+        2.0
+      ],
+      "match_count": 10,
+      "recall@1": 0.4827586206896552,
+      "recall@3": 0.7241379310344828,
+      "recall@10": 0.896551724137931,
+      "recall@20": null,
+      "recall_at_max_match_count": 0.896551724137931,
+      "mrr@10": 0.6316912972085386,
+      "vs_semantic_only": {
+        "wins": 7,
+        "losses": 9,
+        "ties": 13,
+        "dropped_out": [
+          "INRS-DEV-025",
+          "INRS-DEV-032",
+          "INRS-DEV-036"
+        ]
+      },
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 1,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 2,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 1,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 7,
+        "INRS-DEV-019": 2,
+        "INRS-DEV-020": 5,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": 7,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 2,
+        "INRS-DEV-025": null,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 4,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 2,
+        "INRS-DEV-032": null,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 1,
+        "INRS-DEV-035": 2,
+        "INRS-DEV-036": null
+      }
+    },
+    "f=1 mc=10": {
+      "weights": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "match_count": 10,
+      "recall@1": 0.4827586206896552,
+      "recall@3": 0.6206896551724138,
+      "recall@10": 0.896551724137931,
+      "recall@20": null,
+      "recall_at_max_match_count": 0.896551724137931,
+      "mrr@10": 0.5939655172413794,
+      "vs_semantic_only": {
+        "wins": 7,
+        "losses": 9,
+        "ties": 13,
+        "dropped_out": [
+          "INRS-DEV-025",
+          "INRS-DEV-032",
+          "INRS-DEV-036"
+        ]
+      },
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 2,
+        "INRS-DEV-003": 1,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 5,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 1,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 8,
+        "INRS-DEV-019": 5,
+        "INRS-DEV-020": 5,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": 6,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 6,
+        "INRS-DEV-025": null,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 4,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 1,
+        "INRS-DEV-032": null,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 1,
+        "INRS-DEV-035": 3,
+        "INRS-DEV-036": null
+      }
+    },
+    "f=0 mc=20": {
+      "weights": [
+        1.0,
+        0.0,
+        2.0
+      ],
+      "match_count": 20,
+      "recall@1": 0.5517241379310345,
+      "recall@3": 0.7931034482758621,
+      "recall@10": 0.9655172413793104,
+      "recall@20": 1.0,
+      "recall_at_max_match_count": 1.0,
+      "mrr@10": 0.7008620689655172,
+      "vs_semantic_only": {
+        "wins": 1,
+        "losses": 1,
+        "ties": 27,
+        "dropped_out": []
+      },
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 2,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 1,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 2,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 4,
+        "INRS-DEV-019": 1,
+        "INRS-DEV-020": 6,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": 11,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 1,
+        "INRS-DEV-025": 2,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 2,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 2,
+        "INRS-DEV-032": 1,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 8,
+        "INRS-DEV-035": 5,
+        "INRS-DEV-036": 1
+      }
+    },
+    "f=0.25 mc=20": {
+      "weights": [
+        1.0,
+        0.25,
+        2.0
+      ],
+      "match_count": 20,
+      "recall@1": 0.5862068965517241,
+      "recall@3": 0.7931034482758621,
+      "recall@10": 1.0,
+      "recall@20": 1.0,
+      "recall_at_max_match_count": 1.0,
+      "mrr@10": 0.7178981937602628,
+      "vs_semantic_only": {
+        "wins": 7,
+        "losses": 6,
+        "ties": 16,
+        "dropped_out": []
+      },
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 1,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 2,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 1,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 7,
+        "INRS-DEV-019": 2,
+        "INRS-DEV-020": 5,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": 7,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 1,
+        "INRS-DEV-025": 6,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 3,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 2,
+        "INRS-DEV-032": 1,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 4,
+        "INRS-DEV-035": 1,
+        "INRS-DEV-036": 1
+      }
+    },
+    "f=0.5 mc=20": {
+      "weights": [
+        1.0,
+        0.5,
+        2.0
+      ],
+      "match_count": 20,
+      "recall@1": 0.4827586206896552,
+      "recall@3": 0.7931034482758621,
+      "recall@10": 1.0,
+      "recall@20": 1.0,
+      "recall_at_max_match_count": 1.0,
+      "mrr@10": 0.6638752052545156,
+      "vs_semantic_only": {
+        "wins": 7,
+        "losses": 9,
+        "ties": 13,
+        "dropped_out": []
+      },
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 1,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 2,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 1,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 7,
+        "INRS-DEV-019": 2,
+        "INRS-DEV-020": 5,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": 7,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 2,
+        "INRS-DEV-025": 10,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 4,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 2,
+        "INRS-DEV-032": 3,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 1,
+        "INRS-DEV-035": 2,
+        "INRS-DEV-036": 2
+      }
+    },
+    "f=1 mc=20": {
+      "weights": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "match_count": 20,
+      "recall@1": 0.4827586206896552,
+      "recall@3": 0.6206896551724138,
+      "recall@10": 0.9655172413793104,
+      "recall@20": 1.0,
+      "recall_at_max_match_count": 1.0,
+      "mrr@10": 0.6043103448275862,
+      "vs_semantic_only": {
+        "wins": 7,
+        "losses": 9,
+        "ties": 13,
+        "dropped_out": []
+      },
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 2,
+        "INRS-DEV-003": 1,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 5,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 1,
+        "INRS-DEV-017": 1,
+        "INRS-DEV-018": 8,
+        "INRS-DEV-019": 5,
+        "INRS-DEV-020": 5,
+        "INRS-DEV-021": 1,
+        "INRS-DEV-022": 6,
+        "INRS-DEV-023": 1,
+        "INRS-DEV-024": 6,
+        "INRS-DEV-025": 14,
+        "INRS-DEV-026": 1,
+        "INRS-DEV-027": 1,
+        "INRS-DEV-028": 1,
+        "INRS-DEV-029": 4,
+        "INRS-DEV-030": 4,
+        "INRS-DEV-031": 1,
+        "INRS-DEV-032": 10,
+        "INRS-DEV-033": 1,
+        "INRS-DEV-034": 1,
+        "INRS-DEV-035": 3,
+        "INRS-DEV-036": 5
+      }
+    }
+  },
+  "selection_rule": "a) R@20 le plus haut ; b) à égalité, f le plus petit puis match_count le plus petit ; c) MRR@10 pour un ex æquo restant",
+  "selected": "f=0 mc=20"
+}

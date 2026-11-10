@@ -1,0 +1,310 @@
+{
+  "set": "dev",
+  "mode": "retrieval",
+  "date": "2026-11-10",
+  "commit": "6d5fd5d",
+  "working_tree_dirty": false,
+  "config": {
+    "embedding_model": "text-embedding-3-small",
+    "embedding_dimensions": 1536,
+    "match_count": 10,
+    "rrf_k": 50,
+    "max_tokens": 350,
+    "min_quote_chars": 20,
+    "configurations": {
+      "hybride": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "sémantique seule": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "full-text seul": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "identifiants seuls": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "question_ids": [
+    "INRS-DEV-001",
+    "INRS-DEV-002",
+    "INRS-DEV-003",
+    "INRS-DEV-004",
+    "INRS-DEV-005",
+    "INRS-DEV-006",
+    "INRS-DEV-007",
+    "INRS-DEV-008",
+    "INRS-DEV-016"
+  ],
+  "summary": {
+    "hybride": {
+      "weights": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "recall@1": 0.5555555555555556,
+      "recall@3": 0.8888888888888888,
+      "recall@10": 1.0,
+      "mrr": 0.7259259259259259,
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 2,
+        "INRS-DEV-003": 1,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 5,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 1
+      },
+      "returned": {
+        "INRS-DEV-001": 10,
+        "INRS-DEV-002": 10,
+        "INRS-DEV-003": 10,
+        "INRS-DEV-004": 10,
+        "INRS-DEV-005": 10,
+        "INRS-DEV-006": 10,
+        "INRS-DEV-007": 10,
+        "INRS-DEV-008": 10,
+        "INRS-DEV-016": 10
+      }
+    },
+    "sémantique seule": {
+      "weights": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "recall@1": 0.5555555555555556,
+      "recall@3": 1.0,
+      "recall@10": 1.0,
+      "mrr": 0.7407407407407408,
+      "ranks": {
+        "INRS-DEV-001": 3,
+        "INRS-DEV-002": 1,
+        "INRS-DEV-003": 2,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 3,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 1,
+        "INRS-DEV-008": 1,
+        "INRS-DEV-016": 2
+      },
+      "returned": {
+        "INRS-DEV-001": 10,
+        "INRS-DEV-002": 10,
+        "INRS-DEV-003": 10,
+        "INRS-DEV-004": 10,
+        "INRS-DEV-005": 10,
+        "INRS-DEV-006": 10,
+        "INRS-DEV-007": 10,
+        "INRS-DEV-008": 10,
+        "INRS-DEV-016": 10
+      }
+    },
+    "full-text seul": {
+      "weights": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "recall@1": 0.1111111111111111,
+      "recall@3": 0.5555555555555556,
+      "recall@10": 0.8888888888888888,
+      "mrr": 0.35185185185185186,
+      "ranks": {
+        "INRS-DEV-001": 6,
+        "INRS-DEV-002": 6,
+        "INRS-DEV-003": 3,
+        "INRS-DEV-004": 1,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 2,
+        "INRS-DEV-007": null,
+        "INRS-DEV-008": 6,
+        "INRS-DEV-016": 3
+      },
+      "returned": {
+        "INRS-DEV-001": 10,
+        "INRS-DEV-002": 10,
+        "INRS-DEV-003": 10,
+        "INRS-DEV-004": 10,
+        "INRS-DEV-005": 10,
+        "INRS-DEV-006": 10,
+        "INRS-DEV-007": 10,
+        "INRS-DEV-008": 10,
+        "INRS-DEV-016": 10
+      }
+    },
+    "identifiants seuls": {
+      "weights": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "recall@1": 0.1111111111111111,
+      "recall@3": 0.2222222222222222,
+      "recall@10": 0.2222222222222222,
+      "mrr": 0.16666666666666666,
+      "ranks": {
+        "INRS-DEV-001": null,
+        "INRS-DEV-002": null,
+        "INRS-DEV-003": null,
+        "INRS-DEV-004": null,
+        "INRS-DEV-005": 2,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": null,
+        "INRS-DEV-008": null,
+        "INRS-DEV-016": null
+      },
+      "returned": {
+        "INRS-DEV-001": 0,
+        "INRS-DEV-002": 0,
+        "INRS-DEV-003": 0,
+        "INRS-DEV-004": 0,
+        "INRS-DEV-005": 3,
+        "INRS-DEV-006": 1,
+        "INRS-DEV-007": 0,
+        "INRS-DEV-008": 0,
+        "INRS-DEV-016": 0
+      }
+    }
+  },
+  "per_question": {
+    "INRS-DEV-001": {
+      "rank_hybrid": 3,
+      "gold_chunk_ids": [
+        19
+      ],
+      "gold_chunk_index": 18,
+      "gold_semantic_rank": 3,
+      "gold_full_text_rank": 6,
+      "gold_identifier_rank": null,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 64,
+      "identifier_matches_total": 0,
+      "chunks_in_base": 69
+    },
+    "INRS-DEV-002": {
+      "rank_hybrid": 2,
+      "gold_chunk_ids": [
+        5
+      ],
+      "gold_chunk_index": 4,
+      "gold_semantic_rank": 1,
+      "gold_full_text_rank": 6,
+      "gold_identifier_rank": null,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 66,
+      "identifier_matches_total": 0,
+      "chunks_in_base": 69
+    },
+    "INRS-DEV-003": {
+      "rank_hybrid": 1,
+      "gold_chunk_ids": [
+        28
+      ],
+      "gold_chunk_index": 27,
+      "gold_semantic_rank": 2,
+      "gold_full_text_rank": 3,
+      "gold_identifier_rank": null,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 37,
+      "identifier_matches_total": 0,
+      "chunks_in_base": 69
+    },
+    "INRS-DEV-004": {
+      "rank_hybrid": 1,
+      "gold_chunk_ids": [
+        37
+      ],
+      "gold_chunk_index": 36,
+      "gold_semantic_rank": 1,
+      "gold_full_text_rank": 1,
+      "gold_identifier_rank": null,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 21,
+      "identifier_matches_total": 0,
+      "chunks_in_base": 69
+    },
+    "INRS-DEV-005": {
+      "rank_hybrid": 2,
+      "gold_chunk_ids": [
+        46
+      ],
+      "gold_chunk_index": 45,
+      "gold_semantic_rank": 3,
+      "gold_full_text_rank": 2,
+      "gold_identifier_rank": 2,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 62,
+      "identifier_matches_total": 3,
+      "chunks_in_base": 69
+    },
+    "INRS-DEV-006": {
+      "rank_hybrid": 1,
+      "gold_chunk_ids": [
+        45
+      ],
+      "gold_chunk_index": 44,
+      "gold_semantic_rank": 1,
+      "gold_full_text_rank": 2,
+      "gold_identifier_rank": 1,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 59,
+      "identifier_matches_total": 1,
+      "chunks_in_base": 69
+    },
+    "INRS-DEV-007": {
+      "rank_hybrid": 5,
+      "gold_chunk_ids": [
+        55
+      ],
+      "gold_chunk_index": 54,
+      "gold_semantic_rank": 1,
+      "gold_full_text_rank": 17,
+      "gold_identifier_rank": null,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 20,
+      "identifier_matches_total": 0,
+      "chunks_in_base": 69
+    },
+    "INRS-DEV-008": {
+      "rank_hybrid": 1,
+      "gold_chunk_ids": [
+        30
+      ],
+      "gold_chunk_index": 29,
+      "gold_semantic_rank": 1,
+      "gold_full_text_rank": 6,
+      "gold_identifier_rank": null,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 58,
+      "identifier_matches_total": 0,
+      "chunks_in_base": 69
+    },
+    "INRS-DEV-016": {
+      "rank_hybrid": 1,
+      "gold_chunk_ids": [
+        28
+      ],
+      "gold_chunk_index": 27,
+      "gold_semantic_rank": 2,
+      "gold_full_text_rank": 3,
+      "gold_identifier_rank": null,
+      "full_text_returned_top10": 10,
+      "full_text_matches_total": 37,
+      "identifier_matches_total": 0,
+      "chunks_in_base": 69
+    }
+  }
+}
