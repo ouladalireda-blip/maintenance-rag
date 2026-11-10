@@ -4,7 +4,7 @@ last_reviewed: "2026-11-10"
 note: "Questions rédigées avec l'aide d'un LLM puis vérifiées une à une contre le document source."
 dataset_name: "inrs_ed6109_dev_set"
 page_convention: "printed"
-total_questions: 15
+total_questions: 16
 
 questions:
   - id: "INRS-DEV-001"
@@ -175,3 +175,15 @@ questions:
     exact_quote: null
     expected_identifiers: []
     reason: "La réponse n'existe que dans l'illustration de la page 25 ; aucun texte ne la décrit. Le système ne lit pas les images : il doit refuser."
+
+  - id: "INRS-DEV-016"
+    category: "valid"
+    question: "Avant d'intervenir sur une armoire electrique, qu'est-ce que je dois faire, et dans quel ordre ?"
+    original_question: "Quelles sont les 5 prescriptions essentielles de la consignation électrique à appliquer dans l'ordre spécifié ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "5.1. Consignation électrique"
+    expected_page: 14
+    exact_quote: "séparation de l'équipement de travail concerné, préalablement identifié, de toute source d'énergie électrique (opération 1)"
+    expected_identifiers: []
+    reason: "Teste la robustesse aux accents manquants (unaccent)."

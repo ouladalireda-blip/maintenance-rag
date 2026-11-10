@@ -71,3 +71,45 @@ def test_manifest_ids_unique() -> None:
 def test_manifest_page_offsets_valid() -> None:
     for doc in _load("corpus", "manifest.yaml")["documents"]:
         assert isinstance(doc["page_offset"], int) and doc["page_offset"] >= 0
+
+
+MIGRATIONS = ROOT / "supabase" / "migrations"
+_SIGNATURE = re.compile(
+    r"create (?:or replace )?function public\.hybrid_search\((.*?)\)\s*returns", re.S
+)
+
+
+def _hybrid_parameters(sql: str) -> list[str]:
+    """Paramètres de hybrid_search (nom et type, sans commentaires ni espaces superflus)."""
+    raw = _SIGNATURE.search(sql)
+    assert raw, "hybrid_search introuvable"
+    lines = [re.sub(r"--.*", "", line).strip().rstrip(",") for line in raw.group(1).splitlines()]
+    return [" ".join(line.split()) for line in lines if line]
+
+
+def test_later_migrations_keep_hybrid_search_signature() -> None:
+    reference = _hybrid_parameters((MIGRATIONS / "0001_init.sql").read_text(encoding="utf-8"))
+    for name in ("0002_chunks_warning.sql", "0003_fulltext_french.sql"):
+        sql = (MIGRATIONS / name).read_text(encoding="utf-8")
+        assert _hybrid_parameters(sql) == reference, name
+        assert sql.lstrip().splitlines()[-1] == "commit;" and "\nbegin;\n" in sql, name
+        assert "from public, anon, authenticated;" in sql and "to service_role;" in sql, name
+        assert "relrowsecurity" in sql, name  # contrôle RLS
+
+
+def test_fulltext_migration_avoids_double_stemming() -> None:
+    sql = (MIGRATIONS / "0003_fulltext_french.sql").read_text(encoding="utf-8")
+    code = "\n".join(re.sub(r"--.*", "", line) for line in sql.splitlines())
+    assert "websearch_to_tsquery" not in code and "to_tsquery(" not in code
+    assert "::tsquery" in code and "' | '" in code
+    assert (
+        "to_tsvector('public.fr_unaccent', coalesce(section_title, '') || ' ' || "
+        "coalesce(content, ''))"
+    ) in code
+
+
+def test_total_questions_matches() -> None:
+    for name in ("questions_dev.yaml", "questions_test.yaml"):
+        data = _load("evals", name)
+        if "total_questions" in data:
+            assert data["total_questions"] == len(data["questions"]), name
