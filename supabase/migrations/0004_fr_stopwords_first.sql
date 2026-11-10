@@ -71,6 +71,7 @@ create index chunks_fts_gin on public.chunks using gin (fts);
 --   4. la RLS reste active sur documents et chunks.
 -- ---------------------------------------------------------------------
 do $$
+begin
     if to_tsvector('public.fr_unaccent', 'à été était même') <> ''::tsvector then
         raise exception 'fr_unaccent garde des mots vides : migration annulée';
     end if;
