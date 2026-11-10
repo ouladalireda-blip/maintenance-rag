@@ -4,7 +4,7 @@ last_reviewed: "2026-11-10"
 note: "Questions rédigées avec l'aide d'un LLM puis vérifiées une à une contre le document source."
 dataset_name: "inrs_ed6109_dev_set"
 page_convention: "printed"
-total_questions: 16
+total_questions: 50
 
 questions:
   - id: "INRS-DEV-001"
@@ -187,3 +187,391 @@ questions:
     exact_quote: "séparation de l'équipement de travail concerné, préalablement identifié, de toute source d'énergie électrique (opération 1)"
     expected_identifiers: []
     reason: "Teste la robustesse aux accents manquants (unaccent)."
+
+  - id: "INRS-DEV-017"
+    category: "valid"
+    question: "Avant une intervention, quand j'évalue les dangers, je dois aussi regarder ce qui se passe autour, genre un autre chantier à côté ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "1 Démarche générale à appliquer lors d'opérations sur des équipements de travail"
+    expected_page: 7
+    exact_quote: "l'analyse des risques devra prendre en compte tous les aspects de la sécurité des personnes et des matériels, y compris ceux qui ne sont pas directement liés à l'opération considérée"
+    expected_identifiers: []
+    reason: "Teste l'extraction d'un item de la liste ordonnée de la démarche générale (étape 2, analyse des risques)."
+
+  - id: "INRS-DEV-018"
+    category: "valid"
+    question: "Quand on dit qu'un sectionneur est condamné, ça veut dire quoi précisément ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "2 Définitions › Condamnation"
+    expected_page: 8
+    exact_quote: "Opération qui consiste à garantir le maintien de la séparation (généralement obtenu par verrouillage grâce à un dispositif matériel difficilement neutralisable)"
+    expected_identifiers: []
+    reason: "Teste l'extraction d'une définition (condamnation) dans la section des définitions."
+
+  - id: "INRS-DEV-019"
+    category: "valid"
+    question: "Une consignation totale, ca veut dire quoi au juste ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "2 Définitions › Consignation totale"
+    expected_page: 8
+    exact_quote: "Toutes les énergies sur l'ensemble de l'équipement de travail sont consignées."
+    expected_identifiers: []
+    reason: "Teste une définition avec une question écrite sans accents (« ca »)."
+
+  - id: "INRS-DEV-020"
+    category: "valid"
+    question: "Une fois que c'est consigné, c'est qui qui me donne le feu vert pour attaquer le boulot ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "2 Définitions › Chargé d'opérations"
+    expected_page: 8
+    exact_quote: "C'est elle qui donne l'autorisation aux exécutants de commencer les opérations."
+    expected_identifiers: []
+    reason: "Teste l'attribution d'un rôle (chargé d'opérations) à partir d'une formulation orale qui ne nomme pas ce rôle."
+
+  - id: "INRS-DEV-021"
+    category: "valid"
+    question: "Le sectionneur qu'on peut cadenasser, c'est au constructeur de la machine de le prévoir, d'après la directive 2006/42/CE ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "3 Conception des équipements de travail"
+    expected_page: 10
+    exact_quote: "d'équipements de travail assujettis à la directive 2006/42/CE doivent installer les dispositifs matériels – sectionneur cadenassable, vanne de purge cadenassable, etc. –"
+    expected_identifiers: ["2006/42/CE"]
+    reason: "Teste la recherche d'une obligation du fabricant liée à une référence réglementaire (directive 2006/42/CE)."
+
+  - id: "INRS-DEV-022"
+    category: "valid"
+    question: "Je peux réutiliser le cadenas de mon vestaire pour bloquer le sectionneur ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "4.1. Procédures"
+    expected_page: 11
+    exact_quote: "des dispositifs tels que carrés, triangles, cadenas standards pour verrouiller une boîte à outils ou un casier ne doivent pas être utilisés"
+    expected_identifiers: []
+    reason: "Teste la robustesse à une faute de frappe réaliste (« vestaire ») sur l'exigence de moyens de condamnation dédiés."
+
+  - id: "INRS-DEV-023"
+    category: "valid"
+    question: "Chez nous, c'est à qui de rédiger la procédure pour consigner une machine ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "4.2. Organisation"
+    expected_page: 12
+    exact_quote: "Pour chaque opération nécessitant une consignation, la procédure est définie par l'employeur"
+    expected_identifiers: []
+    reason: "Teste une question « qui fait quoi » : responsabilité de la définition de la procédure."
+
+  - id: "INRS-DEV-024"
+    category: "valid"
+    question: "Quand c'est un prestataire qui vient faire la maintenance, le responsable de la consignation, il fait partie de notre équipe ou de la leur ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "4.2. Organisation"
+    expected_page: 12
+    exact_quote: "Dans le cas d'intervention d'une entreprise extérieure, le chargé de consignation est généralement désigné au sein de l'entreprise utilisatrice."
+    expected_identifiers: []
+    reason: "Teste une question « qui fait quoi » sur le cas particulier de l'intervention d'une entreprise extérieure."
+
+  - id: "INRS-DEV-025"
+    category: "valid"
+    question: "Pour former les gars au risque élec, le guide me renvoie vers quel document ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "4.3. Formation du personnel › 4.3.3. Formation spécifique électrique"
+    expected_page: 13
+    exact_quote: "Les principes de la formation relative à la maîtrise du risque électrique sont détaillés dans la brochure INRS ED 6127."
+    expected_identifiers: ["ED 6127"]
+    reason: "Teste la récupération d'une référence de brochure (ED 6127) absente de la question."
+
+  - id: "INRS-DEV-026"
+    category: "valid"
+    question: "Dans la NF C18-510, c'est quel chapitre à lire pour consigner une armoire électrique ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "5.1. Consignation électrique"
+    expected_page: 14
+    exact_quote: "La consignation électrique fait l'objet de prescriptions spécifiques données au chapitre 7 « Opérations hors tension » de la norme NF C18-510."
+    expected_identifiers: ["NF C18-510"]
+    reason: "Teste l'extraction d'une valeur précise (chapitre 7) rattachée à une norme citée dans la question."
+
+  - id: "INRS-DEV-027"
+    category: "valid"
+    question: "Quand je pose mon équipement de MALT-CC, je branche quel côté en premier ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "5.1. Consignation électrique › Mise à la terre et en court-circuit"
+    expected_page: 15
+    exact_quote: "Dans tous les cas, la mise à la terre doit être raccordée côté terre avant d'être raccordée côté conducteur."
+    expected_identifiers: []
+    reason: "Teste une consigne d'ordre opératoire (raccordement côté terre avant côté conducteur) posée avec un sigle d'atelier."
+
+  - id: "INRS-DEV-028"
+    category: "valid"
+    question: "Le test d'absence de tension, je le fais sur quels fils ? Meme le neutre ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "5.1. Consignation électrique › Vérification"
+    expected_page: 15
+    exact_quote: "La vérification d'absence de tension (VAT) doit être effectuée sur chacun des conducteurs actifs, y compris le neutre"
+    expected_identifiers: []
+    reason: "Teste une exigence précise (tous les conducteurs actifs, neutre compris) avec une question écrite sans accents."
+
+  - id: "INRS-DEV-029"
+    category: "valid"
+    question: "À la remise sous tension, dans quel ordre j'enlève mes shunts et mes terres ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "5.2. Déconsignation électrique"
+    expected_page: 15
+    exact_quote: "déposer les mises en court-circuit, puis les mises à la terre en commençant par l'extrémité côté conducteur actif"
+    expected_identifiers: []
+    reason: "Teste l'extraction d'une étape ordonnée de la procédure de déconsignation électrique."
+
+  - id: "INRS-DEV-030"
+    category: "valid"
+    question: "Sur un réseau propane, je mets le point de purge en haut ou en bas ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "6 Consignation et déconsignation fluidique"
+    expected_page: 18
+    exact_quote: "pour les liquides, les gaz et vapeurs plus lourds que l'air (argon, butane, propane, vapeur d'iode ou d'alcool, etc.), les purges devront se situer en partie basse."
+    expected_identifiers: []
+    reason: "Teste une information précise (position basse des purges) dépendant de la nature du fluide."
+
+  - id: "INRS-DEV-031"
+    category: "valid"
+    question: "En isolement R1, ma vanne trois voies, je peux la fermer à gauche comme à droite ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "6.1. Consignation fluidique › Principes de séparation de circuits"
+    expected_page: 22
+    exact_quote: "La fermeture de la vanne 3 voies ne doit pouvoir se faire que dans un sens et ce sens doit être clairement identifié."
+    expected_identifiers: ["R1"]
+    reason: "Teste la récupération d'un avertissement « Attention ! » lié au procédé d'isolement renforcé R1."
+
+  - id: "INRS-DEV-032"
+    category: "valid"
+    question: "Pour faire tomber la pression d'un tronçon, j'ai le droit de débloquer doucement les écrous du raccord ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "6.1. Consignation fluidique › Principes de séparation de circuits"
+    expected_page: 23
+    exact_quote: "La purge d'une portion de ligne par desserrage progressif des boulons de brides doit être systématiquement interdite."
+    expected_identifiers: []
+    reason: "Teste la récupération d'un avertissement « Attention ! » (interdiction) à partir d'une formulation sans mot-clé commun."
+
+  - id: "INRS-DEV-033"
+    category: "valid"
+    question: "Quand le guide parle de purger une zone, ça veut dire quoi, par rapport à juste la vidanger ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "6.1. Consignation fluidique › Dissipation (ou purge)"
+    expected_page: 24
+    exact_quote: "Assurer et maintenir la mise à la pression atmosphérique de la zone."
+    expected_identifiers: []
+    reason: "Teste l'extraction d'une définition (purge) présentée dans un encadré de comparaison purge/vidange."
+
+  - id: "INRS-DEV-034"
+    category: "valid"
+    question: "Avant de relancer une ligne pilotée par automate, je fais quoi pour pas qu'elle parte toute seule ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "6.2. Déconsignation fluidique"
+    expected_page: 25
+    exact_quote: "une initialisation des équipements commandés par certains automatismes (microprocesseur, etc.) devra être effectuée avant toute remise en service afin d'éviter des commandes intempestives."
+    expected_identifiers: []
+    reason: "Teste un cas particulier de déconsignation (équipements automatisés) formulé avec un vocabulaire d'atelier."
+
+  - id: "INRS-DEV-035"
+    category: "valid"
+    question: "Pour consigner en méca, une fois la transmission débrayée, l'étape d'après c'est quoi ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "7.1. Consignation mécanique"
+    expected_page: 27
+    exact_quote: "dissipation de toute énergie mécanique restant dans l'équipement (opération 2)"
+    expected_identifiers: []
+    reason: "Teste l'enchaînement des étapes de la procédure de consignation mécanique (étape 2 après la séparation)."
+
+  - id: "INRS-DEV-036"
+    category: "valid"
+    question: "Pour enlever les cales qui bloquent le bras après le boulot, faut que la machine soit remise sous jus ?"
+    must_refuse: false
+    target_document_id: "inrs-ed6109"
+    expected_section: "7.2. Déconsignation mécanique"
+    expected_page: 28
+    exact_quote: "Il est généralement nécessaire de le remettre en énergie pour retirer les éléments mécaniques d'immobilisation (broches, chandelles ou autres dispositifs de bridage)."
+    expected_identifiers: []
+    reason: "Teste la récupération d'un point de la déconsignation mécanique avec du vocabulaire familier (cales, jus)."
+
+  - id: "INRS-DEV-037"
+    category: "near_miss"
+    question: "Après avoir coupé un extracteur, combien de minutes je dois attendre avant d'intervenir dessus ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "Le guide demande d'attendre l'arrêt complet d'un extracteur (page 27) mais ne donne aucune durée."
+    verification: ["minute", "seconde", "durée", "délai", "temps d"]
+
+  - id: "INRS-DEV-038"
+    category: "near_miss"
+    question: "La mise à la terre, je la pose à combien de mètres maxi de là où je travaille ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "Le guide demande une MALT « au plus près possible de la zone de travail » (page 15) mais ne donne aucune distance chiffrée."
+    verification: ["mètre", " m ", "cm", "distance"]
+
+  - id: "INRS-DEV-039"
+    category: "near_miss"
+    question: "Le robinet de purge, il doit faire quel débit minimum pour être valable ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "Le guide exige un robinet « correctement dimensionné » (page 19) et un circuit de purge compatible en débit avec le circuit principal (page 24), sans aucune valeur."
+    verification: ["débit", "l/min", "m3", "DN", "diamètre"]
+
+  - id: "INRS-DEV-040"
+    category: "near_miss"
+    question: "Sur la pancarte « défense de manœuvrer », les lettres doivent faire quelle taille minimum ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "Le guide demande des dispositifs de signalisation « très visibles » et donne le texte type (page 15), mais aucune dimension."
+    verification: ["taille", "hauteur", "mm", "lettre", "caractère"]
+
+  - id: "INRS-DEV-041"
+    category: "near_miss"
+    question: "Après une purge à l'azote, il faut quel pourcentage d'oxygène mini avant que je rentre ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "Le guide impose la mesure du taux d'oxygène dans la procédure d'élimination d'une atmosphère dangereuse (page 24), sans aucun seuil."
+    verification: ["%", "19", "pour cent", "seuil", "taux d"]
+
+  - id: "INRS-DEV-042"
+    category: "near_miss"
+    question: "L'entretien des purges et des vidanges, je dois le faire tous les combien ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "Le guide parle d'une « maintenance régulière » des dispositifs de purge et de vidange (page 24) sans fréquence."
+    verification: ["par an", "mois", "fréquence", "périodicité", "annuel", "tous les"]
+
+  - id: "INRS-DEV-043"
+    category: "near_miss"
+    question: "En basse tension, en dessous de quelle tension je peux me passer de la mise à la terre ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "La note 4 (page 14) dit que la MALT-CC n'est pas toujours requise en basse tension et renvoie à la NF C18-510, sans aucun seuil de tension."
+    verification: [" V ", "volt", "50 ", "1000", "400"]
+
+  - id: "INRS-DEV-044"
+    category: "identifier_trap"
+    question: "Si une machine ne respecte pas l'article L. 4311-1, l'employeur risque quelle amende ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "L'article L. 4311-1 est cité en page 10 pour l'obligation de conception, sans aucune sanction. Piège renforcé : la seule amende du document (300 000 euros, page de mentions légales) concerne la contrefaçon (L. 335-2)."
+    verification: ["L. 4311", "sanction", "amende", "pénal"]
+
+  - id: "INRS-DEV-045"
+    category: "identifier_trap"
+    question: "Dans la brochure ED 6038 sur les arrêts, combien de modes de mise à l'arrêt sont décrits ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "L'ED 6038 est citée en page 7 (démarche générale) et en bibliographie (page 31), mais son contenu n'est pas détaillé dans l'ED 6109."
+    verification: ["6038", "arrêt", "mode"]
+
+  - id: "INRS-DEV-046"
+    category: "identifier_trap"
+    question: "Pour un isolement R2, le joint plein doit faire quelle épaisseur mini ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "Le procédé R2 est décrit en page 22 (joint plein identifiable, visible de l'extérieur) sans aucune épaisseur. Piège renforcé : la page 19 mentionne une « tôle mince »."
+    verification: ["R2", "épaisseur", "mince", "mm"]
+
+  - id: "INRS-DEV-047"
+    category: "identifier_trap"
+    question: "D'après la NF EN 12266-1, à quelle pression on teste une vanne double sectionnement et vidange ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "La NF EN 12266-1 est citée en page 22 (paragraphe 3.8) et en bibliographie (page 31, intitulé « Essais sous pression »), mais aucune pression d'essai n'est donnée."
+    verification: ["12266", "bar", "MPa", "pression d'essai", "essai"]
+
+  - id: "INRS-DEV-048"
+    category: "out_of_scope"
+    question: "Pour condamner une prise femelle, on met quel accessoire exactement ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "La réponse n'existe que dans l'illustration de la page 16 (seul le titre est écrit). Passage tentant : le retrait d'une fiche de prise de courant (page 14)."
+    verification: ["prise", "femelle"]
+
+  - id: "INRS-DEV-049"
+    category: "out_of_scope"
+    question: "Une vanne quart de tour, je la cadenasse comment, avec quel matériel ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "La page 26 ne contient que le titre « Condamnation d'une vanne quart de tour » et une photo ; aucun texte ne décrit le dispositif."
+    verification: ["quart de tour"]
+
+  - id: "INRS-DEV-050"
+    category: "out_of_scope"
+    question: "Au remontage d'une bride DN100, je serre les boulons à quel couple ?"
+    must_refuse: true
+    target_document_id: null
+    expected_section: null
+    expected_page: null
+    exact_quote: null
+    expected_identifiers: []
+    reason: "Le serrage des brides sort du sujet du guide. Passages tentants : l'interdiction du desserrage progressif des boulons de brides (page 23) et le bon remontage avant déconsignation (page 25)."
+    verification: ["couple", "serrage", "Nm", "N.m", "remontage", "DN"]
