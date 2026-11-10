@@ -2,7 +2,12 @@
 
 import pytest
 
-from maintenance_rag.normalize import build_vocabulary, dehyphenate, normalize_for_match
+from maintenance_rag.normalize import (
+    build_vocabulary,
+    dehyphenate,
+    normalize_for_match,
+    quote_matches,
+)
 
 # --------------------------------------------------------------------------------------------
 # normalize_for_match
@@ -97,3 +102,25 @@ def test_vocabulary_from_corpus_drives_dehyphenation() -> None:
     vocabulary = build_vocabulary(["Porter des équipements adaptés.", "un court-circuit"])
     text = "connaître les équipe-ments ; mise en court-circuit"
     assert dehyphenate(text, vocabulary) == "connaître les équipements ; mise en court-circuit"
+
+
+# --------------------------------------------------------------------------------------------
+# quote_matches
+# --------------------------------------------------------------------------------------------
+
+
+def test_quote_with_control_character_inside_word_matches() -> None:
+    assert quote_matches(
+        "la purge intermédiaire ouverte", "Vanne fermée, la purge intermédiaire ouverte."
+    )
+
+
+def test_really_different_word_does_not_match() -> None:
+    source = "La séparation de l'équipement est réalisée en premier."
+    assert quote_matches("La séparation de l'équipement est réalisée", source)
+    assert not quote_matches("La condamnation de l'équipement est réalisée", source)
+
+
+def test_quote_shorter_than_min_chars_raises() -> None:
+    with pytest.raises(ValueError):
+        quote_matches("la séparation", "la séparation de l'équipement")  # 12 caractères normalisés

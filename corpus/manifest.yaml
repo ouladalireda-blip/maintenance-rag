@@ -3,6 +3,8 @@
 # id : identifiant stable du document, stocké tel quel dans documents.slug (base Supabase).
 # page_offset : page imprimée = page PDF − page_offset (stocké dans documents.page_offset).
 # sha256 : empreinte du fichier exact indexé (null tant que le fichier est absent).
+# layout_profile : profil de mise en page (config/config.yaml → layout_profiles).
+# exclude_pages : pages PDF non indexées (couverture, mentions, sommaire, dos…).
 # =====================================================================
 
 documents:
@@ -16,6 +18,11 @@ documents:
     source_url: "à compléter : URL officielle sur inrs.fr"
     page_offset: 2
     sha256: null   # fichier absent de corpus/inrs/ lors de l'audit : à calculer (voir docs/corpus.md)
+    layout_profile: inrs       # config/config.yaml → layout_profiles.inrs
+    # Pages PDF non indexées : couverture (1), mentions légales (2), page de titre (3),
+    # contributeurs (4), sommaire (5), pages blanches (6, 8, 32), dos (34, 35).
+    # La bibliographie (33) est conservée.
+    exclude_pages: [1, 2, 3, 4, 5, 6, 8, 32, 34, 35]
 
 # Modèle d'entrée pour les 4 procédures fictives TX-200 (à rédiger, versionnées) :
 #
@@ -29,3 +36,5 @@ documents:
 #    source_url: null
 #    page_offset: 0
 #    sha256: <à calculer>
+#    layout_profile: <profil de config/config.yaml>
+#    exclude_pages: []

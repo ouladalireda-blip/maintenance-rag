@@ -31,7 +31,51 @@ guardrails:
   # arbitraire ne doit décider des refus. Une fois calibré, il est FIGÉ avant toute
   # mesure sur questions_test.yaml (sinon le jeu de test fuit dans le réglage).
   tau: null
+  min_quote_chars: 20               # longueur minimale (normalisée) d'une citation vérifiable
 
 chunking:
   max_tokens: 500                   # taille maximale d'un passage
   never_split_lists: true           # une liste d'étapes (procédure) n'est jamais coupée
+
+# ---------------------------------------------------------------------
+# Profils de mise en page des PDF (src/maintenance_rag/pdf_reader.py).
+# Signatures (taille en pt, couleur RRGGBB, gras) relevées avec scripts/inspect_pdf.py
+# sur l'ED 6109 entière ; la police n'est pas comparée. Distances en points PDF.
+# ---------------------------------------------------------------------
+layout_profiles:
+  inrs:
+    chapter:                        # chapitre numéroté (20 pt) ; chapitre non numéroté (30 pt)
+      - {size: 20.0, color: "498ca7", bold: true}
+      - {size: 30.0, color: "498ca7", bold: true}
+    section:                        # titre numéroté N.N.
+      - {size: 14.0, color: "799a2c", bold: true}
+    subsection:                     # titre numéroté N.N.N.
+      - {size: 12.0, color: "356d83", bold: true}
+    intertitle:                     # intertitre (souvent précédé d'un triangle dessiné) ; termes du glossaire
+      - {size: 11.0, color: "799a2c", bold: true}
+    warning:                        # « Attention ! » en rouge
+      - {size: 11.0, color: "d3232a", bold: true}
+    caption:                        # titre de photo (12 pt gras noir) ; commentaire de photo (9 pt)
+      - {size: 12.0, color: "000000", bold: true}
+      - {size: 9.0, color: "000000", bold: false}
+    page_number:                    # numéro imprimé, dans la marge latérale
+      - {size: 11.0, color: "498ca7", bold: true}
+    size_tolerance: 0.3
+    color_tolerance: 8
+    warning_prefix: "Attention"
+    glossary_chapter: "Définitions"
+    margin_ratio: 0.12              # bande latérale (fraction de la largeur) des numéros de page
+    column_tolerance: 10.0          # marge autour du milieu de la zone de texte
+    min_lines_per_column: 3         # en dessous, page à une seule colonne
+    paragraph_gap_margin: 1.5       # nouveau paragraphe si écart > interligne médian + marge
+    short_line_margin: 15.0         # ligne « courte » : s'arrête à plus de 15 pt du bord droit
+    list_indent: 2.0                # retrait minimal d'une ligne de continuation de puce
+    note_max_size: 8.5              # notes de bas de page : 8 pt…
+    note_min_y_ratio: 0.75          # … dans le dernier quart de la page
+    frame_min_width: 40.0           # encadré : rectangle plein sans contour d'au moins 40 × 15 pt
+    frame_min_height: 15.0
+    arrow_max_size: 12.0            # triangle d'intertitre : petit polygone plein…
+    arrow_max_distance: 12.0        # … à moins de 12 pt du début de la ligne
+    diagram_merge_distance: 40.0    # schéma : regroupement des tracés (courbes, cadres) proches…
+    diagram_min_items: 3            # … d'au moins 3 tracés ; le texte qu'il contient est ignoré
+    caption_max_gap: 12.0           # légende : texte collé (≤ 12 pt) au-dessus ou au-dessous d'une photo

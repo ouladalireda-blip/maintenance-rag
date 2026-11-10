@@ -100,3 +100,34 @@ def build_vocabulary(texts: Iterable[str]) -> set[str]:
         cleaned = unicodedata.normalize("NFKC", text.replace("\xad", "")).lower()
         vocabulary.update(_HYPHEN_FREE_WORD.findall(cleaned))
     return vocabulary
+
+
+def quote_matches(quote: str, source: str, min_chars: int = 20) -> bool:
+    """Vrai si la citation figure mot pour mot dans la source, une fois les deux normalisées.
+
+    Les deux côtés passent par ``normalize_for_match``. Pourquoi ses règles suffisent à absorber
+    les artefacts d'extraction PDF sans accepter une citation fausse :
+
+    - les espaces sont tous supprimés, car l'extraction d'un texte en colonnes coupe les lignes
+      et insère des retours à la ligne ou des espaces au milieu d'un mot (« inter médiaire »
+      pour « intermédiaire ») ;
+    - les tirets et le trait d'union conditionnel U+00AD sont supprimés, car les césures de fin
+      de ligne apparaissent tantôt en U+00AD, tantôt en vrai tiret (« inter-médiaire ») ;
+    - les caractères de contrôle sont supprimés : la mise en page de l'ED 6109 laisse un
+      caractère \x07 devant certains mots et après les puces ;
+    - les espaces insécables (U+00A0, U+202F) que la typographie française place devant « ; »,
+      « : », « ! » ou « ? » disparaissent avec les autres espaces : « séparation ; » et
+      « séparation; » sont équivalents.
+
+    Lettres, chiffres et ponctuation restent comparés : un mot, un chiffre ou une unité
+    différents font échouer la vérification.
+
+    Lève ``ValueError`` si la citation normalisée fait moins de ``min_chars`` caractères : une
+    citation trop courte se retrouve n'importe où et ne prouve rien.
+    """
+    needle = normalize_for_match(quote)
+    if len(needle) < min_chars:
+        raise ValueError(
+            f"citation trop courte : {len(needle)} caractères normalisés (minimum {min_chars})"
+        )
+    return needle in normalize_for_match(source)

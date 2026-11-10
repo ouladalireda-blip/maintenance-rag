@@ -26,9 +26,41 @@ def test_embedding_dimension_matches_sql_schema() -> None:
     assert dims == [config["embeddings"]["dimensions"]] * 2
 
 
+CATEGORIES = {"valid", "near_miss", "identifier_trap", "out_of_scope"}
+REFUSAL_NULL_FIELDS = ("target_document_id", "expected_section", "expected_page", "exact_quote")
+
+
 def test_question_files_parse() -> None:
+    """Les fichiers de questions se chargent et chaque question respecte le format.
+
+    Les règles détaillées ne s'appliquent qu'aux fichiers déjà remplis (questions_test.yaml
+    est encore vide tant qu'il n'est pas rédigé et figé).
+    """
     for name in ("questions_dev.yaml", "questions_test.yaml"):
-        assert isinstance(_load("evals", name)["questions"], list)
+        raw = (ROOT / "evals" / name).read_text(encoding="utf-8")
+        assert "À VÉRIFIER" not in raw, f"{name} : commentaire « À VÉRIFIER » restant"
+        data = yaml.safe_load(raw)
+        questions = data["questions"]
+        assert isinstance(questions, list)
+        if not questions:
+            continue
+        assert data["page_convention"] == "printed", name
+        ids = [question["id"] for question in questions]
+        assert len(ids) == len(set(ids)), f"{name} : ids en double"
+        for question in questions:
+            qid = question["id"]
+            assert question["category"] in CATEGORIES, qid
+            assert isinstance(question["must_refuse"], bool), qid
+            if question["must_refuse"]:
+                for key in REFUSAL_NULL_FIELDS:
+                    assert question[key] is None, f"{qid} : {key} doit être null"
+                assert question["expected_identifiers"] == [], qid
+            else:
+                assert question["target_document_id"] == "inrs-ed6109", qid
+                page = question["expected_page"]
+                assert isinstance(page, int) and not isinstance(page, bool), qid
+                quote = question["exact_quote"]
+                assert isinstance(quote, str) and quote.strip(), f"{qid} : exact_quote vide"
 
 
 def test_manifest_ids_unique() -> None:
