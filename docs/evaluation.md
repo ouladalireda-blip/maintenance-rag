@@ -78,6 +78,13 @@ C'est la limite assumée dans l'ADR 0001 : **une citation exacte prouve que l'ex
 
 **Piste v3 : un vérificateur d'implication.** Il contrôlerait que chaque affirmation, et la réponse, est impliquée par son extrait cité (modèle d'inférence textuelle ou LLM juge contraint, à mesurer). Il ne fait pas partie du système évalué. Une v3 serait réglée sur le jeu dev, puis évaluée sur un **nouveau** jeu test (ADR 0003).
 
+## Limites et pistes v3
+
+Points issus d'une revue de code. Ils ne modifient pas le système v2, figé : ce sont des hypothèses et des décisions à reprendre pour une v3, à vérifier sur le jeu **dev** uniquement.
+
+- **Hypothèse à vérifier : citations tirées de la ligne d'en-tête des passages.** Le message envoyé au LLM fait précéder chaque passage d'une ligne `[Pn] Section : … — page …` (`generation.build_user_message`). Le garde-fou 2 ne vérifie les citations que dans le **contenu** du passage (`passage.content`). Une citation recopiée depuis cette ligne d'en-tête, par exemple un titre de section, serait donc rejetée (`extrait_introuvable`), alors même qu'elle est fidèle au texte montré au LLM. Cela pourrait expliquer une partie des refus du garde-fou, y compris des refus variables ou récurrents comme INRS-DEV-020. **Piste v3 :** interdire dans le prompt de citer la ligne d'en-tête, puis réévaluer sur le dev, avec une nouvelle `PROMPT_VERSION`. Le prompt v2 n'est pas modifié.
+- **Décision abandonnée : `str.casefold()` dans `normalize_for_match`.** Remplacer `.lower()` par `.casefold()` a été envisagé, puis abandonné. Pour le français, les deux donnent le même résultat (`casefold` ne diffère que pour quelques caractères comme « ß »), et le système v2 est figé. Le code garde `.lower()`.
+
 ## Décisions
 
 | Décision | Référence |
