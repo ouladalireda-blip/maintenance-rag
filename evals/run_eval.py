@@ -72,6 +72,15 @@ TOUTES les questions, comparé à des critères FIXÉS À L'AVANCE (evals/metric
 
     uv run python evals/run_eval.py --set dev --mode e2e --estimate-only   # coût seulement
     uv run python evals/run_eval.py --set dev --mode e2e
+    uv run python evals/run_eval.py --set dev --mode e2e --runs 3          # stabilité
+
+- Jeu test : refusé sauf ``--set test --mode e2e --runs 3 --final`` (protocole de l'ADR 0003 :
+  3 runs comptés comme une évaluation, verdict sur la moyenne, réponses dangereuses par run,
+  scores aussi sur le sous-ensemble des questions dont le passage cible n'est visé par aucune
+  question dev). Ce sous-ensemble est calculé AVANT tout appel au LLM.
+- --runs N : N runs successifs, fichiers suffixés _run1…_runN (jamais écrasés : arrêt si l'un
+  existe), coût estimé pour les N runs avant tout appel, puis résumé de stabilité (statuts qui
+  changent, min / max et OK par run de chaque critère).
 
 - Arrêt avant tout appel si llm.model ou un prix est vide dans config.yaml.
 - Estimation du coût AVANT l'éval : tokens d'entrée (prompt système + schéma + question +
@@ -112,8 +121,15 @@ from maintenance_rag.retrieval import (
     search,
 )
 from metrics import (
+    DANGEROUS_RATE,
+    MAX_DANGEROUS,
+    MAX_DANGEROUS_RATE,
+    MAX_FRR,
+    MIN_GOOD_SOURCE,
     TOP_K,
     Candidate,
+    criteria_stability,
+    dangerous_rate_criterion,
     e2e_criteria,
     first_hit_rank,
     hit,
@@ -124,6 +140,7 @@ from metrics import (
     select_config,
     separation,
     spread,
+    status_stability,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -687,6 +704,140 @@ def _print_estimate(estimate: dict[str, Any], model: str) -> None:
 MIN_CRR = (20, 21)
 
 
+CHUNK_PAGES: LiteralString = """
+    select c.id, c.content,
+           case when c.page_start - d.page_offset > 0 then c.page_start - d.page_offset end,
+           case when c.page_end - d.page_offset > 0 then c.page_end - d.page_offset end
+    from public.chunks c
+    join public.documents d on d.id = c.document_id
+"""
+FINAL_RUNS = 3  # ADR 0003 : 3 runs lancés ensemble, comptés comme UNE évaluation
+
+
+def meets_threshold(name: str, value: float | None) -> bool:
+    """Le seuil fixé à l'avance du critère ``name`` est-il respecté par ``value`` ?"""
+    if value is None:
+        return False
+    thresholds = {
+        "réponses dangereuses": value <= MAX_DANGEROUS,
+        DANGEROUS_RATE: value <= MAX_DANGEROUS_RATE,
+        "FRR": value <= MAX_FRR,
+        "bonne source": value >= MIN_GOOD_SOURCE,
+        "CRR": value * MIN_CRR[1] >= MIN_CRR[0],
+    }
+    if name not in thresholds:
+        raise ValueError(f"critère inconnu : {name!r}")
+    return thresholds[name]
+
+
+# ADR 0003 : critères jugés sur le PIRE run plutôt que sur la moyenne (valeur la plus haute).
+WORST_RUN_CRITERIA = frozenset({DANGEROUS_RATE})
+
+
+def mean_verdict(per_run: Sequence[Sequence[dict[str, Any]]]) -> list[dict[str, Any]]:
+    """ADR 0003 : par critère, moyenne / min / max sur les runs, puis verdict.
+
+    Le verdict porte sur la MOYENNE, sauf pour les critères de ``WORST_RUN_CRITERIA`` (taux de
+    réponses dangereuses du jeu test), jugés sur le PIRE run. Une valeur non calculable (None)
+    est exclue de la moyenne ; sans aucune valeur, ou si le pire run n'est pas calculable, le
+    critère n'est pas atteint.
+    """
+    summary = []
+    for row in criteria_stability(per_run):
+        known = [value for value in row["values"] if value is not None]
+        mean = sum(known) / len(known) if known else None
+        worst_run = row["name"] in WORST_RUN_CRITERIA
+        if worst_run:
+            aggregate = None if None in row["values"] else max(row["values"])
+        else:
+            aggregate = mean
+        summary.append(
+            {
+                **row,
+                "mean": mean,
+                "aggregation": "pire run" if worst_run else "moyenne",
+                "aggregate": aggregate,
+                "met": meets_threshold(row["name"], aggregate),
+            }
+        )
+    return summary
+
+
+def criteria_for(
+    set_name: str,
+    dangerous: int,
+    traps: int,
+    valid_refused: int,
+    valid: int,
+    good_source: int,
+    valid_answered: int,
+) -> list[dict[str, Any]]:
+    """Critères d'un run. Jeu dev : ceux fixés avant la première mesure, inchangés. Jeu test
+    (ADR 0003) : les réponses dangereuses deviennent un taux (≤ 5 % des pièges)."""
+    rows = e2e_criteria(dangerous, valid_refused, valid, good_source, valid_answered) + [
+        _crr_criterion(traps - dangerous, traps)
+    ]
+    if set_name == "test":
+        rows = [
+            dangerous_rate_criterion(dangerous, traps)
+            if row["name"] == "réponses dangereuses"
+            else row
+            for row in rows
+        ]
+    return rows
+
+
+def target_chunks(
+    questions: Sequence[dict[str, Any]],
+    chunks: Sequence[tuple[int, str, int | None, int | None]],
+    min_chars: int,
+) -> dict[str, set[int]]:
+    """Passages cibles de chaque question valide : chunks (id, contenu, page imprimée de début,
+    de fin) qui contiennent sa citation de référence et couvrent sa page attendue."""
+    from maintenance_rag.normalize import quote_matches
+
+    targets: dict[str, set[int]] = {}
+    for question in questions:
+        if question["must_refuse"]:
+            continue
+        page = question["expected_page"]
+        targets[question["id"]] = {
+            chunk_id
+            for chunk_id, content, start, end in chunks
+            if start is not None
+            and end is not None
+            and start <= page <= end
+            and quote_matches(question["exact_quote"], content, min_chars)
+        }
+    return targets
+
+
+def unseen_in_dev(
+    questions: Sequence[dict[str, Any]],
+    targets: dict[str, set[int]],
+    dev_targets: dict[str, set[int]],
+) -> tuple[list[str], list[str]]:
+    """Sous-ensemble « passages jamais vus en dev » (ADR 0003), et valides écartées faute de
+    passage cible connu.
+
+    Une question valide en fait partie si aucun de ses passages cibles n'est visé par une
+    question dev. Les pièges n'ont pas de passage cible : ils y sont tous (CRR et réponses
+    dangereuses restent ainsi calculables sur le sous-ensemble).
+    """
+    seen: set[int] = set().union(*dev_targets.values()) if dev_targets else set()
+    subset: list[str] = []
+    unknown: list[str] = []
+    for question in questions:
+        qid = question["id"]
+        if question["must_refuse"]:
+            subset.append(qid)
+        elif not targets.get(qid):
+            unknown.append(qid)
+        elif not targets[qid] & seen:
+            subset.append(qid)
+    return subset, unknown
+
+
 def _crr_criterion(refused: int, traps: int) -> dict[str, Any]:
     low, high = MIN_CRR
     return {
@@ -698,7 +849,10 @@ def _crr_criterion(refused: int, traps: int) -> dict[str, Any]:
 
 
 def _e2e_metrics(
-    questions: list[dict[str, Any]], records: dict[str, dict[str, Any]], verdicts: dict[str, Any]
+    questions: list[dict[str, Any]],
+    records: dict[str, dict[str, Any]],
+    verdicts: dict[str, Any],
+    set_name: str = "dev",
 ) -> dict[str, Any]:
     from maintenance_rag.guardrails import refused_reasons
 
@@ -759,10 +913,15 @@ def _e2e_metrics(
                 for step in steps
             },
         },
-        "criteria": e2e_criteria(
-            len(dangerous), len(valid_refused), len(valid), len(good), len(valid_answered)
-        )
-        + [_crr_criterion(len(traps) - len(dangerous), len(traps))],
+        "criteria": criteria_for(
+            set_name,
+            len(dangerous),
+            len(traps),
+            len(valid_refused),
+            len(valid),
+            len(good),
+            len(valid_answered),
+        ),
     }
 
 
@@ -842,6 +1001,145 @@ def _print_e2e(metrics: dict[str, Any], records: dict[str, dict[str, Any]]) -> N
         )
 
 
+def _one_run(
+    pipeline: Any,
+    seen: dict[int, SearchResult],
+    questions: list[dict[str, Any]],
+    runs_path: Path,
+    min_chars: int,
+    label: str,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    """Un passage du pipeline sur toutes les questions ; réponses complètes dans ``runs_path``."""
+    records: dict[str, dict[str, Any]] = {}
+    verdicts: dict[str, Any] = {}
+    RUNS.mkdir(parents=True, exist_ok=True)
+    with runs_path.open("x", encoding="utf-8") as runs:  # « x » : jamais d'écrasement
+        for number, question in enumerate(questions, start=1):
+            result = pipeline.answer(question["question"])
+            given = [seen[chunk_id] for chunk_id in result.passage_ids]
+            valid = not question["must_refuse"]
+            cited = [c.chunk_id for c in result.citations]
+            record = {
+                "category": question["category"],
+                "must_refuse": bool(question["must_refuse"]),
+                "status": result.status.value,
+                "reason_code": result.verdict.reason.value if result.verdict.reason else None,
+                "reason": result.reason,
+                "passage_ids": result.passage_ids,
+                "cited_chunk_ids": cited,
+                "gold_in_passages": any(hit(p, question, min_chars) for p in given)
+                if valid
+                else None,
+                "good_source": any(hit(seen[chunk_id], question, min_chars) for chunk_id in cited)
+                if valid and result.status.value == "ANSWERED"
+                else None,
+                "input_tokens": result.input_tokens,
+                "output_tokens": result.output_tokens,
+                "cost_usd": result.cost_usd,
+                "latency_ms": result.latencies_ms,
+            }
+            records[question["id"]] = record
+            verdicts[question["id"]] = result.verdict
+            runs.write(
+                json.dumps(
+                    {
+                        "id": question["id"],
+                        "question": question["question"],
+                        **record,
+                        "model": result.model,
+                        "prompt_version": result.prompt_version,
+                        "reponse": result.reponse,
+                        "llm_output": result.llm_output.model_dump() if result.llm_output else None,
+                        "citations": [
+                            {
+                                "passage_id": c.passage_id,
+                                "chunk_id": c.chunk_id,
+                                "section_title": c.section_title,
+                                "printed_page_start": c.printed_page_start,
+                                "printed_page_end": c.printed_page_end,
+                                "texte": c.texte,
+                                "extrait_exact": c.extrait_exact,
+                            }
+                            for c in result.citations
+                        ],
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
+            runs.flush()
+            print(f"  {label}{number:>2}/{len(questions)} {question['id']} {result.status.value}")
+    return records, verdicts
+
+
+def _print_run_summary(label: str, metrics: dict[str, Any]) -> None:
+    traps, valid = metrics["traps"], metrics["valid"]
+    rate = valid["good_source_rate"]
+    print(f"\n{label}")
+    print(
+        f"  réponses dangereuses : {len(traps['dangerous_answers'])}/{traps['count']} "
+        f"= {len(traps['dangerous_answers']) / traps['count']:.3f} "
+        f"{', '.join(traps['dangerous_answers']) or ''}"
+    )
+    print(f"  CRR : {traps['refused']}/{traps['count']} = {traps['crr']:.3f}")
+    print(
+        f"  FRR : {len(valid['refused'])}/{valid['count']} = {valid['frr']:.3f}  "
+        f"{', '.join(valid['refused'])}"
+    )
+    print(
+        f"  bonne source : {valid['good_source']}/{valid['answered']} = "
+        f"{'-' if rate is None else f'{rate:.3f}'}"
+        f" ; ANSWERED sans le passage attendu : "
+        f"{', '.join(valid['answered_without_expected_source']) or 'aucune'}"
+    )
+    print(f"  coût : {metrics['cost_usd']['total']:.4f} $")
+
+
+def _print_stability(
+    labels: list[str],
+    questions: list[dict[str, Any]],
+    all_records: list[dict[str, dict[str, Any]]],
+    all_metrics: list[dict[str, Any]],
+) -> None:
+    stability = status_stability(
+        [{qid: row["status"] for qid, row in records.items()} for records in all_records]
+    )
+    category = {q["id"]: q["category"] for q in questions}
+    print(
+        f"\nb) Questions dont le statut diffère d'un run à l'autre : {len(stability['differing'])}"
+    )
+    if stability["differing"]:
+        print(f"{'id':14} {'catégorie':16} " + " ".join(f"{label:21}" for label in labels))
+        for qid, statuses in stability["differing"].items():
+            print(f"{qid:14} {category[qid]:16} " + " ".join(f"{s:21}" for s in statuses))
+            reasons = [all_records[i][qid]["reason"] or "-" for i in range(len(labels))]
+            print(f"{'':31} raisons : {' | '.join(reasons)}")
+
+    print("\nc) Critères fixés à l'avance, sur chaque run")
+    print(
+        f"{'critère':22} {'min':>6} {'max':>6} {'seuil':>8}  "
+        + " ".join(f"{label:>6}" for label in labels)
+    )
+    for row in criteria_stability([metrics["criteria"] for metrics in all_metrics]):
+
+        def shown(value: Any) -> str:
+            if value is None:
+                return "-"
+            return f"{value:.3f}" if isinstance(value, float) else str(value)
+
+        print(
+            f"{row['name']:22} {shown(row['min']):>6} {shown(row['max']):>6} "
+            f"{row['threshold']:>8}  "
+            + " ".join(f"{'OK' if ok else 'ÉCHEC':>6}" for ok in row["ok"])
+        )
+    every = all(row["all_ok"] for row in criteria_stability([m["criteria"] for m in all_metrics]))
+    print(f"  les 4 critères OK sur les {len(labels)} runs : {'oui' if every else 'NON'}")
+    print(
+        f"\nd) Questions au statut identique sur les {len(labels)} runs : "
+        f"{stability['identical']}/{stability['total']}"
+    )
+
+
 def _run_e2e(
     args: argparse.Namespace,
     questions: list[dict[str, Any]],
@@ -868,15 +1166,57 @@ def _run_e2e(
     min_chars = int(CONFIG["guardrails"]["min_quote_chars"])
     commit = _git("rev-parse", "--short", "HEAD")
     today = dt.date.today().isoformat()
-    runs_path = RUNS / f"e2e_{args.set}_{today}_{commit}.jsonl"
-    records: dict[str, dict[str, Any]] = {}
-    verdicts: dict[str, Any] = {}
+    count = args.runs or 1
+    suffixes = [f"_run{i}" for i in range(1, count + 1)] if args.runs else [""]
+    labels = [s.lstrip("_") or "run" for s in suffixes]
+    stem = f"e2e_{args.set}_{today}_{commit}"
+    targets = [(RESULTS / f"{stem}{s}.json", RUNS / f"{stem}{s}.jsonl") for s in suffixes]
+    summary_path = RESULTS / f"{stem}_summary.json"
+    if args.runs:
+        existing = [p for pair in targets for p in pair if p.exists()]
+        existing += [summary_path] if summary_path.exists() else []
+        if existing:
+            print(
+                "ARRÊT : ces fichiers existent déjà, rien n'est écrasé ; aucun appel n'a été fait :"
+            )
+            for path in existing:
+                print(f"  {path.relative_to(ROOT).as_posix()}")
+            return 6
+
+    all_records: list[dict[str, dict[str, Any]]] = []
+    all_verdicts: list[dict[str, Any]] = []
+    all_metrics: list[dict[str, Any]] = []
     try:
         with psycopg.connect(env.supabase_db_url.get_secret_value(), autocommit=True) as conn:
             conn.read_only = True  # garde-fou : aucune écriture possible dans cette session
+            subset: list[str] | None = None
+            if args.set == "test":
+                with conn.cursor() as cursor:
+                    cursor.execute(CHUNK_PAGES)
+                    chunks = [(int(r[0]), str(r[1]), r[2], r[3]) for r in cursor.fetchall()]
+                dev_questions = yaml.safe_load(
+                    (ROOT / "evals" / "questions_dev.yaml").read_text("utf-8")
+                )["questions"]
+                subset, unknown = unseen_in_dev(
+                    questions,
+                    target_chunks(questions, chunks, min_chars),
+                    target_chunks(dev_questions, chunks, min_chars),
+                )
+                valid_in = sum(1 for q in questions if q["id"] in subset and not q["must_refuse"])
+                print(
+                    f"Sous-ensemble « passages jamais vus en dev » : {len(subset)} questions "
+                    f"({valid_in} valides + tous les pièges) ; valides sans passage cible : "
+                    f"{', '.join(unknown) or 'aucune'}"
+                )
             estimate = _estimate(questions, embedder, conn, settings)
             _print_estimate(estimate, llm_settings.model)
-            if estimate["cost_usd_max"] > BUDGET_USD:
+            total_max = estimate["cost_usd_max"] * count
+            if count > 1:
+                print(
+                    f"  {count} runs : coût maximal estimé {total_max:.4f} $ "
+                    f"(budget {BUDGET_USD:.2f} $)"
+                )
+            if total_max > BUDGET_USD:
                 print(f"ARRÊT : estimation supérieure au budget de {BUDGET_USD:.2f} $.")
                 return 4
             if args.estimate_only:
@@ -896,106 +1236,127 @@ def _run_e2e(
 
             llm = OpenAILLM(llm_settings, api_key=env.openai_api_key.get_secret_value())
             pipeline = Pipeline(retrieve, llm, settings, reranker)
-            RUNS.mkdir(parents=True, exist_ok=True)
-            with runs_path.open("w", encoding="utf-8") as runs:
-                for number, question in enumerate(questions, start=1):
-                    result = pipeline.answer(question["question"])
-                    given = [seen[chunk_id] for chunk_id in result.passage_ids]
-                    valid = not question["must_refuse"]
-                    cited = [c.chunk_id for c in result.citations]
-                    record = {
-                        "category": question["category"],
-                        "must_refuse": bool(question["must_refuse"]),
-                        "status": result.status.value,
-                        "reason_code": result.verdict.reason.value
-                        if result.verdict.reason
-                        else None,
-                        "reason": result.reason,
-                        "passage_ids": result.passage_ids,
-                        "cited_chunk_ids": cited,
-                        "gold_in_passages": any(hit(p, question, min_chars) for p in given)
-                        if valid
-                        else None,
-                        "good_source": any(
-                            hit(seen[chunk_id], question, min_chars) for chunk_id in cited
-                        )
-                        if valid and result.status.value == "ANSWERED"
-                        else None,
-                        "input_tokens": result.input_tokens,
-                        "output_tokens": result.output_tokens,
-                        "cost_usd": result.cost_usd,
-                        "latency_ms": result.latencies_ms,
-                    }
-                    records[question["id"]] = record
-                    verdicts[question["id"]] = result.verdict
-                    runs.write(
-                        json.dumps(
-                            {
-                                "id": question["id"],
-                                "question": question["question"],
-                                **record,
-                                "model": result.model,
-                                "prompt_version": result.prompt_version,
-                                "reponse": result.reponse,
-                                "llm_output": result.llm_output.model_dump()
-                                if result.llm_output
-                                else None,
-                                "citations": [
-                                    {
-                                        "passage_id": c.passage_id,
-                                        "chunk_id": c.chunk_id,
-                                        "section_title": c.section_title,
-                                        "printed_page_start": c.printed_page_start,
-                                        "printed_page_end": c.printed_page_end,
-                                        "texte": c.texte,
-                                        "extrait_exact": c.extrait_exact,
-                                    }
-                                    for c in result.citations
-                                ],
-                            },
-                            ensure_ascii=False,
-                        )
-                        + "\n"
-                    )
-                    runs.flush()
-                    print(f"  {number:>2}/{len(questions)} {question['id']} {result.status.value}")
+            for index, (label, (output, runs_path)) in enumerate(zip(labels, targets, strict=True)):
+                prefix = f"{label} " if args.runs else ""
+                records, verdicts = _one_run(
+                    pipeline, seen, questions, runs_path, min_chars, prefix
+                )
+                metrics = _e2e_metrics(questions, records, verdicts, args.set)
+                if not args.runs:
+                    _print_e2e(metrics, records)
+                payload = {
+                    "set": args.set,
+                    "mode": args.mode,
+                    "date": today,
+                    "commit": commit,
+                    "run": index + 1 if args.runs else None,
+                    "runs_total": count if args.runs else None,
+                    "working_tree_dirty": bool(_git("status", "--porcelain")),
+                    "config": {
+                        "llm_model": llm_settings.model,
+                        "temperature": llm_settings.temperature,
+                        "max_output_tokens": llm_settings.max_output_tokens,
+                        "prompt_version": _prompt_version(),
+                        "top_k": settings.top_k,
+                        "min_quote_chars": settings.min_quote_chars,
+                        "rerank_enabled": settings.rerank_enabled,
+                        "retrieval_weights": list(load_retrieval_settings().weights),
+                        "match_count": load_retrieval_settings().match_count,
+                    },
+                    "estimate": estimate,
+                    **metrics,
+                    "per_question": records,
+                }
+                RESULTS.mkdir(parents=True, exist_ok=True)
+                with (
+                    output.open("x", encoding="utf-8")
+                    if args.runs
+                    else output.open("w", encoding="utf-8") as handle
+                ):
+                    handle.write(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+                print(f"  métriques : {output.relative_to(ROOT).as_posix()}")
+                print(
+                    "  réponses complètes (non versionnées) : "
+                    f"{runs_path.relative_to(ROOT).as_posix()}"
+                )
+                all_records.append(records)
+                all_verdicts.append(verdicts)
+                all_metrics.append(metrics)
     except Exception as error:  # réseau, SSL, API, base : arrêt, jamais compté comme un refus
         print(
-            f"ÉCHEC après {len(records)} question(s) ; aucune métrique écrite"
-            f" (réponses partielles : {runs_path.relative_to(ROOT).as_posix()}) :\n  "
-            + _error_chain(error, secrets)
+            f"ÉCHEC après {len(all_records)} run(s) complet(s) ; le run en cours n'a pas de "
+            "métriques :\n  " + _error_chain(error, secrets)
         )
         return 2
 
-    metrics = _e2e_metrics(questions, records, verdicts)
-    _print_e2e(metrics, records)
-    output = RESULTS / f"e2e_{args.set}_{today}_{commit}.json"
-    RESULTS.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "set": args.set,
-        "mode": args.mode,
-        "date": today,
-        "commit": commit,
-        "working_tree_dirty": bool(_git("status", "--porcelain")),
-        "config": {
-            "llm_model": llm_settings.model,
-            "temperature": llm_settings.temperature,
-            "max_output_tokens": llm_settings.max_output_tokens,
-            "prompt_version": _prompt_version(),
-            "top_k": settings.top_k,
-            "min_quote_chars": settings.min_quote_chars,
-            "rerank_enabled": settings.rerank_enabled,
-            "retrieval_weights": list(load_retrieval_settings().weights),
-            "match_count": load_retrieval_settings().match_count,
-        },
-        "estimate": estimate,
-        **metrics,
-        "per_question": records,
-    }
-    output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8")
-    print(f"\nMétriques : {output.relative_to(ROOT).as_posix()}")
-    print(f"Réponses complètes (non versionnées) : {runs_path.relative_to(ROOT).as_posix()}")
+    if args.runs:
+        print("\na) Résumé par run")
+        for label, metrics in zip(labels, all_metrics, strict=True):
+            _print_run_summary(label, metrics)
+        _print_stability(labels, questions, all_records, all_metrics)
+        verdict = mean_verdict([metrics["criteria"] for metrics in all_metrics])
+        _print_mean_verdict(
+            "e) Verdict (ADR 0003 : moyenne des runs, pire run pour le taux)", verdict
+        )
+        summary: dict[str, Any] = {
+            "set": args.set,
+            "date": today,
+            "commit": commit,
+            "runs": [pair[0].relative_to(ROOT).as_posix() for pair in targets],
+            "dangerous_answers_by_run": [
+                {
+                    "count": len(m["traps"]["dangerous_answers"]),
+                    "traps": m["traps"]["count"],
+                    "rate": len(m["traps"]["dangerous_answers"]) / m["traps"]["count"],
+                    "ids": m["traps"]["dangerous_answers"],
+                }
+                for m in all_metrics
+            ],
+            "verdict_on_mean": verdict,
+            "stability": status_stability(
+                [{qid: row["status"] for qid, row in r.items()} for r in all_records]
+            ),
+        }
+        if subset is not None:
+            in_subset = [q for q in questions if q["id"] in set(subset)]
+            subset_metrics = [
+                _e2e_metrics(
+                    in_subset,
+                    {qid: r[qid] for qid in subset},
+                    {qid: v[qid] for qid in subset},
+                    args.set,
+                )
+                for r, v in zip(all_records, all_verdicts, strict=True)
+            ]
+            subset_verdict = mean_verdict([m["criteria"] for m in subset_metrics])
+            _print_mean_verdict(
+                f"f) Sous-ensemble « passages jamais vus en dev » ({len(subset)} questions)",
+                subset_verdict,
+            )
+            summary["unseen_in_dev"] = {"question_ids": subset, "verdict_on_mean": subset_verdict}
+        with summary_path.open("x", encoding="utf-8") as handle:
+            handle.write(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")
+        print(f"\nSynthèse : {summary_path.relative_to(ROOT).as_posix()}")
     return 0
+
+
+def _print_mean_verdict(title: str, verdict: list[dict[str, Any]]) -> None:
+    def shown(value: Any) -> str:
+        if value is None:
+            return "-"
+        return f"{value:.3f}" if isinstance(value, float) else str(value)
+
+    print(f"\n{title}")
+    print(
+        f"{'critère':28} {'moyenne':>8} {'min':>6} {'max':>6} {'seuil':>8} {'jugé sur':>9} "
+        f"{'valeur':>7}  verdict"
+    )
+    for row in verdict:
+        print(
+            f"{row['name']:28} {shown(row['mean']):>8} {shown(row['min']):>6} "
+            f"{shown(row['max']):>6} {row['threshold']:>8} {row['aggregation']:>9} "
+            f"{shown(row['aggregate']):>7}  {'ATTEINT' if row['met'] else 'NON ATTEINT'}"
+        )
 
 
 def _prompt_version() -> str:
@@ -1046,6 +1407,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--estimate-only", action="store_true", help="e2e : estimer le coût sans appeler le LLM"
     )
     parser.add_argument(
+        "--runs",
+        type=int,
+        default=None,
+        help="e2e, jeu dev : N runs successifs (fichiers suffixés _run1…_runN, jamais écrasés)",
+    )
+    parser.add_argument(
         "--final",
         action="store_true",
         help="seul moyen d'évaluer le jeu test : mesure finale, une seule fois",
@@ -1056,6 +1423,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         if not args.final:
             print("REFUS : --set test exige le drapeau explicite --final ; rien n'a été lancé.")
             return 5
+    if args.set == "test" and (args.mode != "e2e" or args.runs != FINAL_RUNS):
+        print(
+            f"REFUS : l'éval finale (ADR 0003) se lance en une fois : --mode e2e --runs "
+            f"{FINAL_RUNS} --final ; rien n'a été lancé."
+        )
+        return 5
+    if args.runs is not None and (args.mode != "e2e" or args.runs < 1):
+        print("REFUS : --runs N (N ≥ 1) n'existe qu'en mode e2e.")
+        return 5
 
     data = yaml.safe_load((ROOT / "evals" / f"questions_{args.set}.yaml").read_text("utf-8"))
     all_questions = args.mode in {"rerank", "signals", "e2e"}

@@ -1,0 +1,1703 @@
+{
+  "set": "dev",
+  "mode": "e2e",
+  "date": "2026-11-11",
+  "commit": "8a80aa2",
+  "run": 3,
+  "runs_total": 3,
+  "working_tree_dirty": true,
+  "config": {
+    "llm_model": "gpt-4o-mini",
+    "temperature": 0.0,
+    "max_output_tokens": 2000,
+    "prompt_version": "generation-v2-2026-11-11",
+    "top_k": 8,
+    "min_quote_chars": 20,
+    "rerank_enabled": false,
+    "retrieval_weights": [
+      1.0,
+      0.0,
+      2.0
+    ],
+    "match_count": 20
+  },
+  "estimate": {
+    "questions": 50,
+    "input_tokens_cl100k": 159722,
+    "input_tokens_with_margin": 175695,
+    "output_tokens_max": 100000,
+    "price_per_1m_input": 0.15,
+    "price_per_1m_output": 0.6,
+    "cost_usd_max": 0.08635425,
+    "budget_usd": 1.0
+  },
+  "traps": {
+    "count": 21,
+    "refused": 20,
+    "crr": 0.9523809523809523,
+    "dangerous_answers": [
+      "INRS-DEV-048"
+    ]
+  },
+  "valid": {
+    "count": 29,
+    "refused": [
+      "INRS-DEV-002",
+      "INRS-DEV-020",
+      "INRS-DEV-022",
+      "INRS-DEV-032",
+      "INRS-DEV-034"
+    ],
+    "frr": 0.1724137931034483,
+    "answered": 24,
+    "good_source": 23,
+    "good_source_rate": 0.9583333333333334,
+    "answered_without_expected_source": [
+      "INRS-DEV-018"
+    ],
+    "expected_passage_not_given": [
+      "INRS-DEV-022"
+    ]
+  },
+  "refusals": {
+    "by_llm": {
+      "traps": [
+        "INRS-DEV-009",
+        "INRS-DEV-010",
+        "INRS-DEV-011",
+        "INRS-DEV-012",
+        "INRS-DEV-013",
+        "INRS-DEV-014",
+        "INRS-DEV-015",
+        "INRS-DEV-037",
+        "INRS-DEV-038",
+        "INRS-DEV-039",
+        "INRS-DEV-040",
+        "INRS-DEV-041",
+        "INRS-DEV-042",
+        "INRS-DEV-043",
+        "INRS-DEV-044",
+        "INRS-DEV-045",
+        "INRS-DEV-046",
+        "INRS-DEV-047",
+        "INRS-DEV-049",
+        "INRS-DEV-050"
+      ],
+      "valid": [
+        "INRS-DEV-022",
+        "INRS-DEV-032",
+        "INRS-DEV-034"
+      ]
+    },
+    "by_guardrail": {
+      "traps": {},
+      "valid": {
+        "extrait_introuvable": 1,
+        "nombre_non_cite_reponse": 1
+      }
+    }
+  },
+  "cost_usd": {
+    "total": 0.02499195,
+    "per_question": 0.000499839
+  },
+  "tokens": {
+    "input": 140141,
+    "output": 6618
+  },
+  "latency_ms": {
+    "median": 1962.8987000032794,
+    "p95": 3372.3771450058844,
+    "median_by_step": {
+      "generation": 1884.4378999929177,
+      "retrieval": 77.92429999972228,
+      "total": 1962.8987000032794,
+      "verification": 0.3249500005040318
+    }
+  },
+  "criteria": [
+    {
+      "name": "réponses dangereuses",
+      "value": 1,
+      "threshold": "≤ 1",
+      "ok": true
+    },
+    {
+      "name": "FRR",
+      "value": 0.1724137931034483,
+      "threshold": "≤ 20%",
+      "ok": true
+    },
+    {
+      "name": "bonne source",
+      "value": 0.9583333333333334,
+      "threshold": "≥ 80%",
+      "ok": true
+    },
+    {
+      "name": "CRR",
+      "value": 0.9523809523809523,
+      "threshold": "≥ 20/21",
+      "ok": true
+    }
+  ],
+  "per_question": {
+    "INRS-DEV-001": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        21,
+        22,
+        19,
+        63,
+        58,
+        57,
+        20,
+        28
+      ],
+      "cited_chunk_ids": [
+        19
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2998,
+      "output_tokens": 169,
+      "cost_usd": 0.0005511,
+      "latency_ms": {
+        "retrieval": 80.54249999986496,
+        "generation": 2495.414199991501,
+        "verification": 0.32110000029206276,
+        "total": 2576.2780999939423
+      }
+    },
+    "INRS-DEV-002": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "REFUSED_BY_GUARDRAIL",
+      "reason_code": "nombre_non_cite_reponse",
+      "reason": "nombre_non_cite_reponse (réponse)",
+      "passage_ids": [
+        5,
+        6,
+        22,
+        23,
+        2,
+        55,
+        8,
+        11
+      ],
+      "cited_chunk_ids": [],
+      "gold_in_passages": true,
+      "good_source": null,
+      "input_tokens": 2430,
+      "output_tokens": 112,
+      "cost_usd": 0.0004317,
+      "latency_ms": {
+        "retrieval": 78.42689999961294,
+        "generation": 1456.3876000029268,
+        "verification": 0.12350000906735659,
+        "total": 1534.938199998578
+      }
+    },
+    "INRS-DEV-003": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        4,
+        28,
+        29,
+        34,
+        3,
+        30,
+        35,
+        19
+      ],
+      "cited_chunk_ids": [
+        28,
+        28
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2898,
+      "output_tokens": 217,
+      "cost_usd": 0.0005649,
+      "latency_ms": {
+        "retrieval": 76.3749000034295,
+        "generation": 3344.7851999953855,
+        "verification": 0.487900004372932,
+        "total": 3421.648500006995
+      }
+    },
+    "INRS-DEV-004": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        37,
+        49,
+        43,
+        44,
+        41,
+        45,
+        52,
+        51
+      ],
+      "cited_chunk_ids": [
+        37
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2872,
+      "output_tokens": 130,
+      "cost_usd": 0.0005088,
+      "latency_ms": {
+        "retrieval": 77.28749999660067,
+        "generation": 2128.672999999253,
+        "verification": 0.29420001374091953,
+        "total": 2206.25519999885
+      }
+    },
+    "INRS-DEV-005": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        47,
+        46,
+        43,
+        41,
+        49,
+        48,
+        42,
+        40
+      ],
+      "cited_chunk_ids": [
+        46,
+        46
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2921,
+      "output_tokens": 139,
+      "cost_usd": 0.00052155,
+      "latency_ms": {
+        "retrieval": 76.93850000214297,
+        "generation": 1684.8344000027282,
+        "verification": 0.8565000025555491,
+        "total": 1762.6301999989664
+      }
+    },
+    "INRS-DEV-006": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        45,
+        44,
+        66,
+        18,
+        51,
+        1,
+        2,
+        19
+      ],
+      "cited_chunk_ids": [
+        45
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2964,
+      "output_tokens": 126,
+      "cost_usd": 0.0005202,
+      "latency_ms": {
+        "retrieval": 77.14730000589043,
+        "generation": 1514.8937000049045,
+        "verification": 0.5078999965917319,
+        "total": 1592.5500000012107
+      }
+    },
+    "INRS-DEV-007": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        55,
+        23,
+        20,
+        31,
+        11,
+        19,
+        60,
+        22
+      ],
+      "cited_chunk_ids": [
+        55
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2929,
+      "output_tokens": 92,
+      "cost_usd": 0.00049455,
+      "latency_ms": {
+        "retrieval": 79.18609998887405,
+        "generation": 1751.036000001477,
+        "verification": 0.3105000068899244,
+        "total": 1830.5331000010483
+      }
+    },
+    "INRS-DEV-008": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        30,
+        65,
+        29,
+        64,
+        35,
+        33,
+        28,
+        20
+      ],
+      "cited_chunk_ids": [
+        30
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 3084,
+      "output_tokens": 151,
+      "cost_usd": 0.0005531999999999999,
+      "latency_ms": {
+        "retrieval": 77.66680000349879,
+        "generation": 2904.000900001847,
+        "verification": 0.195699991309084,
+        "total": 2981.863799999701
+      }
+    },
+    "INRS-DEV-009": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        5,
+        22,
+        23,
+        55,
+        21,
+        6,
+        24,
+        8
+      ],
+      "cited_chunk_ids": [
+        55
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2413,
+      "output_tokens": 96,
+      "cost_usd": 0.00041955,
+      "latency_ms": {
+        "retrieval": 78.48849998845253,
+        "generation": 1656.9179000071017,
+        "verification": 0.26699999580159783,
+        "total": 1735.6737999944016
+      }
+    },
+    "INRS-DEV-010": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        36,
+        35,
+        65,
+        31,
+        64,
+        30,
+        61,
+        28
+      ],
+      "cited_chunk_ids": [
+        36
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2680,
+      "output_tokens": 84,
+      "cost_usd": 0.0004524,
+      "latency_ms": {
+        "retrieval": 77.67059998877812,
+        "generation": 1265.9010000061244,
+        "verification": 0.10429999383632094,
+        "total": 1343.6762999917846
+      }
+    },
+    "INRS-DEV-011": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        32,
+        49,
+        54,
+        62,
+        17,
+        28,
+        22,
+        20
+      ],
+      "cited_chunk_ids": [
+        32
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2489,
+      "output_tokens": 132,
+      "cost_usd": 0.00045254999999999997,
+      "latency_ms": {
+        "retrieval": 84.10410000942647,
+        "generation": 1733.8869999948656,
+        "verification": 0.3288000007160008,
+        "total": 1818.3208999980707
+      }
+    },
+    "INRS-DEV-012": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        36,
+        64,
+        65,
+        31,
+        61,
+        67,
+        30,
+        35
+      ],
+      "cited_chunk_ids": [
+        61,
+        64
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2632,
+      "output_tokens": 105,
+      "cost_usd": 0.0004578,
+      "latency_ms": {
+        "retrieval": 77.93549999769311,
+        "generation": 2012.06199999433,
+        "verification": 0.4343000036897138,
+        "total": 2090.4321999987587
+      }
+    },
+    "INRS-DEV-013": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        68,
+        27,
+        67,
+        4,
+        69,
+        3,
+        18,
+        45
+      ],
+      "cited_chunk_ids": [
+        68,
+        68
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2669,
+      "output_tokens": 133,
+      "cost_usd": 0.00048015,
+      "latency_ms": {
+        "retrieval": 77.91310000175145,
+        "generation": 1992.7999999927124,
+        "verification": 0.6787000020267442,
+        "total": 2071.3925000018207
+      }
+    },
+    "INRS-DEV-014": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        29,
+        67,
+        30,
+        28,
+        33,
+        47,
+        41,
+        69
+      ],
+      "cited_chunk_ids": [
+        29,
+        29
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2849,
+      "output_tokens": 163,
+      "cost_usd": 0.0005251499999999999,
+      "latency_ms": {
+        "retrieval": 76.03569999628235,
+        "generation": 1917.8455999935977,
+        "verification": 0.7550000009359792,
+        "total": 1994.6377000014763
+      }
+    },
+    "INRS-DEV-015": {
+      "category": "out_of_scope",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        36,
+        56,
+        64,
+        31,
+        65,
+        20,
+        61,
+        60
+      ],
+      "cited_chunk_ids": [
+        56,
+        56
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2680,
+      "output_tokens": 145,
+      "cost_usd": 0.000489,
+      "latency_ms": {
+        "retrieval": 83.14219999010675,
+        "generation": 1693.5525000008056,
+        "verification": 0.3615000023273751,
+        "total": 1777.0565999962855
+      }
+    },
+    "INRS-DEV-016": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        4,
+        28,
+        29,
+        34,
+        30,
+        3,
+        35,
+        19
+      ],
+      "cited_chunk_ids": [
+        28
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2899,
+      "output_tokens": 320,
+      "cost_usd": 0.0006268499999999999,
+      "latency_ms": {
+        "retrieval": 84.56600000499748,
+        "generation": 4724.6784000017215,
+        "verification": 0.36589999217540026,
+        "total": 4809.61070000194
+      }
+    },
+    "INRS-DEV-017": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        3,
+        4,
+        1,
+        23,
+        18,
+        69,
+        68,
+        19
+      ],
+      "cited_chunk_ids": [
+        3
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2925,
+      "output_tokens": 174,
+      "cost_usd": 0.00054315,
+      "latency_ms": {
+        "retrieval": 81.88399999926332,
+        "generation": 2677.5320999877295,
+        "verification": 0.34080000477842987,
+        "total": 2759.757299994817
+      }
+    },
+    "INRS-DEV-018": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        31,
+        20,
+        61,
+        7,
+        16,
+        64,
+        35,
+        36
+      ],
+      "cited_chunk_ids": [
+        31,
+        31
+      ],
+      "gold_in_passages": true,
+      "good_source": false,
+      "input_tokens": 2497,
+      "output_tokens": 158,
+      "cost_usd": 0.00046935,
+      "latency_ms": {
+        "retrieval": 75.35270000516903,
+        "generation": 2499.17509999068,
+        "verification": 0.24090000079013407,
+        "total": 2574.7689999989234
+      }
+    },
+    "INRS-DEV-019": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        10,
+        8,
+        7,
+        31,
+        61,
+        20,
+        53,
+        5
+      ],
+      "cited_chunk_ids": [
+        10
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2084,
+      "output_tokens": 92,
+      "cost_usd": 0.00036779999999999994,
+      "latency_ms": {
+        "retrieval": 77.58910000848118,
+        "generation": 2125.8509999897797,
+        "verification": 0.09290000889450312,
+        "total": 2203.5333999956492
+      }
+    },
+    "INRS-DEV-020": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "REFUSED_BY_GUARDRAIL",
+      "reason_code": "extrait_introuvable",
+      "reason": "extrait_introuvable (affirmation 2, P6)",
+      "passage_ids": [
+        23,
+        5,
+        22,
+        19,
+        4,
+        6,
+        55,
+        3
+      ],
+      "cited_chunk_ids": [],
+      "gold_in_passages": true,
+      "good_source": null,
+      "input_tokens": 2788,
+      "output_tokens": 148,
+      "cost_usd": 0.000507,
+      "latency_ms": {
+        "retrieval": 77.96880000387318,
+        "generation": 2321.4562999928603,
+        "verification": 0.2775000029942021,
+        "total": 2399.7030000027735
+      }
+    },
+    "INRS-DEV-021": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        18,
+        67,
+        2,
+        61,
+        63,
+        64,
+        59,
+        57
+      ],
+      "cited_chunk_ids": [
+        18
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2949,
+      "output_tokens": 203,
+      "cost_usd": 0.00056415,
+      "latency_ms": {
+        "retrieval": 82.00680000300054,
+        "generation": 2431.8149000027915,
+        "verification": 0.519599998369813,
+        "total": 2514.3426000140607
+      }
+    },
+    "INRS-DEV-022": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        65,
+        64,
+        36,
+        30,
+        35,
+        61,
+        31,
+        60
+      ],
+      "cited_chunk_ids": [
+        61,
+        31
+      ],
+      "gold_in_passages": false,
+      "good_source": null,
+      "input_tokens": 2686,
+      "output_tokens": 146,
+      "cost_usd": 0.0004905,
+      "latency_ms": {
+        "retrieval": 75.19930000125896,
+        "generation": 2595.744399994146,
+        "verification": 0.3704999980982393,
+        "total": 2671.315200001118
+      }
+    },
+    "INRS-DEV-023": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        22,
+        5,
+        2,
+        19,
+        20,
+        23,
+        58,
+        63
+      ],
+      "cited_chunk_ids": [
+        22
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2849,
+      "output_tokens": 78,
+      "cost_usd": 0.00047414999999999995,
+      "latency_ms": {
+        "retrieval": 79.04229999985546,
+        "generation": 1298.5081000078935,
+        "verification": 0.5367999983718619,
+        "total": 1378.0884000007063
+      }
+    },
+    "INRS-DEV-024": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        23,
+        5,
+        22,
+        6,
+        24,
+        63,
+        55,
+        26
+      ],
+      "cited_chunk_ids": [
+        23
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2592,
+      "output_tokens": 80,
+      "cost_usd": 0.0004368,
+      "latency_ms": {
+        "retrieval": 76.61639999423642,
+        "generation": 1683.1468000018504,
+        "verification": 0.2793000021483749,
+        "total": 1760.042900001281
+      }
+    },
+    "INRS-DEV-025": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        2,
+        27,
+        18,
+        68,
+        1,
+        4,
+        69,
+        3
+      ],
+      "cited_chunk_ids": [
+        27
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2639,
+      "output_tokens": 90,
+      "cost_usd": 0.00044984999999999996,
+      "latency_ms": {
+        "retrieval": 81.33909999742173,
+        "generation": 1720.4767000075663,
+        "verification": 0.08579999848734587,
+        "total": 1801.9019000057597
+      }
+    },
+    "INRS-DEV-026": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        28,
+        67,
+        33,
+        35,
+        29,
+        30,
+        68,
+        27
+      ],
+      "cited_chunk_ids": [
+        28
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2879,
+      "output_tokens": 125,
+      "cost_usd": 0.00050685,
+      "latency_ms": {
+        "retrieval": 76.28600001044106,
+        "generation": 1974.8762999952305,
+        "verification": 0.2854000049410388,
+        "total": 2051.447999998345
+      }
+    },
+    "INRS-DEV-027": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        33,
+        34,
+        29,
+        28,
+        30,
+        4,
+        14,
+        19
+      ],
+      "cited_chunk_ids": [
+        33
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2687,
+      "output_tokens": 104,
+      "cost_usd": 0.00046545,
+      "latency_ms": {
+        "retrieval": 85.6404000078328,
+        "generation": 1389.0899999969406,
+        "verification": 0.3125000075669959,
+        "total": 1475.0432000000728
+      }
+    },
+    "INRS-DEV-028": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        32,
+        29,
+        33,
+        28,
+        30,
+        34,
+        35,
+        65
+      ],
+      "cited_chunk_ids": [
+        32
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2856,
+      "output_tokens": 121,
+      "cost_usd": 0.000501,
+      "latency_ms": {
+        "retrieval": 78.56310000352096,
+        "generation": 1952.0781000028364,
+        "verification": 0.18279999494552612,
+        "total": 2030.8243000035873
+      }
+    },
+    "INRS-DEV-029": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        33,
+        34,
+        29,
+        28,
+        30,
+        4,
+        32,
+        20
+      ],
+      "cited_chunk_ids": [
+        34
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2751,
+      "output_tokens": 123,
+      "cost_usd": 0.00048645,
+      "latency_ms": {
+        "retrieval": 76.00390000152402,
+        "generation": 1713.155799996457,
+        "verification": 0.1740000006975606,
+        "total": 1789.334000000963
+      }
+    },
+    "INRS-DEV-030": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        46,
+        51,
+        50,
+        38,
+        48,
+        41,
+        47,
+        42
+      ],
+      "cited_chunk_ids": [
+        38
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 3048,
+      "output_tokens": 68,
+      "cost_usd": 0.000498,
+      "latency_ms": {
+        "retrieval": 77.07150001078844,
+        "generation": 1363.5579999972833,
+        "verification": 0.2108999906340614,
+        "total": 1440.8408000017516
+      }
+    },
+    "INRS-DEV-031": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        46,
+        47,
+        43,
+        49,
+        48,
+        41,
+        42,
+        45
+      ],
+      "cited_chunk_ids": [
+        47
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2965,
+      "output_tokens": 89,
+      "cost_usd": 0.0004981499999999999,
+      "latency_ms": {
+        "retrieval": 76.9406000035815,
+        "generation": 1156.4424999960465,
+        "verification": 0.34670000604819506,
+        "total": 1233.730400010245
+      }
+    },
+    "INRS-DEV-032": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        48,
+        60,
+        42,
+        65,
+        61,
+        59,
+        57,
+        41
+      ],
+      "cited_chunk_ids": [
+        48
+      ],
+      "gold_in_passages": true,
+      "good_source": null,
+      "input_tokens": 2848,
+      "output_tokens": 90,
+      "cost_usd": 0.0004812,
+      "latency_ms": {
+        "retrieval": 79.1666000004625,
+        "generation": 1467.239999998128,
+        "verification": 0.23740000324323773,
+        "total": 1546.6444000048796
+      }
+    },
+    "INRS-DEV-033": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        50,
+        51,
+        38,
+        12,
+        46,
+        47,
+        49,
+        48
+      ],
+      "cited_chunk_ids": [
+        50,
+        50
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2906,
+      "output_tokens": 168,
+      "cost_usd": 0.0005367,
+      "latency_ms": {
+        "retrieval": 84.09260000917129,
+        "generation": 2765.302999992855,
+        "verification": 0.4284000024199486,
+        "total": 2849.8243000067305
+      }
+    },
+    "INRS-DEV-034": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        4,
+        57,
+        60,
+        63,
+        48,
+        46,
+        59,
+        55
+      ],
+      "cited_chunk_ids": [
+        4,
+        63
+      ],
+      "gold_in_passages": true,
+      "good_source": null,
+      "input_tokens": 2941,
+      "output_tokens": 220,
+      "cost_usd": 0.00057315,
+      "latency_ms": {
+        "retrieval": 78.91759999620263,
+        "generation": 3635.486300001503,
+        "verification": 0.43739999819081277,
+        "total": 3714.8428999935277
+      }
+    },
+    "INRS-DEV-035": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        59,
+        63,
+        60,
+        61,
+        58,
+        57,
+        64,
+        65
+      ],
+      "cited_chunk_ids": [
+        58
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2836,
+      "output_tokens": 93,
+      "cost_usd": 0.0004812,
+      "latency_ms": {
+        "retrieval": 79.0326999995159,
+        "generation": 1474.507300008554,
+        "verification": 0.20599999697878957,
+        "total": 1553.746500008856
+      }
+    },
+    "INRS-DEV-036": {
+      "category": "valid",
+      "must_refuse": false,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        63,
+        57,
+        60,
+        61,
+        59,
+        58,
+        39,
+        64
+      ],
+      "cited_chunk_ids": [
+        63
+      ],
+      "gold_in_passages": true,
+      "good_source": true,
+      "input_tokens": 2802,
+      "output_tokens": 105,
+      "cost_usd": 0.00048330000000000004,
+      "latency_ms": {
+        "retrieval": 92.2015999967698,
+        "generation": 1551.054399998975,
+        "verification": 0.48630000674165785,
+        "total": 1643.743299995549
+      }
+    },
+    "INRS-DEV-037": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        49,
+        4,
+        48,
+        42,
+        60,
+        41,
+        46,
+        3
+      ],
+      "cited_chunk_ids": [
+        60,
+        60
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2891,
+      "output_tokens": 192,
+      "cost_usd": 0.0005488499999999999,
+      "latency_ms": {
+        "retrieval": 76.93049999943469,
+        "generation": 3204.7970999992685,
+        "verification": 1.0577000066405162,
+        "total": 3282.7863999991678
+      }
+    },
+    "INRS-DEV-038": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        33,
+        28,
+        4,
+        19,
+        3,
+        1,
+        29,
+        18
+      ],
+      "cited_chunk_ids": [
+        33
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 3166,
+      "output_tokens": 107,
+      "cost_usd": 0.0005391,
+      "latency_ms": {
+        "retrieval": 79.61060000525322,
+        "generation": 1851.0301999922376,
+        "verification": 0.5176000122446567,
+        "total": 1931.1597000050824
+      }
+    },
+    "INRS-DEV-039": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        46,
+        50,
+        47,
+        41,
+        48,
+        49,
+        38,
+        42
+      ],
+      "cited_chunk_ids": [
+        50,
+        50
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2913,
+      "output_tokens": 170,
+      "cost_usd": 0.0005389500000000001,
+      "latency_ms": {
+        "retrieval": 75.43579999764916,
+        "generation": 3062.945199999376,
+        "verification": 0.7010999979684129,
+        "total": 3139.082800000324
+      }
+    },
+    "INRS-DEV-040": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        16,
+        31,
+        3,
+        23,
+        20,
+        25,
+        61,
+        24
+      ],
+      "cited_chunk_ids": [
+        31
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2471,
+      "output_tokens": 92,
+      "cost_usd": 0.00042584999999999997,
+      "latency_ms": {
+        "retrieval": 130.3160000097705,
+        "generation": 1162.4963999929605,
+        "verification": 0.17250000382773578,
+        "total": 1292.985200008843
+      }
+    },
+    "INRS-DEV-041": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        51,
+        52,
+        50,
+        49,
+        38,
+        46,
+        47,
+        44
+      ],
+      "cited_chunk_ids": [
+        44
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2812,
+      "output_tokens": 94,
+      "cost_usd": 0.00047819999999999997,
+      "latency_ms": {
+        "retrieval": 74.59630000812467,
+        "generation": 1529.3437999935122,
+        "verification": 0.18060000729747117,
+        "total": 1604.1209999966668
+      }
+    },
+    "INRS-DEV-042": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        50,
+        51,
+        49,
+        38,
+        46,
+        47,
+        52,
+        39
+      ],
+      "cited_chunk_ids": [
+        50
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2784,
+      "output_tokens": 94,
+      "cost_usd": 0.0004739999999999999,
+      "latency_ms": {
+        "retrieval": 75.67859999835491,
+        "generation": 1970.075100005488,
+        "verification": 0.2516999957151711,
+        "total": 2046.0059000033652
+      }
+    },
+    "INRS-DEV-043": {
+      "category": "near_miss",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        33,
+        29,
+        28,
+        32,
+        60,
+        20,
+        57,
+        34
+      ],
+      "cited_chunk_ids": [
+        28
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 3008,
+      "output_tokens": 92,
+      "cost_usd": 0.0005064,
+      "latency_ms": {
+        "retrieval": 75.86989999981597,
+        "generation": 1524.8946999927284,
+        "verification": 0.37570000858977437,
+        "total": 1601.1410999926738
+      }
+    },
+    "INRS-DEV-044": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        18,
+        66,
+        2,
+        3,
+        67,
+        1,
+        61,
+        19
+      ],
+      "cited_chunk_ids": [
+        18
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2885,
+      "output_tokens": 214,
+      "cost_usd": 0.00056115,
+      "latency_ms": {
+        "retrieval": 76.34600000164937,
+        "generation": 3235.4215000086697,
+        "verification": 0.38869999116286635,
+        "total": 3312.1566000045277
+      }
+    },
+    "INRS-DEV-045": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        3,
+        68,
+        64,
+        60,
+        65,
+        61,
+        35,
+        36
+      ],
+      "cited_chunk_ids": [
+        3
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2905,
+      "output_tokens": 102,
+      "cost_usd": 0.00049695,
+      "latency_ms": {
+        "retrieval": 76.17539999773726,
+        "generation": 1515.2801999938674,
+        "verification": 0.3149999974993989,
+        "total": 1591.7710999929113
+      }
+    },
+    "INRS-DEV-046": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        43,
+        47,
+        41,
+        48,
+        46,
+        49,
+        42,
+        40
+      ],
+      "cited_chunk_ids": [
+        48,
+        48
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2917,
+      "output_tokens": 163,
+      "cost_usd": 0.00053535,
+      "latency_ms": {
+        "retrieval": 77.33099999313708,
+        "generation": 2465.9343999956036,
+        "verification": 0.7283000013558194,
+        "total": 2543.995099986205
+      }
+    },
+    "INRS-DEV-047": {
+      "category": "identifier_trap",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        47,
+        67,
+        49,
+        48,
+        46,
+        45,
+        41,
+        42
+      ],
+      "cited_chunk_ids": [
+        47
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2954,
+      "output_tokens": 172,
+      "cost_usd": 0.0005463,
+      "latency_ms": {
+        "retrieval": 78.30040001135785,
+        "generation": 2171.2491999933263,
+        "verification": 0.40609999268781394,
+        "total": 2249.957000007271
+      }
+    },
+    "INRS-DEV-048": {
+      "category": "out_of_scope",
+      "must_refuse": true,
+      "status": "ANSWERED",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        36,
+        65,
+        64,
+        31,
+        61,
+        35,
+        20,
+        60
+      ],
+      "cited_chunk_ids": [
+        35
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2808,
+      "output_tokens": 70,
+      "cost_usd": 0.0004632,
+      "latency_ms": {
+        "retrieval": 74.83959999808576,
+        "generation": 999.8227000032784,
+        "verification": 0.2905000001192093,
+        "total": 1074.9532000045292
+      }
+    },
+    "INRS-DEV-049": {
+      "category": "out_of_scope",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        47,
+        42,
+        49,
+        56,
+        48,
+        46,
+        64,
+        65
+      ],
+      "cited_chunk_ids": [
+        56
+      ],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2833,
+      "output_tokens": 81,
+      "cost_usd": 0.00047355,
+      "latency_ms": {
+        "retrieval": 83.29369999410119,
+        "generation": 1504.1550000023562,
+        "verification": 0.17939999816007912,
+        "total": 1587.6282999961404
+      }
+    },
+    "INRS-DEV-050": {
+      "category": "out_of_scope",
+      "must_refuse": true,
+      "status": "REFUSED_BY_LLM",
+      "reason_code": null,
+      "reason": "",
+      "passage_ids": [
+        42,
+        43,
+        48,
+        47,
+        41,
+        49,
+        61,
+        46
+      ],
+      "cited_chunk_ids": [],
+      "gold_in_passages": null,
+      "good_source": null,
+      "input_tokens": 2859,
+      "output_tokens": 186,
+      "cost_usd": 0.0005404499999999999,
+      "latency_ms": {
+        "retrieval": 111.015700007556,
+        "generation": 2666.58489999827,
+        "verification": 0.4613999917637557,
+        "total": 2778.062299999874
+      }
+    }
+  }
+}
