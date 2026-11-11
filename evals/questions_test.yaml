@@ -594,7 +594,7 @@ questions:
     expected_page: null
     exact_quote: null
     expected_identifiers: []
-    reason: "Aucune marque n'est recommandée. Piège : MASTER LOCK et BRADY figurent dans les remerciements (page non numérotée, page 4 du PDF), et la page 17 montre un verrouillage par multicadenas."
+    reason: "Le guide ne recommande aucune marque de cadenas ni de pince multicadenas. Passage tentant : les légendes de la page 17 (verrouillage par multicadenas, condamnation par cadenas)."
     verification: ["MASTER LOCK", "BRADY", "marque", "multicadenas"]
 
   - id: "INRS-TEST-049"
