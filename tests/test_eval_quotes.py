@@ -1,4 +1,7 @@
-"""Chaque ``exact_quote`` de evals/questions_dev.yaml figure-t-elle dans le PDF source ?
+"""Chaque ``exact_quote`` de evals/questions_dev.yaml et evals/questions_test.yaml figure-t-elle
+dans le PDF source, à la bonne page ?
+
+Le jeu test est seulement LU ici (comparaison au PDF) : le système n'est jamais exécuté dessus.
 
 Nécessite le PDF INRS local (jamais versionné) : SKIPPED s'il est absent, comme en CI.
 Le texte du PDF est extrait en mémoire uniquement ; aucun fichier n'est écrit, et les messages
@@ -19,7 +22,7 @@ import yaml
 from maintenance_rag.normalize import normalize_for_match, quote_matches
 
 ROOT = Path(__file__).resolve().parents[1]
-QUESTIONS = ROOT / "evals" / "questions_dev.yaml"
+QUESTION_FILES = (ROOT / "evals" / "questions_dev.yaml", ROOT / "evals" / "questions_test.yaml")
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -42,15 +45,21 @@ MIN_CHARS: int = _load_yaml(ROOT / "config" / "config.yaml")["guardrails"]["min_
 def _questions_with_quotes() -> list[Any]:
     """Une entrée par question à citation ; un YAML illisible donne une seule entrée en échec
     (une erreur de collecte interromprait toute la session pytest)."""
-    try:
-        questions = _load_yaml(QUESTIONS)["questions"]
-    except yaml.YAMLError as error:
-        return [pytest.param({"yaml_error": str(error)}, id="yaml-illisible")]
-    return [
-        pytest.param(question, id=question["id"])
-        for question in questions
-        if not question["must_refuse"]
-    ]
+    params = []
+    for path in QUESTION_FILES:
+        try:
+            questions = _load_yaml(path)["questions"]
+        except yaml.YAMLError as error:
+            params.append(
+                pytest.param({"yaml_error": f"{path.name} : {error}"}, id=f"{path.stem}-illisible")
+            )
+            continue
+        params += [
+            pytest.param(question, id=question["id"])
+            for question in questions
+            if not question["must_refuse"]
+        ]
+    return params
 
 
 @pytest.fixture(scope="module")
@@ -88,7 +97,7 @@ def _diagnostic(qid: str, needle: str, haystack: str, where: str) -> str:
 @pytest.mark.parametrize("question", _questions_with_quotes())
 def test_exact_quote_is_in_pdf(question: dict[str, Any], pages: dict[int, str]) -> None:
     if "yaml_error" in question:
-        pytest.fail(f"{QUESTIONS.name} illisible : {question['yaml_error']}", pytrace=False)
+        pytest.fail(f"YAML illisible : {question['yaml_error']}", pytrace=False)
 
     qid, quote = question["id"], question["exact_quote"]
     needle = normalize_for_match(quote)

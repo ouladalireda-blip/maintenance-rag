@@ -28,3 +28,6 @@ corpus/inrs/
 
 # Réponses complètes du LLM (extraits du guide © INRS) : jamais versionnées
 evals/runs/
+
+# Lots de questions en cours de rédaction (avant assemblage dans questions_test.yaml)
+evals/drafts/

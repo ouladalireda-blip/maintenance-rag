@@ -116,8 +116,13 @@ def test_unique_and_sorted() -> None:
 # --------------------------------------------------------------------------------------------
 # Jeu d'évaluation
 # --------------------------------------------------------------------------------------------
-QUESTIONS = yaml.safe_load((ROOT / "evals" / "questions_dev.yaml").read_text(encoding="utf-8"))
-VALID = [q for q in QUESTIONS["questions"] if not q["must_refuse"]]
+QUESTION_FILES = ("questions_dev.yaml", "questions_test.yaml")  # lus, jamais soumis au système
+VALID = [
+    q
+    for name in QUESTION_FILES
+    for q in yaml.safe_load((ROOT / "evals" / name).read_text(encoding="utf-8"))["questions"]
+    if not q["must_refuse"]
+]
 
 
 @pytest.mark.parametrize("question", VALID, ids=[q["id"] for q in VALID])

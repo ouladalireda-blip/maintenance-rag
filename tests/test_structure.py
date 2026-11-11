@@ -115,6 +115,94 @@ def test_total_questions_matches() -> None:
             assert data["total_questions"] == len(data["questions"]), name
 
 
+# Ordre canonique des champs d'une question ; une question n'en a qu'une partie, mais toujours
+# dans cet ordre. style, difficulty, tag et verification sont facultatifs.
+FIELD_ORDER = (
+    "id",
+    "category",
+    "tag",
+    "style",
+    "difficulty",
+    "question",
+    "original_question",
+    "must_refuse",
+    "target_document_id",
+    "expected_section",
+    "expected_page",
+    "exact_quote",
+    "expected_identifiers",
+    "reason",
+    "verification",
+)
+REQUIRED_FIELDS = set(FIELD_ORDER) - {
+    "tag",
+    "style",
+    "difficulty",
+    "original_question",
+    "verification",
+}
+ID_PREFIX = {"questions_dev.yaml": "INRS-DEV-", "questions_test.yaml": "INRS-TEST-"}
+
+
+# Champs d'en-tête permis dans le jeu TEST seulement : ids retirés (jamais renumérotés) et motif.
+TEST_ONLY_HEADER = ("removed_ids", "removed_reason")
+
+
+def _id_number(qid: str, prefix: str) -> int:
+    match = re.fullmatch(re.escape(prefix) + r"(\d{3})", qid)
+    assert match, f"{qid} : format d'id attendu {prefix}NNN"
+    return int(match.group(1))
+
+
+def test_question_fields_ids_and_header() -> None:
+    dev_header = [key for key in _load("evals", "questions_dev.yaml") if key != "questions"]
+    for name, prefix in ID_PREFIX.items():
+        raw = (ROOT / "evals" / name).read_text(encoding="utf-8")
+        assert len(re.findall(r"^questions:", raw, re.M)) == 1, f"{name} : une seule clé questions:"
+        data = yaml.safe_load(raw)
+        header = [key for key in data if key != "questions"]
+        questions = data["questions"]
+        ids = [q["id"] for q in questions]
+        if name == "questions_dev.yaml":
+            # Jeu dev : comparé comme avant (ids continus dès 001).
+            expected_ids = [f"{prefix}{number:03d}" for number in range(1, len(questions) + 1)]
+            assert ids == expected_ids, f"{name} : ids non continus"
+        else:
+            # Jeu test : en-tête du dev, plus éventuellement removed_ids / removed_reason à la fin.
+            extra = [key for key in header if key in TEST_ONLY_HEADER]
+            assert [key for key in header if key not in TEST_ONLY_HEADER] == dev_header, name
+            assert header == dev_header + extra and extra in ([], list(TEST_ONLY_HEADER)), (
+                f"{name} : removed_ids et removed_reason vont ensemble, après total_questions"
+            )
+            numbers = [_id_number(qid, prefix) for qid in ids]
+            assert len(set(ids)) == len(ids), f"{name} : ids en double"
+            assert numbers == sorted(numbers), f"{name} : ids non croissants"
+            removed = data.get("removed_ids") or []
+            assert len(set(removed)) == len(removed), f"{name} : removed_ids en double"
+            missing = (
+                {f"{prefix}{n:03d}" for n in range(numbers[0], numbers[-1] + 1)} - set(ids)
+                if numbers
+                else set()
+            )
+            unexplained = sorted(missing - set(removed))
+            assert not unexplained, f"{name} : ids manquants absents de removed_ids : {unexplained}"
+            still_there = sorted(set(removed) & set(ids))
+            assert not still_there, f"{name} : ids retirés encore présents : {still_there}"
+            if removed:
+                reason = data.get("removed_reason")
+                assert isinstance(reason, str) and reason.strip(), f"{name} : removed_reason vide"
+        if not questions:
+            continue
+        for question in questions:
+            keys = list(question)
+            unknown = set(keys) - set(FIELD_ORDER)
+            assert not unknown, f"{question['id']} : champs inconnus {sorted(unknown)}"
+            assert REQUIRED_FIELDS <= set(keys), f"{question['id']} : champs manquants"
+            assert keys == sorted(keys, key=FIELD_ORDER.index), f"{question['id']} : ordre"
+            if "verification" in question:
+                assert isinstance(question["verification"], list), question["id"]
+
+
 def test_stopwords_migration_orders_dictionaries() -> None:
     sql = (MIGRATIONS / "0004_fr_stopwords_first.sql").read_text(encoding="utf-8")
     code = "\n".join(re.sub(r"--.*", "", line) for line in sql.splitlines())

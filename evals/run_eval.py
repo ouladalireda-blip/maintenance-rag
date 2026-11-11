@@ -1038,14 +1038,24 @@ def _print(report: dict[str, Any], questions: list[dict[str, Any]]) -> None:
 def main(argv: Sequence[str] | None = None) -> int:
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     parser = argparse.ArgumentParser(description="Évaluation du pipeline maintenance-rag.")
-    parser.add_argument("--set", choices=["dev"], required=True)
+    parser.add_argument("--set", choices=["dev", "test"], required=True)
     parser.add_argument(
         "--mode", choices=["retrieval", "grid", "rerank", "signals", "e2e"], required=True
     )
     parser.add_argument(
         "--estimate-only", action="store_true", help="e2e : estimer le coût sans appeler le LLM"
     )
+    parser.add_argument(
+        "--final",
+        action="store_true",
+        help="seul moyen d'évaluer le jeu test : mesure finale, une seule fois",
+    )
     args = parser.parse_args(argv)
+    if args.set == "test":
+        print("AVERTISSEMENT : le jeu test ne doit être utilisé qu'une seule fois.")
+        if not args.final:
+            print("REFUS : --set test exige le drapeau explicite --final ; rien n'a été lancé.")
+            return 5
 
     data = yaml.safe_load((ROOT / "evals" / f"questions_{args.set}.yaml").read_text("utf-8"))
     all_questions = args.mode in {"rerank", "signals", "e2e"}

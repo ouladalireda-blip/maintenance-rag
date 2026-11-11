@@ -216,7 +216,13 @@ CONFIG = yaml.safe_load((ROOT / "config" / "config.yaml").read_text(encoding="ut
 MAX_TOKENS: int = CONFIG["chunking"]["max_tokens"]
 MIN_CHARS: int = CONFIG["guardrails"]["min_quote_chars"]
 QUESTIONS = yaml.safe_load((ROOT / "evals" / "questions_dev.yaml").read_text(encoding="utf-8"))
-VALID = [q for q in QUESTIONS["questions"] if not q["must_refuse"]]
+# Citations des jeux dev ET test : on lit le PDF et on découpe, sans exécuter le système.
+VALID = [
+    q
+    for name in ("questions_dev.yaml", "questions_test.yaml")
+    for q in yaml.safe_load((ROOT / "evals" / name).read_text(encoding="utf-8"))["questions"]
+    if not q["must_refuse"]
+]
 real_pdf = pytest.mark.skipif(not PDF_PATH.exists(), reason="PDF INRS absent (non versionné)")
 
 RERANK_MODEL = CONFIG["rerank"]["model"]
@@ -233,6 +239,12 @@ def blocks() -> list[Block]:
     return read_pdf(PDF_PATH, INRS, load_layout_profile(INRS.layout_profile))
 
 
+@pytest.fixture(scope="module")
+def real_chunks(blocks: list[Block]) -> list[Chunk]:
+    """Découpage du vrai PDF, calculé une fois pour toutes les citations (dev et test)."""
+    return chunk_blocks(blocks, MAX_TOKENS, document_slug=INRS.id)
+
+
 def _found(question: dict[str, Any], chunks: list[Chunk]) -> bool:
     page = question["expected_page"]
     return any(
@@ -246,8 +258,8 @@ def _found(question: dict[str, Any], chunks: list[Chunk]) -> bool:
 
 @real_pdf
 @pytest.mark.parametrize("question", VALID, ids=[q["id"] for q in VALID])
-def test_real_quote_is_in_one_chunk(question: dict[str, Any], blocks: list[Block]) -> None:
-    chunks = chunk_blocks(blocks, MAX_TOKENS, document_slug=INRS.id)
+def test_real_quote_is_in_one_chunk(question: dict[str, Any], real_chunks: list[Chunk]) -> None:
+    chunks = real_chunks
     if not _found(question, chunks):
         page = question["expected_page"]
         on_page = [
