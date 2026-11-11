@@ -683,6 +683,20 @@ def _print_estimate(estimate: dict[str, Any], model: str) -> None:
     )
 
 
+# Critère ajouté avant la mesure v2 : le CRR ne doit pas baisser sous son niveau v1 (20/21).
+MIN_CRR = (20, 21)
+
+
+def _crr_criterion(refused: int, traps: int) -> dict[str, Any]:
+    low, high = MIN_CRR
+    return {
+        "name": "CRR",
+        "value": refused / traps,
+        "threshold": f"≥ {low}/{high}",
+        "ok": refused * high >= low * traps,
+    }
+
+
 def _e2e_metrics(
     questions: list[dict[str, Any]], records: dict[str, dict[str, Any]], verdicts: dict[str, Any]
 ) -> dict[str, Any]:
@@ -747,7 +761,8 @@ def _e2e_metrics(
         },
         "criteria": e2e_criteria(
             len(dangerous), len(valid_refused), len(valid), len(good), len(valid_answered)
-        ),
+        )
+        + [_crr_criterion(len(traps) - len(dangerous), len(traps))],
     }
 
 

@@ -1,6 +1,6 @@
 expected_identifiers_definition: "Références citées dans la question ou la citation, que la recherche exacte doit retrouver."
-version: "2.1"
-last_reviewed: "2026-11-10"
+version: "2.2"
+last_reviewed: "2026-11-11"
 note: "Questions rédigées avec l'aide d'un LLM puis vérifiées une à une contre le document source."
 dataset_name: "inrs_ed6109_dev_set"
 page_convention: "printed"
@@ -355,14 +355,15 @@ questions:
 
   - id: "INRS-DEV-032"
     category: "valid"
-    question: "Pour faire tomber la pression d'un tronçon, j'ai le droit de débloquer doucement les écrous du raccord ?"
+    question: "Pour faire tomber la pression d'un tronçon, j'ai le droit de desserrer petit à petit les boulons de la bride ?"
+    original_question: "Pour faire tomber la pression d'un tronçon, j'ai le droit de débloquer doucement les écrous du raccord ?"
     must_refuse: false
     target_document_id: "inrs-ed6109"
     expected_section: "6.1. Consignation fluidique › Principes de séparation de circuits"
     expected_page: 23
     exact_quote: "La purge d'une portion de ligne par desserrage progressif des boulons de brides doit être systématiquement interdite."
     expected_identifiers: []
-    reason: "Teste la récupération d'un avertissement « Attention ! » (interdiction) à partir d'une formulation sans mot-clé commun."
+    reason: "Teste la récupération d'un avertissement « Attention ! » (interdiction) à partir d'une formulation sans mot-clé commun. v2.2 : reformulée, un raccord n'est pas une bride (question v2.1 ambiguë)."
 
   - id: "INRS-DEV-033"
     category: "valid"

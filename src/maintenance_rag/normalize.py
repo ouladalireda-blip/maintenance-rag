@@ -35,6 +35,10 @@ _QUOTES = str.maketrans(
 # cadratin, barre horizontale, signe moins.
 _DASHES = re.compile("[-\u2010\u2011\u2012\u2013\u2014\u2015\u2212]")
 _WHITESPACE = re.compile(r"\s+")
+# Artefacts du chunking, absents du texte imprimé du guide : puces de liste (•, ◦, ▪) et appels
+# de note Markdown « [^4] » insérés devant le texte des notes de bas de page.
+_BULLETS = re.compile("[•◦▪]")
+_FOOTNOTE_REFS = re.compile(r"\[\^\d+\]")
 
 # Recollage : uniquement entre deux suites de LETTRES (pas de chiffres), pour ne jamais toucher
 # aux identifiants exacts comme ERR-402 ou NF C18-510.
@@ -53,21 +57,31 @@ def normalize_for_match(text: str) -> str:
 
     Étapes, dans l'ordre :
       1. NFKC (ligatures, espaces et caractères de compatibilité) ;
-      2. minuscules ;
-      3. apostrophes et guillemets typographiques unifiés (’ → ', « » “ ” → ") ;
-      4. suppression des caractères de contrôle et de format, dont le trait d'union
+      2. suppression des appels de note Markdown ``[^<chiffres>]`` et des puces de liste
+         U+2022 (•), U+25E6 (◦), U+25AA (▪) ;
+      3. minuscules ;
+      4. apostrophes et guillemets typographiques unifiés (’ → ', « » “ ” → ") ;
+      5. suppression des caractères de contrôle et de format, dont le trait d'union
          conditionnel U+00AD et les caractères de mise en page des PDF ;
-      5. suppression de TOUS les tirets (-, ‐, ‑, ‒, –, —, ―, −) ;
-      6. suppression de TOUS les espaces, insécables compris.
+      6. suppression de TOUS les tirets (-, ‐, ‑, ‒, –, —, ―, −) ;
+      7. suppression de TOUS les espaces, insécables compris.
 
-    Les étapes 5 et 6 rendent équivalents « court-circuit », « court circuit » et
+    L'étape 2 retire des artefacts du CHUNKING, absents du texte imprimé du guide : la puce
+    placée devant chaque item de liste et l'appel « [^4] » inséré là où le PDF porte un renvoi
+    de note. Un LLM qui recopie une liste en phrase les omet à juste titre ; les garder
+    ferait échouer des citations exactes. Seule la forme exacte ``[^<chiffres>]`` est retirée :
+    aucun autre chiffre ne l'est (« R. 4411-6 », « 1 000 V » restent comparés).
+
+    Les étapes 6 et 7 rendent équivalents « court-circuit », « court circuit » et
     « courtcircuit », ainsi que les césures de fin de ligne, quelle que soit leur forme. Les
     lettres, chiffres et autres signes restent comparés tels quels : un chiffre, une unité ou
     une négation modifiés font toujours échouer la vérification.
 
     Le résultat n'est pas destiné à l'affichage.
     """
-    text = unicodedata.normalize("NFKC", text).lower().translate(_QUOTES)
+    text = unicodedata.normalize("NFKC", text)
+    text = _BULLETS.sub("", _FOOTNOTE_REFS.sub("", text))
+    text = text.lower().translate(_QUOTES)
     text = "".join(ch for ch in text if unicodedata.category(ch) not in ("Cc", "Cf"))
     text = _DASHES.sub("", text)
     return _WHITESPACE.sub("", text)

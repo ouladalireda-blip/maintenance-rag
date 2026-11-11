@@ -19,7 +19,7 @@ from maintenance_rag.llm import LLM, LLMReply
 from maintenance_rag.retrieval import SearchResult
 from maintenance_rag.schemas import LLMAnswer, strict_json_schema
 
-PROMPT_VERSION = "generation-v1-2026-11-11"
+PROMPT_VERSION = "generation-v2-2026-11-11"
 
 SYSTEM_PROMPT = """\
 Tu es l'assistant d'un technicien de maintenance. Tu réponds à sa question à partir d'extraits \
@@ -41,6 +41,22 @@ norme, numéro) : si cette référence n'est pas écrite dans les passages, info
 information ; les affirmations peuvent donner des informations liées, chacune citée.
 6. reponse est courte, en français, pour un technicien. Elle ne contient aucun chiffre, durée, \
 seuil ou nom qui ne figure pas dans une affirmation.
+7. Une affirmation = un extrait CONTINU, copié mot pour mot. Jamais de « ... » ni de « … », \
+jamais de coupure à l'intérieur d'un extrait. S'il faut sauter du texte, fais deux affirmations, \
+une par extrait continu.
+   Exemple inventé. Passage : "Le contrôle comprend : la lecture du compteur (étape 1) ; la \
+purge du filtre (étape 2) ; le relevé de la pression (étape 3)."
+   INTERDIT : extrait_exact = "Le contrôle comprend : ... la purge du filtre (étape 2) ..."
+   Correct : extrait_exact = "la purge du filtre (étape 2)", recopié tel quel ; et, si \
+l'introduction est utile, une seconde affirmation avec l'extrait "Le contrôle comprend : la \
+lecture du compteur (étape 1)".
+8. Ne reprends dans reponse une référence de la question (R1, numéro d'article, norme…) que si \
+elle figure dans un extrait cité. Plus généralement, reponse ne contient rien qui ne soit pas \
+dans un extrait cité.
+9. L'extrait doit nommer l'objet ou l'équipement demandé par la question. Une légende de photo ne \
+vaut que pour sa propre photo : ne l'attribue pas à un autre objet décrit à côté.
+10. Examine tous les passages fournis (P1 à P8) avant de conclure qu'une information est \
+absente.
 """
 
 SCHEMA_NAME = "reponse_maintenance"

@@ -132,3 +132,24 @@ def test_cost() -> None:
     settings = LLMSettings("openai", "m", 0.0, 2000, 0.25, 2.0)
     assert settings.cost(1_000_000, 500_000) == 1.25
     assert replace(settings, price_per_1m_output=None).cost(1, 1) is None
+
+
+def test_prompt_v2_rules() -> None:
+    assert PROMPT_VERSION == "generation-v2-2026-11-11"
+    for rule in (
+        "extrait CONTINU",
+        "Jamais de « ... »",
+        "fais deux affirmations",
+        "INTERDIT : extrait_exact",
+        "référence de la question",
+        "reponse ne contient rien qui ne soit pas",
+        "nommer l'objet ou l'équipement demandé",
+        "légende de photo ne vaut que pour sa propre photo",
+        "Examine tous les passages fournis",
+    ):
+        assert rule in SYSTEM_PROMPT
+    # Rien n'a été retiré de la v1, ni assoupli : info_presente reste « écrite explicitement ».
+    assert "écrite explicitement dans les passages" in SYSTEM_PROMPT
+    assert "synonyme" not in SYSTEM_PROMPT
+    numbers = [int(line.split(".")[0]) for line in SYSTEM_PROMPT.splitlines() if line[:1].isdigit()]
+    assert numbers == list(range(1, 11))

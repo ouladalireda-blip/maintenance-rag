@@ -202,3 +202,17 @@ def test_refused_by_llm_answer_with_unquoted_number_is_not_shown() -> None:
 def test_affirmation_failure_takes_precedence_over_answer_failure() -> None:
     verdict = verify(_answer_with("Attendre 10 minutes.", _aff("x", QUOTE_1, "P9")), PASSAGES)
     assert verdict.reason is Reason.UNKNOWN_PASSAGE
+
+
+def test_bullets_and_footnote_refs_in_passage_do_not_block_an_exact_quote() -> None:
+    passages = {
+        "P1": P(
+            "Opérations : • séparation de la source ; • mise à la terre[^4] immédiatement après."
+        )
+    }
+    quote = "Opérations : séparation de la source ; mise à la terre immédiatement après."
+    output = _answer(_aff("Séparer puis mettre à la terre.", quote))
+    assert verify(output, passages).status is Status.ANSWERED
+    # Un mot changé échoue toujours.
+    changed = _aff("x", "Opérations : séparation de la source ; mise à la terre juste après.")
+    assert verify(_answer(changed), passages).reason is Reason.QUOTE_NOT_FOUND

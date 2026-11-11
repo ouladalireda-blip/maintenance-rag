@@ -41,7 +41,8 @@ def test_every_dash_is_removed(dash: str) -> None:
 
 def test_soft_hyphen_and_layout_characters_are_removed() -> None:
     assert normalize_for_match("consi\xadgnation") == "consignation"
-    assert normalize_for_match("•\u2009\x07séparation") == "•séparation"
+    # Espace fine et  retirés ; depuis la v2, la puce aussi (artefact du chunking).
+    assert normalize_for_match("•\u2009\x07séparation") == "séparation"
 
 
 def test_nfkc_expands_ligatures() -> None:
@@ -124,3 +125,29 @@ def test_really_different_word_does_not_match() -> None:
 def test_quote_shorter_than_min_chars_raises() -> None:
     with pytest.raises(ValueError):
         quote_matches("la séparation", "la séparation de l'équipement")  # 12 caractères normalisés
+
+
+@pytest.mark.parametrize("bullet", ["•", "◦", "▪"])
+def test_list_bullets_are_removed(bullet: str) -> None:
+    source = f"opérations suivantes : {bullet} séparation ; {bullet} condamnation"
+    assert normalize_for_match(source) == normalize_for_match(
+        "opérations suivantes : séparation ; condamnation"
+    )
+    assert quote_matches("opérations suivantes : séparation ; condamnation", source)
+
+
+def test_markdown_footnote_reference_is_removed() -> None:
+    source = "mise à la terre et en court-circuit[^4] immédiatement après la VAT"
+    assert quote_matches("mise à la terre et en court-circuit immédiatement après la VAT", source)
+    assert normalize_for_match("[^12]") == ""
+
+
+def test_other_digits_are_kept() -> None:
+    assert normalize_for_match("R. 4411-6") == "r.44116"  # seuls l'espace et le tiret partent
+    assert normalize_for_match("1 000 V") == "1000v"
+    # Pas un appel de note : crochets ordinaires ou sans « ^ », conservés avec leurs chiffres
+    assert normalize_for_match("[4]") == "[4]"
+    assert normalize_for_match("[^a]") == "[^a]"
+    assert not quote_matches(
+        "délai de 5 minutes après la coupure", "délai de 15 minutes après la coupure"
+    )
