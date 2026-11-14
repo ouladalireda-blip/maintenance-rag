@@ -12,74 +12,74 @@ verdict_values:
 - trompeur
 questions:
 - id: INRS-DEV-001
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-003
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-004
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-005
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-006
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-007
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-008
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-016
-  verdict: null
+  verdict: incomplet
   note: ''
 - id: INRS-DEV-017
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-018
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-019
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-021
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-023
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-024
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-025
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-026
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-027
-  verdict: null
+  verdict: trompeur
   note: ''
 - id: INRS-DEV-028
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-029
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-030
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-031
-  verdict: null
+  verdict: incomplet
   note: ''
 - id: INRS-DEV-033
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-035
-  verdict: null
+  verdict: fidele
   note: ''
 - id: INRS-DEV-036
-  verdict: null
+  verdict: fidele
   note: ''
