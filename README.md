@@ -56,6 +56,18 @@ Les ports 8100 et 8600 évitent les conflits avec un autre projet local sur 8000
 
 **Données conservées.** Le journal des questions et les avis « utile / pas utile » sont stockés dans le volume nommé `api-data`, qui survit aux redémarrages.
 
+**Derrière un antivirus ou un proxy qui inspecte HTTPS.** Si la construction échoue avec `invalid peer certificate: UnknownIssuer` (ou `CERTIFICATE_VERIFY_FAILED`), un logiciel du poste remplace les certificats des sites par les siens. Les images peuvent faire confiance à son autorité racine, **en plus** des autorités publiques, sans désactiver aucune vérification :
+
+1. Identifier l'émetteur depuis un conteneur :
+   ```sh
+   docker run --rm python:3.12-slim sh -c "openssl s_client -connect pypi.org:443 -servername pypi.org </dev/null 2>/dev/null | grep -E 'issuer|depth'"
+   ```
+   Un émetteur qui n'est pas une autorité publique (par exemple `CN=Norton Web/Mail Shield Root`) signale une inspection.
+2. Exporter le certificat **racine public** de cet émetteur au format PEM (depuis le magasin de certificats du système ou les réglages du logiciel) dans `certs/`, par exemple `certs/inspection-ca.pem`. Jamais de clé privée : la construction refuse un tel fichier.
+3. Reconstruire : `docker compose up -d --build`. Le certificat est ajouté au magasin système de l'image (`update-ca-certificates`), utilisé par uv au build et par Python à l'exécution.
+
+Règle : **ce fichier ne doit jamais être versionné** (propre au poste ; `.gitignore` n'autorise que `certs/.keep`, et la CI le vérifie). Sans certificat dans `certs/` (CI, autre poste), la construction fonctionne telle quelle.
+
 **Arrêter**
 
 ```sh

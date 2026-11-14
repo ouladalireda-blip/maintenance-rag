@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: certs/ ne versionne que .keep (aucun certificat de poste)
+        run: |
+          tracked=$(git ls-files certs/)
+          echo "certs/ versionné : $tracked"
+          test "$tracked" = "certs/.keep"
+
       - name: Installer uv
         uses: astral-sh/setup-uv@v6
         with:

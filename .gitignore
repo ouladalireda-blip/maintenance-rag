@@ -35,4 +35,7 @@ evals/drafts/
 # Données locales de l'API (journal SQLite des requêtes)
 data/
 
-certs/
+# Certificat racine PUBLIC d'un antivirus / proxy qui inspecte HTTPS (propre au poste) :
+# jamais versionné. Seul certs/.keep l'est (le dossier doit exister pour le COPY des Dockerfiles).
+certs/*
+!certs/.keep

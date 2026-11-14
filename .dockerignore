@@ -9,6 +9,14 @@
 corpus/*
 !corpus/manifest.yaml
 
+# Autorités de certification supplémentaires (certs/, voir README « Docker ») : seuls les
+# certificats PEM et certs/.keep entrent dans le contexte ; copiés uniquement dans le magasin
+# système de l'image (/usr/local/share/ca-certificates/extra/).
+certs/*
+!certs/.keep
+!certs/*.pem
+!certs/*.crt
+
 # Données locales, caches et modèles (FlashRank : reranking désactivé).
 data/
 .cache/
