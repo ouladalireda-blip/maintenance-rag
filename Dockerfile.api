@@ -1,0 +1,51 @@
+# Image de l'API FastAPI (maintenance_rag.api.main:app), port 8000.
+#
+# - Python 3.12 slim ; dépendances installées avec uv à partir du lockfile (--locked : échec si
+#   uv.lock n'est pas à jour), sans les outils de développement.
+# - Utilisateur NON-root (uid 10001).
+# - Rien de sensible ni d'inutile dans l'image (voir aussi .dockerignore) : ni .env, ni le PDF
+#   (corpus/inrs/), ni .cache/ (modèle FlashRank : reranking désactivé), ni evals/, ni data/.
+#   Seul corpus/manifest.yaml est copié (titres des documents). Le texte du guide est en base.
+# - Les secrets (OPENAI_API_KEY, SUPABASE_DB_URL) viennent de l'environnement au lancement
+#   (docker compose : env_file). Sans eux, l'API démarre en mode dégradé : /health 200,
+#   /ready 503.
+# - Le démarrage ne télécharge rien (ni modèle FlashRank, ni encodage tiktoken) : vérifié en
+#   lançant le conteneur sans réseau.
+FROM python:3.12-slim
+
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1 \
+    UV_PYTHON_DOWNLOADS=never \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/app/.venv/bin:$PATH"
+
+RUN useradd --uid 10001 --create-home --shell /usr/sbin/nologin app
+
+WORKDIR /app
+
+# 1. Dépendances seules (couche mise en cache tant que le lockfile ne change pas).
+COPY pyproject.toml uv.lock .python-version README.md ./
+RUN uv sync --locked --no-dev --no-install-project
+
+# 2. Code et configuration du pipeline, puis installation du projet.
+COPY src ./src
+COPY config ./config
+COPY corpus/manifest.yaml ./corpus/manifest.yaml
+RUN uv sync --locked --no-dev \
+    && mkdir -p /app/data \
+    && chown -R app:app /app/data
+
+# Journal SQLite et avis des utilisateurs : volume nommé monté sur /app/data (docker-compose).
+VOLUME ["/app/data"]
+
+USER app
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+    CMD ["python", "-c", "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).status == 200 else 1)"]
+
+CMD ["uvicorn", "maintenance_rag.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

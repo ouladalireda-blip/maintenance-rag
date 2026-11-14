@@ -1,0 +1,42 @@
+# Contexte de construction des images (Dockerfile.api, Dockerfile.ui).
+# Principe : rien de secret, rien de protégé, rien d'inutile à l'exécution.
+
+# Secrets : jamais dans une image (fournis au lancement par docker compose : env_file).
+.env
+.env.*
+
+# Document protégé (© INRS) : jamais dans une image ; seul le manifeste est utile.
+corpus/*
+!corpus/manifest.yaml
+
+# Données locales, caches et modèles (FlashRank : reranking désactivé).
+data/
+.cache/
+.venv/
+**/__pycache__/
+*.py[oc]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Évaluation : réponses complètes (extraits du guide), résultats, brouillons, jeu test.
+# Seul le jeu DEV est copié (exemples de l'interface).
+evals/*
+!evals/questions_dev.yaml
+
+# Gestion de version, CI, éditeur, outillage Docker.
+.git/
+.gitignore
+.github/
+.vscode/
+Dockerfile
+Dockerfile.*
+docker-compose.yml
+.dockerignore
+
+# Inutile à l'exécution.
+tests/
+docs/
+scripts/
+supabase/
+app_streamlit.py

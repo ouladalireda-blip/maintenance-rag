@@ -1,8 +1,41 @@
+# maintenance-rag : API (FastAPI) + interface (Streamlit, client de l'API).
+#
+#   docker compose up -d --build
+#   interface : http://localhost:8600     API : http://localhost:8100/docs
+#
+# Ports hôte 8100 / 8600 : choisis pour ne pas entrer en conflit avec un autre projet local
+# (8000 / 8501). Les secrets restent dans .env, lu au lancement (env_file), jamais copié dans
+# une image.
+name: maintenance-rag
+
 services:
   api:
-    build: .
-    env_file: .env              # secrets locaux, jamais versionnés
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: maintenance-rag-api:v2
+    env_file: .env              # OPENAI_API_KEY, SUPABASE_DB_URL… (jamais versionné)
     ports:
-      - "8000:8000"
+      - "8100:8000"
     volumes:
-      - ./corpus:/app/corpus:ro # corpus local (dont le PDF INRS) en lecture seule
+      - api-data:/app/data      # journal SQLite et avis des utilisateurs, conservés
+    restart: unless-stopped
+    # HEALTHCHECK défini dans Dockerfile.api (/health, start-period 90 s).
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    image: maintenance-rag-ui:v2
+    environment:
+      API_URL: http://api:8000  # réseau interne de compose
+    ports:
+      - "8600:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    # HEALTHCHECK défini dans Dockerfile.ui (/_stcore/health).
+
+volumes:
+  api-data:

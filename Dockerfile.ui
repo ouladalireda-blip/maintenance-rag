@@ -1,0 +1,44 @@
+# Image de l'interface Streamlit (ui/app.py), port 8501 : un CLIENT de l'API (API_URL).
+#
+# - Python 3.12 slim ; dépendances installées avec uv à partir du lockfile (--locked), groupe
+#   « ui » (streamlit) en plus des dépendances du projet, sans les outils de développement.
+# - Utilisateur NON-root (uid 10001).
+# - L'interface ne parle jamais à la base ni au LLM : aucun secret n'est nécessaire. Elle lit
+#   config/config.yaml (section ui) et evals/questions_dev.yaml (exemples, jeu DEV) ; le jeu test
+#   n'est pas copié.
+FROM python:3.12-slim
+
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1 \
+    UV_PYTHON_DOWNLOADS=never \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/app/.venv/bin:$PATH" \
+    API_URL=http://api:8000
+
+RUN useradd --uid 10001 --create-home --shell /usr/sbin/nologin app
+
+WORKDIR /app
+
+# 1. Dépendances seules (couche mise en cache tant que le lockfile ne change pas).
+COPY pyproject.toml uv.lock .python-version README.md ./
+RUN uv sync --locked --no-dev --group ui --no-install-project
+
+# 2. Interface et fichiers lus à l'exécution (jamais le jeu test).
+COPY ui ./ui
+COPY .streamlit ./.streamlit
+COPY config ./config
+COPY evals/questions_dev.yaml ./evals/questions_dev.yaml
+
+USER app
+EXPOSE 8501
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD ["python", "-c", "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=4).status == 200 else 1)"]
+
+# --server.address : écoute sur toutes les interfaces du conteneur (.streamlit/config.toml
+# limite à localhost pour un lancement direct sur le poste).
+CMD ["streamlit", "run", "ui/app.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true"]

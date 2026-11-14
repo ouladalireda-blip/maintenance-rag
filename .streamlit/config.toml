@@ -1,0 +1,13 @@
+# Interface Streamlit de l'assistant consignation (ui/app.py)
+[server]
+headless = true               # pas d'ouverture automatique ni de question au démarrage
+port = 8501
+address = "localhost"         # accessible depuis ce poste uniquement
+
+[browser]
+gatherUsageStats = false      # aucune télémétrie
+
+[theme]
+base = "light"
+primaryColor = "#1d4ed8"
+font = "sans serif"

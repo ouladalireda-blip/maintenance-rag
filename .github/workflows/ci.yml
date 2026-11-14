@@ -33,3 +33,56 @@ jobs:
 
       - name: Pytest
         run: uv run pytest
+
+  docker:
+    runs-on: ubuntu-latest
+    # Construit les deux images et vérifie que l'API démarre SANS secret ni réseau, en mode
+    # dégradé : /health 200, /ready 503 (aucun téléchargement au démarrage). Aucun secret n'est
+    # utilisé par ce job.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construire l'image de l'API
+        run: docker build -f Dockerfile.api -t maintenance-rag-api:ci .
+
+      - name: Construire l'image de l'interface
+        run: docker build -f Dockerfile.ui -t maintenance-rag-ui:ci .
+
+      - name: API sans secret ni réseau — /health 200, /ready 503
+        run: |
+          docker run -d --name api --network none maintenance-rag-api:ci
+          probe='import sys, urllib.request, urllib.error
+          def code(path):
+              try:
+                  return urllib.request.urlopen("http://127.0.0.1:8000" + path, timeout=4).status
+              except urllib.error.HTTPError as error:
+                  return error.code
+          print(code("/health"), code("/ready"))'
+          for attempt in $(seq 1 45); do
+            if result=$(docker exec api python -c "$probe" 2>/dev/null); then break; fi
+            sleep 2
+          done
+          echo "health ready : ${result:-aucune réponse}"
+          docker logs api
+          test "$result" = "200 503"
+
+      - name: Interface — /_stcore/health 200
+        run: |
+          docker run -d --name ui -p 8501:8501 maintenance-rag-ui:ci
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8501/_stcore/health; then echo; exit 0; fi
+            sleep 2
+          done
+          docker logs ui
+          exit 1
+
+      - name: Aucun secret dans les images
+        run: |
+          for image in maintenance-rag-api:ci maintenance-rag-ui:ci; do
+            if docker run --rm --entrypoint sh "$image" -c 'test -e /app/.env'; then
+              echo "::error::.env présent dans $image"; exit 1
+            fi
+            if docker history --no-trunc "$image" | grep -E 'sk-[A-Za-z0-9_-]{20,}|postgres(ql)?://[^ ]+:[^ ]+@'; then
+              echo "::error::secret visible dans l'historique de $image"; exit 1
+            fi
+          done

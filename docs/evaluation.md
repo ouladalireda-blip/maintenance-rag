@@ -78,6 +78,24 @@ C'est la limite assumée dans l'ADR 0001 : **une citation exacte prouve que l'ex
 
 **Piste v3 : un vérificateur d'implication.** Il contrôlerait que chaque affirmation, et la réponse, est impliquée par son extrait cité (modèle d'inférence textuelle ou LLM juge contraint, à mesurer). Il ne fait pas partie du système évalué. Une v3 serait réglée sur le jeu dev, puis évaluée sur un **nouveau** jeu test (ADR 0003).
 
+## Limite connue : fidélité des résumés (INRS-DEV-028)
+
+**Constat (test manuel de l'interface).** Sur INRS-DEV-028 (valide), le système cite le bon passage, et l'extrait est vérifié mot pour mot. Mais le **résumé** du LLM le déforme : le guide prescrit la vérification d'absence de tension sur **tous les conducteurs actifs, neutre compris**, et le résumé ne parle que du **neutre**. Un technicien qui lirait seulement le résumé retiendrait une consigne fausse.
+
+Les métriques automatiques ne voient rien : la question est `ANSWERED` avec la bonne source. Le garde-fou 2 contrôle l'existence des extraits et la présence des nombres, pas le **sens** du résumé (limite assumée, ADR 0001). C'est la même famille de défaut qu'INRS-DEV-048, mais sur une question valide : citation exacte, affirmation non fidèle.
+
+**Parade d'interface, sans modifier le système v2.** Dans l'interface (`ui/app.py`), la **citation** devient la réponse principale :
+
+- les extraits exacts s'affichent en premier et en grand, avec leur page et leur section ;
+- le résumé du LLM vient ensuite, en plus petit, sous le titre « Résumé automatique — vérifiez dans l'extrait ci-dessus » ;
+- un refus avec informations liées suit la même présentation, sous « Ce que le guide dit sur ce sujet ».
+
+Le technicien lit d'abord le texte vérifié du guide.
+
+**Mesure.** La fidélité des résumés est relue à la main avec `evals/fidelity.py`, qui produit un fichier de relecture local et un fichier de verdicts `evals/fidelity_dev.yaml` (fidèle / incomplet / trompeur). L'évaluation finale ajoute le critère « résumés trompeurs ≤ 5 % des réponses », mesuré à la main sur le 1er run du jeu test (ADR 0003).
+
+**Piste v3 : vérificateur d'implication.** Pour chaque affirmation et pour le résumé, il vérifierait que le texte est **impliqué** par l'extrait cité, et pas seulement que l'extrait existe. Un résumé qui restreint ou généralise l'extrait (« tous les conducteurs » réduit au « neutre ») serait alors refusé ou réécrit. Comme pour INRS-DEV-048, cette piste serait réglée sur le jeu dev, puis évaluée sur un **nouveau** jeu test.
+
 ## Limites et pistes v3
 
 Points issus d'une revue de code. Ils ne modifient pas le système v2, figé : ce sont des hypothèses et des décisions à reprendre pour une v3, à vérifier sur le jeu **dev** uniquement.

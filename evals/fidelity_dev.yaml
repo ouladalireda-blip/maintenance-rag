@@ -1,0 +1,85 @@
+# Fidélité des résumés du LLM, jeu DEV : verdicts saisis À LA MAIN (ADR 0003).
+# verdict : fidele | incomplet | trompeur (null = pas encore relu).
+# note : courte, SANS texte du guide. Relecture : evals/runs/fidelity_review_dev.md
+# (local). Régénérer : uv run python evals/fidelity.py review
+set: dev
+run: e2e_dev_2026-11-11_8a80aa2_run3.jsonl
+prompt_version: generation-v2-2026-11-11
+updated: '2026-11-11'
+verdict_values:
+- fidele
+- incomplet
+- trompeur
+questions:
+- id: INRS-DEV-001
+  verdict: null
+  note: ''
+- id: INRS-DEV-003
+  verdict: null
+  note: ''
+- id: INRS-DEV-004
+  verdict: null
+  note: ''
+- id: INRS-DEV-005
+  verdict: null
+  note: ''
+- id: INRS-DEV-006
+  verdict: null
+  note: ''
+- id: INRS-DEV-007
+  verdict: null
+  note: ''
+- id: INRS-DEV-008
+  verdict: null
+  note: ''
+- id: INRS-DEV-016
+  verdict: null
+  note: ''
+- id: INRS-DEV-017
+  verdict: null
+  note: ''
+- id: INRS-DEV-018
+  verdict: null
+  note: ''
+- id: INRS-DEV-019
+  verdict: null
+  note: ''
+- id: INRS-DEV-021
+  verdict: null
+  note: ''
+- id: INRS-DEV-023
+  verdict: null
+  note: ''
+- id: INRS-DEV-024
+  verdict: null
+  note: ''
+- id: INRS-DEV-025
+  verdict: null
+  note: ''
+- id: INRS-DEV-026
+  verdict: null
+  note: ''
+- id: INRS-DEV-027
+  verdict: null
+  note: ''
+- id: INRS-DEV-028
+  verdict: null
+  note: ''
+- id: INRS-DEV-029
+  verdict: null
+  note: ''
+- id: INRS-DEV-030
+  verdict: null
+  note: ''
+- id: INRS-DEV-031
+  verdict: null
+  note: ''
+- id: INRS-DEV-033
+  verdict: null
+  note: ''
+- id: INRS-DEV-035
+  verdict: null
+  note: ''
+- id: INRS-DEV-036
+  verdict: null
+  note: ''

@@ -1,7 +1,10 @@
-"""Journal local des requêtes /ask (SQLite, data/api_log.sqlite, gitignoré).
+"""Journal local des requêtes /ask et des avis /feedback (SQLite, data/api_log.sqlite,
+gitignoré).
 
-Champs : horodatage, request_id, question, statut, refus_raison, ids des passages cités,
-latence, coût, prompt_version. Jamais la réponse complète ni les extraits du guide.
+Table ``requests`` : horodatage, request_id, question, statut, refus_raison, ids des passages
+cités, latence, coût, prompt_version. Jamais la réponse complète ni les extraits du guide.
+Table ``feedback`` : request_id (une requête journalisée), utile (0 / 1), horodatage. Un nouvel
+avis sur la même requête remplace le précédent.
 
 Le coût cumulé du jour (date locale du serveur) se lit dans ce journal, pour le garde-fou
 de budget : il survit donc à un redémarrage de l'API.
@@ -29,6 +32,13 @@ create table if not exists requests (
     prompt_version  text
 )
 """
+FEEDBACK_SCHEMA = """
+create table if not exists feedback (
+    request_id  text    not null primary key references requests (request_id),
+    utile       integer not null check (utile in (0, 1)),
+    ts          text    not null    -- horodatage ISO 8601, heure locale avec décalage
+)
+"""
 COLUMNS = (
     "ts",
     "day",
@@ -50,6 +60,7 @@ class RequestLog:
         self._lock = threading.Lock()
         with self._connect() as conn:
             conn.execute(SCHEMA)
+            conn.execute(FEEDBACK_SCHEMA)
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -104,3 +115,19 @@ class RequestLog:
 
     def spent_today(self) -> float:
         return self.spent_on(dt.datetime.now().astimezone().date())
+
+    def record_feedback(self, request_id: str, utile: bool, now: dt.datetime | None = None) -> bool:
+        """Enregistre l'avis ; ``False`` (rien d'écrit) si la requête n'est pas journalisée."""
+        moment = (now or dt.datetime.now()).astimezone().isoformat(timespec="seconds")
+        with self._lock, self._connect() as conn:
+            known = conn.execute(
+                "select 1 from requests where request_id = ?", (request_id,)
+            ).fetchone()
+            if known is None:
+                return False
+            conn.execute(
+                "insert into feedback (request_id, utile, ts) values (?, ?, ?) "
+                "on conflict (request_id) do update set utile = excluded.utile, ts = excluded.ts",
+                (request_id, int(utile), moment),
+            )
+        return True

@@ -498,3 +498,68 @@ def test_api_settings_from_config() -> None:
     assert settings.daily_budget_usd == 1.0
     assert settings.cors_origins == ["http://localhost:5173"]
     assert settings.log_path.name == "api_log.sqlite"
+
+
+# ------------------------------------------------------------------------------- /feedback
+def _feedback_rows(state: AppState) -> list[dict[str, Any]]:
+    conn = sqlite3.connect(state.log.path)
+    conn.row_factory = sqlite3.Row
+    try:
+        return [dict(row) for row in conn.execute("select * from feedback")]
+    finally:
+        conn.close()
+
+
+@pytest.mark.parametrize("utile", [True, False])
+def test_feedback_is_recorded(make_client: Maker, utile: bool) -> None:
+    client, state, _ = make_client()
+    request_id = _ask(client).json()["request_id"]
+    response = client.post("/feedback", json={"request_id": request_id, "utile": utile})
+    assert response.status_code == 204
+    assert response.content == b""
+    (row,) = _feedback_rows(state)
+    assert row["request_id"] == request_id and row["utile"] == int(utile)
+    assert dt.datetime.fromisoformat(row["ts"]).tzinfo is not None
+    assert set(row) == {"request_id", "utile", "ts"}
+
+
+def test_feedback_replaces_previous_opinion(make_client: Maker) -> None:
+    client, state, _ = make_client()
+    request_id = _ask(client).json()["request_id"]
+    client.post("/feedback", json={"request_id": request_id, "utile": True})
+    client.post("/feedback", json={"request_id": request_id, "utile": False})
+    assert [row["utile"] for row in _feedback_rows(state)] == [0]
+
+
+def test_feedback_unknown_request_is_404(make_client: Maker) -> None:
+    client, state, _ = make_client()
+    response = client.post("/feedback", json={"request_id": "0" * 32, "utile": True})
+    assert response.status_code == 404
+    assert "inconnue" in response.json()["detail"]
+    assert _feedback_rows(state) == []
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {},
+        {"request_id": "abc", "utile": True},  # pas un request_id
+        {"request_id": "0" * 32},  # utile manquant
+        {"request_id": "0" * 32, "utile": "peut-être"},
+        {"request_id": "0" * 32, "utile": True, "note": 5},  # champ en plus
+    ],
+)
+def test_feedback_invalid_body_is_422(make_client: Maker, body: dict[str, Any]) -> None:
+    client, _, _ = make_client()
+    assert client.post("/feedback", json=body).status_code == 422
+
+
+def test_feedback_on_a_429_request_is_404(make_client: Maker) -> None:
+    """Une question refusée pour budget n'est pas journalisée : pas d'avis possible."""
+    client, _, _ = make_client(budget=0.0)
+    response = _ask(client)
+    assert response.status_code == 429
+    request_id = response.json()["request_id"]
+    assert (
+        client.post("/feedback", json={"request_id": request_id, "utile": True}).status_code == 404
+    )

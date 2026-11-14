@@ -13,6 +13,8 @@ uvicorn ``maintenance_rag.api.main:app``.
     * ``avertissement`` toujours présent ;
     * erreur réseau, TLS, OpenAI ou base : 503, jamais présentée comme un refus ;
     * entrée invalide : 422 ; budget journalier épuisé : 429, sans appel au LLM.
+- ``POST /feedback`` : avis « utile / pas utile » sur une réponse (``request_id`` renvoyé par
+  /ask) : 204, ou 404 si la requête n'est pas journalisée ; 422 si l'entrée est invalide.
 - Chaque appel traité est journalisé (``api.logging``), sans réponse ni extrait du guide.
 """
 
@@ -33,6 +35,7 @@ from .schemas import (
     AskResponse,
     CitationOut,
     ErrorResponse,
+    FeedbackRequest,
     HealthResponse,
     ReadyResponse,
 )
@@ -43,6 +46,7 @@ UPSTREAM_MESSAGE = (
     "Service momentanément indisponible (base de données ou modèle de langage injoignable). "
     "Ce n'est pas une réponse du guide : réessayez plus tard."
 )
+FEEDBACK_UNKNOWN_MESSAGE = "Requête inconnue : l'avis n'a pas été enregistré."
 NOT_READY_MESSAGE = "Service non prêt : le pipeline n'a pas pu être initialisé."
 BUDGET_MESSAGE = (
     "Budget journalier de l'assistant atteint : aucune nouvelle question n'est traitée "
@@ -163,6 +167,16 @@ def create_app(build: Callable[[], AppState] = build_state) -> FastAPI:
             latence_ms=round(latency, 1),
             cout_usd=result.cost_usd,
         )
+
+    @app.post(
+        "/feedback",
+        status_code=status.HTTP_204_NO_CONTENT,
+        responses={404: {"model": ErrorResponse}},
+    )
+    def feedback(body: FeedbackRequest, state: State) -> Response:
+        if not state.log.record_feedback(body.request_id, body.utile):
+            return _error(status.HTTP_404_NOT_FOUND, FEEDBACK_UNKNOWN_MESSAGE, body.request_id)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     return app
 

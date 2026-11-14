@@ -48,6 +48,15 @@ api:
     - "http://localhost:5173"
   log_path: "data/api_log.sqlite"   # journal local (gitignoré) : ni réponse ni extrait du guide
 
+ui:
+  timeout_s: 60                     # délai d'attente d'une réponse de l'API (génération : ~2 à 5 s)
+  history_size: 5                   # questions de la session gardées dans l'historique
+  examples:                         # exemples cliquables : jeu DEV uniquement (jamais le jeu test)
+    - "INRS-DEV-007"                # valide
+    - "INRS-DEV-028"                # valide
+    - "INRS-DEV-037"                # piège (near_miss)
+    - "INRS-DEV-041"                # piège (near_miss)
+
 chunking:
   max_tokens: 350                   # mesuré : 0 passage > 512 tokens BERT avec marge pour la question
   never_split_lists: true           # une liste d'étapes (procédure) n'est jamais coupée

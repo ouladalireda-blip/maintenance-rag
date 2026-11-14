@@ -40,6 +40,16 @@ class AskResponse(BaseModel):
     cout_usd: float | None
 
 
+RequestId = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{32}$")]
+
+
+class FeedbackRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    request_id: RequestId = Field(description="request_id renvoyé par /ask")
+    utile: bool
+
+
 class HealthResponse(BaseModel):
     status: Literal["ok"] = "ok"
 

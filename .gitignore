@@ -34,3 +34,5 @@ evals/drafts/
 
 # Données locales de l'API (journal SQLite des requêtes)
 data/
+
+certs/

@@ -54,6 +54,19 @@ Si le protocole était décidé après avoir vu les résultats, on pourrait choi
 
 5. **Aucune modification après lecture.** Après avoir vu ces résultats, il est interdit de modifier le système (prompt, configuration, garde-fous, recherche, données) puis de le réévaluer sur ce jeu test. Les résultats sont publiés tels quels, qu'ils atteignent les critères ou non. Une v3, par exemple avec un vérificateur d'implication, serait réglée sur le jeu dev, puis évaluée sur un **nouveau** jeu test, rédigé et figé avant la mesure.
 
+## Fidélité des résumés
+
+Décidé **avant** l'évaluation finale, et donc avant toute utilisation du jeu test.
+
+- **Constat qui motive ce critère.** Sur INRS-DEV-028 (jeu dev, relevé en test manuel de l'interface), le système cite le bon passage et l'extrait est exact. Le guide y prescrit la vérification d'absence de tension sur tous les conducteurs actifs, neutre compris ; le résumé du LLM ne parle que du neutre. La réponse est classée `ANSWERED` avec la bonne source, donc les métriques automatiques la comptent comme un succès. Le garde-fou 2 ne vérifie pas le sens du résumé, seulement l'existence des extraits et les nombres (limite connue, ADR 0001).
+- **Mesure.** Sur le **1er run** de l'évaluation finale, chaque question valide `ANSWERED` est classée **à la main** :
+  - **fidèle** : le résumé dit ce que disent les extraits cités ;
+  - **incomplet** : juste, mais partiel ;
+  - **trompeur** : le résumé déforme un extrait, ou affirme ce qu'aucun extrait ne contient.
+- **Critère.** Les résumés trompeurs représentent **au plus 5 %** des réponses `ANSWERED` des questions valides de ce run. Le critère est publié avec les quatre autres, avec le nombre de chaque verdict et la liste des ids « trompeur ».
+- **Outillage.** La relecture se fait avec `evals/fidelity.py`. Il produit un fichier de relecture local, non versionné (extraits du guide), et un fichier de verdicts versionné, sans texte du guide. L'outil est d'abord utilisé et rodé sur le jeu dev (`evals/fidelity_dev.yaml`). Pour l'évaluation finale, il sera ouvert au jeu test uniquement sur le 1er run du `--final`, sans aucun changement du système.
+- **Lecture.** Ce critère est un jugement humain, pas une métrique automatique. Il est publié comme tel, avec la règle de classement ci-dessus, et ne conditionne aucune modification du système v2 (point 5 de la décision).
+
 ## Conséquences
 
 - **Une seule commande consomme le jeu test.** Elle produit trois fichiers de métriques `evals/results/e2e_test_<date>_<commit>_run{1,2,3}.json`, une synthèse `…_summary.json` (verdict par critère selon l'agrégation ci-dessus, réponses dangereuses par run en nombre, taux et ids, stabilité, sous-ensemble) et trois fichiers de réponses complètes dans `evals/runs/` (non versionné).
